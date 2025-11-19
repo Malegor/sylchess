@@ -5,7 +5,7 @@ import com.sylvain.chess.pieces.Piece;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class Position {
+public class PieceOnBoard {
     final Piece piece;
     final int column;
     final int row;

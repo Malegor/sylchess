@@ -6,6 +6,6 @@ import java.util.List;
 
 @AllArgsConstructor
 public class ChessBoard {
-    final List<Position> whitePieces;
-    final List<Position> blackPieces;
+    final List<PieceOnBoard> whitePieces;
+    final List<PieceOnBoard> blackPieces;
 }
