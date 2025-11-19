@@ -1,6 +1,5 @@
 package com.sylvain.chess.pieces;
 
-import com.sylvain.chess.Constants;
 import com.sylvain.chess.board.Square;
 import lombok.AllArgsConstructor;
 
@@ -10,7 +9,7 @@ public class PieceOnBoard {
     final Square square;
 
     public boolean isValid() {
-        return this.square.isValid() && piece.isValidAt(this.square);
+        return piece.isValidAt(this.square);
     }
 
     /**
