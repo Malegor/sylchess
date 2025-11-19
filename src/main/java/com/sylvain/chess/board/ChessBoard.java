@@ -1,5 +1,6 @@
 package com.sylvain.chess.board;
 
+import com.sylvain.chess.pieces.PieceOnBoard;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
