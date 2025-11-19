@@ -1,18 +1,16 @@
 package com.sylvain.chess.pieces;
 
 import com.sylvain.chess.Constants;
+import com.sylvain.chess.board.Square;
 import lombok.AllArgsConstructor;
-
-import java.util.List;
 
 @AllArgsConstructor
 public class PieceOnBoard {
     final Piece piece;
-    final int column;
-    final int row;
+    final Square square;
 
     public boolean isValid() {
-        return column >= 1 && column <= Constants.BOARD_COLS && row >= 1 && row <= Constants.BOARD_ROWS && piece.isValidAt(this.column, this.row);
+        return this.square.isValid() && piece.isValidAt(this.square);
     }
 
     /**
