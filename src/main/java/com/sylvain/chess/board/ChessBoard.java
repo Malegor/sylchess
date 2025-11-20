@@ -12,6 +12,14 @@ public class ChessBoard {
     private final List<PieceOnBoard> blackPieces;
 
     public static boolean isInBoard(final Square square) {
-        return square.getColumn() >= 1 && square.getColumn() <= Constants.BOARD_COLS && square.getRow() >= 1 && square.getRow() <= Constants.BOARD_ROWS;
+        return isColumnInBoard(square.getColumn()) && isRowInBoard(square.getRow());
+    }
+
+    public static boolean isColumnInBoard(final int i) {
+        return i >= 1 && i <= Constants.BOARD_COLS;
+    }
+
+    public static boolean isRowInBoard(final int j) {
+        return j >= 1 && j <= Constants.BOARD_ROWS;
     }
 }

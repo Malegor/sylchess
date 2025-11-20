@@ -46,7 +46,20 @@ public enum Piece {
 
         @Override
         public Set<Square> getControlledSquares(final Square square) {
-            return Set.of();
+            final Set<Square> controlled = new HashSet<>();
+            for (int i = 1; i <= Constants.BOARD_COLS; i++) {
+                if (i != square.getColumn()) {
+                    final int j1 = i - square.getColumn() + square.getRow();
+                    if (ChessBoard.isRowInBoard(j1)) {
+                        controlled.add(new Square(i, j1));
+                    }
+                    final int j2 = square.getColumn() - i + square.getRow();
+                    if (ChessBoard.isRowInBoard(j2)) {
+                        controlled.add(new Square(i, j2));
+                    }
+                }
+            }
+            return controlled;
         }
     }, KNIGHT {
         @Override
@@ -54,6 +67,7 @@ public enum Piece {
             return ChessBoard.isInBoard(square);
         }
 
+        @Override
         public Set<Square> getControlledSquares(final Square square) {
             final Set<Square> controlled = new HashSet<>();
             final int [] possibleValues = new int[]{-2, -1, 1, 2};
