@@ -6,6 +6,8 @@ import com.sylvain.chess.board.Square;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public enum Piece {
     KING {
@@ -36,7 +38,15 @@ public enum Piece {
 
         @Override
         public Set<Square> getControlledSquares(final Square square) {
-            return Set.of();
+            final Set<Square> controlled = IntStream.range(1, Constants.BOARD_COLS + 1)
+                    .filter(i -> i != square.getColumn())
+                    .mapToObj(i -> new Square(i, square.getRow()))
+                    .collect(Collectors.toSet());
+            controlled.addAll(IntStream.range(1, Constants.BOARD_ROWS + 1)
+                    .filter(j -> j != square.getRow())
+                    .mapToObj(j -> new Square(square.getColumn(), j))
+                    .collect(Collectors.toSet()));
+            return controlled;
         }
     }, BISHOP {
         @Override
