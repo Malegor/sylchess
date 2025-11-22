@@ -14,7 +14,7 @@ public class TestPawn {
         final int j = 2;
         for (int i = 1; i <= Constants.BOARD_COLS; i++) {
             final Square startingSquare = new Square(i, j);
-            final Set<Square> squares = Piece.PAWN.getControlledSquares(startingSquare);
+            final Set<Square> squares = PieceKind.PAWN.getControlledSquares(startingSquare);
             System.out.println(startingSquare + " : " + squares);
             Assert.assertEquals((i == 1 || i == Constants.BOARD_COLS) ? 1 : 2, squares.size());
             for (Square square : squares) {

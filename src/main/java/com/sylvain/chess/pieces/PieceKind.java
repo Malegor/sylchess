@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public enum Piece {
+public enum PieceKind {
     KING {
         @Override
         public Set<Square> getControlledSquares(final Square square) {

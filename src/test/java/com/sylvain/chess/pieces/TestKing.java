@@ -17,7 +17,7 @@ public class TestKing {
         for (int i = 1; i <= Constants.BOARD_COLS; i++) {
             for (int j = 1; j <= Constants.BOARD_ROWS; j++) {
                 final Square startingSquare = new Square(i, j);
-                final Set<Square> squares = Piece.KING.getControlledSquares(startingSquare);
+                final Set<Square> squares = PieceKind.KING.getControlledSquares(startingSquare);
                 System.out.println(startingSquare + " : " + squares);
                 for (Square square : squares) {
                     Assert.assertTrue(ChessBoard.isInBoard(square));

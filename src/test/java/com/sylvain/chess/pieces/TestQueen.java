@@ -17,10 +17,10 @@ public class TestQueen {
         for (int i = 1; i <= Constants.BOARD_COLS; i++) {
             for (int j = 1; j <= Constants.BOARD_ROWS; j++) {
                 final Square startingSquare = new Square(i, j);
-                final Set<Square> squares = Piece.QUEEN.getControlledSquares(startingSquare);
+                final Set<Square> squares = PieceKind.QUEEN.getControlledSquares(startingSquare);
                 System.out.println(startingSquare + " : " + squares);
-                final Set<Square> rookControl = Piece.ROOK.getControlledSquares(startingSquare);
-                final Set<Square> bishopControl = Piece.BISHOP.getControlledSquares(startingSquare);
+                final Set<Square> rookControl = PieceKind.ROOK.getControlledSquares(startingSquare);
+                final Set<Square> bishopControl = PieceKind.BISHOP.getControlledSquares(startingSquare);
                 Assert.assertEquals(rookControl.size() + bishopControl.size(), squares.size());
                 Assert.assertTrue(squares.containsAll(rookControl));
                 Assert.assertTrue(squares.containsAll(bishopControl));

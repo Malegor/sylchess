@@ -17,7 +17,7 @@ public class TestKnight {
         for (int i = 1; i <= Constants.BOARD_COLS; i++) {
             for (int j = 1; j <= Constants.BOARD_ROWS; j++) {
                 final Square startingSquare = new Square(i, j);
-                final Set<Square> squares = Piece.KNIGHT.getControlledSquares(startingSquare);
+                final Set<Square> squares = PieceKind.KNIGHT.getControlledSquares(startingSquare);
                 System.out.println(startingSquare + " : " + squares);
                 Assert.assertTrue(squares.size() >= 2 && squares.size() <= 8);
                 for (Square square : squares) {
