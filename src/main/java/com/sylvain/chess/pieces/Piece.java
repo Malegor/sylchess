@@ -4,10 +4,10 @@ import com.sylvain.chess.Constants;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public enum Piece {
     KING {
@@ -28,7 +28,7 @@ public enum Piece {
 
         @Override
         public Set<Square> getControlledSquares(final Square square) {
-            return Set.of();
+            return Stream.of(ROOK.getControlledSquares(square), BISHOP.getControlledSquares(square)).flatMap(Set::stream).collect(Collectors.toSet());
         }
     }, ROOK {
         @Override
@@ -56,20 +56,19 @@ public enum Piece {
 
         @Override
         public Set<Square> getControlledSquares(final Square square) {
-            final Set<Square> controlled = new HashSet<>();
-            for (int i = 1; i <= Constants.BOARD_COLS; i++) {
-                if (i != square.getColumn()) {
-                    final int j1 = i - square.getColumn() + square.getRow();
-                    if (ChessBoard.isRowInBoard(j1)) {
-                        controlled.add(new Square(i, j1));
-                    }
-                    final int j2 = square.getColumn() - i + square.getRow();
-                    if (ChessBoard.isRowInBoard(j2)) {
-                        controlled.add(new Square(i, j2));
-                    }
-                }
-            }
-            return controlled;
+            return IntStream.range(1, Constants.BOARD_COLS + 1)
+                    .filter(i -> i != square.getColumn())
+                    .mapToObj(i -> getControlledSquaresAtColumn(square, i))
+                    .flatMap(Collection::stream)
+                    .filter(sq -> ChessBoard.isRowInBoard(sq.getRow()))
+                    .collect(Collectors.toSet());
+        }
+
+        private List<Square> getControlledSquaresAtColumn(final Square originalSquare, final int column) {
+            return List.of(
+                    new Square(column, column - originalSquare.getColumn() + originalSquare.getRow()),
+                    new Square(column, originalSquare.getColumn() - column + originalSquare.getRow())
+            );
         }
     }, KNIGHT {
         @Override
@@ -79,20 +78,13 @@ public enum Piece {
 
         @Override
         public Set<Square> getControlledSquares(final Square square) {
-            final Set<Square> controlled = new HashSet<>();
-            final int [] possibleValues = new int[]{-2, -1, 1, 2};
-            for (int i : possibleValues) {
-                for (int j : possibleValues) {
-                    // abs(i) and abs(j) must be distinct
-                    if (Math.abs(i) != Math.abs(j)) {
-                        final Square newSquare = square.move(i, j);
-                        if (ChessBoard.isInBoard(newSquare)) {
-                            controlled.add(newSquare);
-                        }
-                    }
-                }
-            }
-            return controlled;
+            final List<Integer> possibleValues = List.of(-2, -1, 1, 2);
+            return possibleValues.stream()
+                    .flatMap(i -> possibleValues.stream()
+                            .filter(j -> Math.abs(i) != Math.abs(j))
+                            .map(j -> square.move(i, j))
+                            .filter(ChessBoard::isInBoard))
+                    .collect(Collectors.toSet());
         }
     }, PAWN {
         @Override
