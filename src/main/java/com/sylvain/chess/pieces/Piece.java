@@ -12,30 +12,25 @@ import java.util.stream.Stream;
 public enum Piece {
     KING {
         @Override
-        public boolean isValidAt(final Square square) {
-            return ChessBoard.isInBoard(square);
-        }
-
-        @Override
         public Set<Square> getControlledSquares(final Square square) {
-            return Set.of();
+            final Set<Square> controlled = new HashSet<>();
+            final List<Integer> neighborhood = List.of(-1,0,1);
+            for (int i : neighborhood) {
+                for (int j : neighborhood) {
+                    final Square result = square.move(i, j);
+                    if ((i != 0 || j != 0) && ChessBoard.isInBoard(result)) {
+                        controlled.add(result);
+                    }
+                }
+            }
+            return controlled;
         }
     }, QUEEN {
-        @Override
-        public boolean isValidAt(final Square square) {
-            return ChessBoard.isInBoard(square);
-        }
-
         @Override
         public Set<Square> getControlledSquares(final Square square) {
             return Stream.of(ROOK.getControlledSquares(square), BISHOP.getControlledSquares(square)).flatMap(Set::stream).collect(Collectors.toSet());
         }
     }, ROOK {
-        @Override
-        public boolean isValidAt(final Square square) {
-            return ChessBoard.isInBoard(square);
-        }
-
         @Override
         public Set<Square> getControlledSquares(final Square square) {
             final Set<Square> controlled = IntStream.range(1, Constants.BOARD_COLS + 1)
@@ -49,11 +44,6 @@ public enum Piece {
             return controlled;
         }
     }, BISHOP {
-        @Override
-        public boolean isValidAt(final Square square) {
-            return ChessBoard.isInBoard(square);
-        }
-
         @Override
         public Set<Square> getControlledSquares(final Square square) {
             return IntStream.range(1, Constants.BOARD_COLS + 1)
@@ -72,15 +62,10 @@ public enum Piece {
         }
     }, KNIGHT {
         @Override
-        public boolean isValidAt(final Square square) {
-            return ChessBoard.isInBoard(square);
-        }
-
-        @Override
         public Set<Square> getControlledSquares(final Square square) {
-            final List<Integer> possibleValues = List.of(-2, -1, 1, 2);
-            return possibleValues.stream()
-                    .flatMap(i -> possibleValues.stream()
+            final List<Integer> neighborhood = List.of(-2, -1, 1, 2);
+            return neighborhood.stream()
+                    .flatMap(i -> neighborhood.stream()
                             .filter(j -> Math.abs(i) != Math.abs(j))
                             .map(j -> square.move(i, j))
                             .filter(ChessBoard::isInBoard))
@@ -89,7 +74,7 @@ public enum Piece {
     }, PAWN {
         @Override
         public boolean isValidAt(final Square square) {
-            return square.getRow() > 1 && square.getRow() < Constants.BOARD_ROWS;
+            return super.isValidAt(square) && square.getRow() > 1 && square.getRow() < Constants.BOARD_ROWS;
         }
 
         @Override
@@ -101,7 +86,9 @@ public enum Piece {
         }
     };
 
-    public abstract boolean isValidAt(final Square square);
+    public boolean isValidAt(final Square square) {
+        return ChessBoard.isInBoard(square);
+    }
 
     /**
      * OBS: This is only different for the pawn, as any other piece has its controlled squares the same as the possible moves.

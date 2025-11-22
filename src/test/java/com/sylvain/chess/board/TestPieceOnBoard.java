@@ -8,16 +8,16 @@ import org.junit.Test;
 public class TestPieceOnBoard {
     @Test
     public void testBoardLimits() {
-        Assert.assertFalse((new PieceOnBoard(Piece.KING, new Square(0, 5))).isValid());
-        Assert.assertFalse((new PieceOnBoard(Piece.QUEEN, new Square(2, Constants.BOARD_ROWS + 1))).isValid());
-        Assert.assertTrue((new PieceOnBoard(Piece.ROOK, new Square(1, 1))).isValid());
+        Assert.assertFalse(Piece.KING.isValidAt(new Square(0, 5)));
+        Assert.assertFalse(Piece.QUEEN.isValidAt(new Square(2, Constants.BOARD_ROWS + 1)));
+        Assert.assertTrue(Piece.ROOK.isValidAt(new Square(1, 1)));
     }
 
     @Test
     public void testPawnPosition() {
-        Assert.assertTrue(new PieceOnBoard(Piece.PAWN, new Square(1, 5)).isValid());
-        Assert.assertTrue(new PieceOnBoard(Piece.PAWN, new Square(Constants.BOARD_COLS, 5)).isValid());
-        Assert.assertFalse(new PieceOnBoard(Piece.PAWN, new Square(2, 1)).isValid());
-        Assert.assertFalse(new PieceOnBoard(Piece.PAWN, new Square(2, Constants.BOARD_ROWS)).isValid());
+        Assert.assertTrue(Piece.PAWN.isValidAt(new Square(1, 5)));
+        Assert.assertTrue(Piece.PAWN.isValidAt(new Square(Constants.BOARD_COLS, 5)));
+        Assert.assertFalse(Piece.PAWN.isValidAt(new Square(2, 1)));
+        Assert.assertFalse(Piece.PAWN.isValidAt(new Square(2, Constants.BOARD_ROWS)));
     }
 }
