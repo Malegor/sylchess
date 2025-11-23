@@ -25,10 +25,20 @@ public enum PieceKind {
             }
             return controlled;
         }
+
+        @Override
+        public String printOnBoard() {
+            return "k";
+        }
     }, QUEEN {
         @Override
         public Set<Square> getControlledSquares(final Square square) {
             return Stream.of(ROOK.getControlledSquares(square), BISHOP.getControlledSquares(square)).flatMap(Set::stream).collect(Collectors.toSet());
+        }
+
+        @Override
+        public String printOnBoard() {
+            return "q";
         }
     }, ROOK {
         @Override
@@ -42,6 +52,11 @@ public enum PieceKind {
                     .mapToObj(j -> new Square(square.getColumn(), j))
                     .collect(Collectors.toSet()));
             return controlled;
+        }
+
+        @Override
+        public String printOnBoard() {
+            return "r";
         }
     }, BISHOP {
         @Override
@@ -60,6 +75,11 @@ public enum PieceKind {
                     new Square(column, originalSquare.getColumn() - column + originalSquare.getRow())
             );
         }
+
+        @Override
+        public String printOnBoard() {
+            return "b";
+        }
     }, KNIGHT {
         @Override
         public Set<Square> getControlledSquares(final Square square) {
@@ -70,6 +90,11 @@ public enum PieceKind {
                             .map(j -> square.move(i, j))
                             .filter(ChessBoard::isInBoard))
                     .collect(Collectors.toSet());
+        }
+
+        @Override
+        public String printOnBoard() {
+            return "n";
         }
     }, PAWN {
         @Override
@@ -84,6 +109,11 @@ public enum PieceKind {
             if (square.getColumn() < Constants.BOARD_COLS) controlled.add(square.move(1, 1));
             return controlled;
         }
+
+        @Override
+        public String printOnBoard() {
+            return "p";
+        }
     };
 
     public boolean isValidAt(final Square square) {
@@ -95,4 +125,6 @@ public enum PieceKind {
      * @return The (regular) controlled squares independently of the position of other pieces.
      */
     public abstract Set<Square> getControlledSquares(final Square square);
+
+    public abstract String printOnBoard();
 }
