@@ -1,7 +1,6 @@
 package com.sylvain.chess.board;
 
 import com.sylvain.chess.Color;
-import com.sylvain.chess.Constants;
 import com.sylvain.chess.pieces.Piece;
 import com.sylvain.chess.pieces.PieceKind;
 import lombok.extern.java.Log;
@@ -13,6 +12,8 @@ import java.util.Map;
 
 @Log
 public class ChessBoard {
+    public static final int BOARD_COLS = 8;
+    public static final int BOARD_ROWS = 8;
     private final List<Map<Square, Piece>> pieces;
 
     public ChessBoard() {
@@ -22,11 +23,11 @@ public class ChessBoard {
     public static ChessBoard startingPositions() {
         final ChessBoard board = new ChessBoard();
         final Map<Square, PieceKind> whitePieces = getClassicalPositionsForMainPieces(true);
-        for (int i = 1; i <= Constants.BOARD_COLS; i++) {
+        for (int i = 1; i <= BOARD_COLS; i++) {
             whitePieces.put(new Square(i, 2), PieceKind.PAWN);
         }
         final Map<Square, PieceKind> blackPieces = getClassicalPositionsForMainPieces(false);
-        for (int i = 1; i <= Constants.BOARD_COLS; i++) {
+        for (int i = 1; i <= BOARD_COLS; i++) {
             blackPieces.put(new Square(i, 7), PieceKind.PAWN);
         }
         board.addPieces(Color.WHITE, whitePieces, Color.BLACK, blackPieces);
@@ -52,11 +53,11 @@ public class ChessBoard {
     }
 
     public static boolean isColumnInBoard(final int i) {
-        return i >= 1 && i <= Constants.BOARD_COLS;
+        return i >= 1 && i <= BOARD_COLS;
     }
 
     public static boolean isRowInBoard(final int j) {
-        return j >= 1 && j <= Constants.BOARD_ROWS;
+        return j >= 1 && j <= BOARD_ROWS;
     }
 
     public void addPiece(final Square square, final Piece piece) {
@@ -79,7 +80,7 @@ public class ChessBoard {
         final List<List<Piece>> piecesAtEachRow = this.getPiecesAtEachRow();
         System.out.println(" |a|b|c|d|e|f|g|h|");
         System.out.println(" |---------------|");
-        int rowIndex = Constants.BOARD_ROWS;
+        int rowIndex = BOARD_ROWS;
         for (List<Piece> piecesAtRow : piecesAtEachRow.reversed()) {
             System.out.print(rowIndex);
             char sep = '|';
@@ -95,10 +96,10 @@ public class ChessBoard {
     }
 
     private List<List<Piece>> getPiecesAtEachRow() {
-        final List<List<Piece>> piecesAtEachRow = new ArrayList<>(Constants.BOARD_ROWS);
-        for (int i = 1; i <= Constants.BOARD_ROWS; i++) {
-            final List<Piece> piecesAtRow = new ArrayList<>(Constants.BOARD_COLS);
-            for (int j = 1; j <= Constants.BOARD_COLS; j++) {
+        final List<List<Piece>> piecesAtEachRow = new ArrayList<>(BOARD_ROWS);
+        for (int i = 1; i <= BOARD_ROWS; i++) {
+            final List<Piece> piecesAtRow = new ArrayList<>(BOARD_COLS);
+            for (int j = 1; j <= BOARD_COLS; j++) {
                 Piece piece = this.pieces.get(Color.WHITE.getIndex()).get(new Square(j, i));
                 if (piece == null) {
                     piece = this.pieces.get(Color.BLACK.getIndex()).get(new Square(j, i));

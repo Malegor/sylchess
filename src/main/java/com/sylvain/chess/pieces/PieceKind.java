@@ -1,6 +1,5 @@
 package com.sylvain.chess.pieces;
 
-import com.sylvain.chess.Constants;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 
@@ -43,11 +42,11 @@ public enum PieceKind {
     }, ROOK {
         @Override
         public Set<Square> getControlledSquares(final Square square) {
-            final Set<Square> controlled = IntStream.range(1, Constants.BOARD_COLS + 1)
+            final Set<Square> controlled = IntStream.range(1, ChessBoard.BOARD_COLS + 1)
                     .filter(i -> i != square.getColumn())
                     .mapToObj(i -> new Square(i, square.getRow()))
                     .collect(Collectors.toSet());
-            controlled.addAll(IntStream.range(1, Constants.BOARD_ROWS + 1)
+            controlled.addAll(IntStream.range(1, ChessBoard.BOARD_ROWS + 1)
                     .filter(j -> j != square.getRow())
                     .mapToObj(j -> new Square(square.getColumn(), j))
                     .collect(Collectors.toSet()));
@@ -61,7 +60,7 @@ public enum PieceKind {
     }, BISHOP {
         @Override
         public Set<Square> getControlledSquares(final Square square) {
-            return IntStream.range(1, Constants.BOARD_COLS + 1)
+            return IntStream.range(1, ChessBoard.BOARD_COLS + 1)
                     .filter(i -> i != square.getColumn())
                     .mapToObj(i -> getControlledSquaresAtColumn(square, i))
                     .flatMap(Collection::stream)
@@ -99,14 +98,14 @@ public enum PieceKind {
     }, PAWN {
         @Override
         public boolean isValidAt(final Square square) {
-            return super.isValidAt(square) && square.getRow() > 1 && square.getRow() < Constants.BOARD_ROWS;
+            return super.isValidAt(square) && square.getRow() > 1 && square.getRow() < ChessBoard.BOARD_ROWS;
         }
 
         @Override
         public Set<Square> getControlledSquares(final Square square) {
             final Set<Square> controlled = new HashSet<>();
             if (square.getColumn() > 1) controlled.add(square.move(-1,1)); // FIXME: row=-1 for BLACK
-            if (square.getColumn() < Constants.BOARD_COLS) controlled.add(square.move(1, 1));
+            if (square.getColumn() < ChessBoard.BOARD_COLS) controlled.add(square.move(1, 1));
             return controlled;
         }
 

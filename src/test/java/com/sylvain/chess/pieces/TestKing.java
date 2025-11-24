@@ -1,6 +1,5 @@
 package com.sylvain.chess.pieces;
 
-import com.sylvain.chess.Constants;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 import lombok.extern.java.Log;
@@ -14,8 +13,8 @@ public class TestKing {
     @Test
     public void testControlledSquares() {
         int totalSquares = 0;
-        for (int i = 1; i <= Constants.BOARD_COLS; i++) {
-            for (int j = 1; j <= Constants.BOARD_ROWS; j++) {
+        for (int i = 1; i <= ChessBoard.BOARD_COLS; i++) {
+            for (int j = 1; j <= ChessBoard.BOARD_ROWS; j++) {
                 final Square startingSquare = new Square(i, j);
                 final Set<Square> squares = PieceKind.KING.getControlledSquares(startingSquare);
                 System.out.println(startingSquare + " : " + squares);
