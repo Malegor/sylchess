@@ -105,7 +105,7 @@ public enum PieceKind {
         @Override
         public Set<Square> getControlledSquares(final Square square) {
             final Set<Square> controlled = new HashSet<>();
-            if (square.getColumn() > 1) controlled.add(square.move(-1,1));
+            if (square.getColumn() > 1) controlled.add(square.move(-1,1)); // FIXME: row=-1 for BLACK
             if (square.getColumn() < Constants.BOARD_COLS) controlled.add(square.move(1, 1));
             return controlled;
         }

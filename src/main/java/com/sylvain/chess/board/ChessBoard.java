@@ -21,11 +21,11 @@ public class ChessBoard {
 
     public static ChessBoard startingPositions() {
         final ChessBoard board = new ChessBoard();
-        final Map<Square, PieceKind> whitePieces = getClassicalPositions(true);
+        final Map<Square, PieceKind> whitePieces = getClassicalPositionsForMainPieces(true);
         for (int i = 1; i <= Constants.BOARD_COLS; i++) {
             whitePieces.put(new Square(i, 2), PieceKind.PAWN);
         }
-        final Map<Square, PieceKind> blackPieces = getClassicalPositions(false);
+        final Map<Square, PieceKind> blackPieces = getClassicalPositionsForMainPieces(false);
         for (int i = 1; i <= Constants.BOARD_COLS; i++) {
             blackPieces.put(new Square(i, 7), PieceKind.PAWN);
         }
@@ -33,8 +33,8 @@ public class ChessBoard {
         return board;
     }
 
-    private static Map<Square, PieceKind> getClassicalPositions(final boolean isWhite) {
-        final int row = isWhite?1:8;
+    private static Map<Square, PieceKind> getClassicalPositionsForMainPieces(final boolean isWhite) {
+        final int row = isWhite ? 1 : 8;
         return new HashMap<>(Map.of(
                 new Square(1, row), PieceKind.ROOK,
                 new Square(2, row), PieceKind.KNIGHT,
