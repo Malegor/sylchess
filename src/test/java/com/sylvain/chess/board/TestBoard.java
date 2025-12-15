@@ -1,19 +1,17 @@
 package com.sylvain.chess.board;
 
 import com.sylvain.chess.Color;
-import com.sylvain.chess.pieces.PieceKind;
+import com.sylvain.chess.pieces.King;
+import com.sylvain.chess.pieces.Rook;
 import org.junit.Test;
-
-import java.util.Map;
 
 public class TestBoard {
 
     @Test
     public void testBoard() {
         final ChessBoard board = new ChessBoard();
-        final Map<Square, PieceKind> whitePieces = Map.of(new Square(1, 1), PieceKind.ROOK);
-        final Map<Square, PieceKind> blackPieces = Map.of(new Square(5, 8), PieceKind.KING);
-        board.addPieces(Color.WHITE, whitePieces, Color.BLACK, blackPieces);
+        board.addPiece(new Rook(Color.WHITE, new Square(1, 1)));
+        board.addPiece(new King(Color.BLACK, new Square(5, 8)));
         board.printBoard();
     }
 
