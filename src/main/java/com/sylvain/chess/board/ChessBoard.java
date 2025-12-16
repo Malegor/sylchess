@@ -16,10 +16,12 @@ public class ChessBoard {
     public static final int BOARD_ROWS = 8;
     private final List<Map<Square, PieceOnBoard>> piecesByColor;
     private final Map<Square, PieceOnBoard> allPieces;
+    private final Map<Color, King> kings;
 
     public ChessBoard() {
         this.piecesByColor = List.of(new HashMap<>(16), new HashMap<>(16));
         this.allPieces = new HashMap<>(32);
+        this.kings = new HashMap<>(2);
     }
 
     public static ChessBoard startingPositions() {
@@ -68,6 +70,9 @@ public class ChessBoard {
     public void addPiece(final PieceOnBoard piece) {
         final PieceOnBoard oldPieceColor = this.piecesByColor.get(piece.getColor().getIndex()).put(piece.getSquare(), piece);
         final PieceOnBoard oldPiece = this.allPieces.put(piece.getSquare(), piece);
+        if (piece instanceof King) {
+            this.kings.put(piece.getColor(), (King) piece);
+        }
         if (oldPieceColor != null || oldPiece != null) {
             log.warning("The following piece was already on the board! " + oldPieceColor + " - " + oldPiece);
         }
@@ -114,5 +119,15 @@ public class ChessBoard {
 
     public boolean hasPieceAt(final Square square) {
         return this.allPieces.containsKey(square);
+    }
+
+    public List<PieceOnBoard> piecesCheckingKing(final Color color) {
+        final List<PieceOnBoard> piecesChecking = new ArrayList<>(2);
+        for (Map.Entry<Square, PieceOnBoard> squarePiece : this.piecesByColor.get(1 - color.getIndex()).entrySet()) {
+            if (squarePiece.getValue().getControlledSquares(this).contains(this.kings.get(color).getSquare())) {
+                piecesChecking.add(squarePiece.getValue());
+            }
+        }
+        return piecesChecking;
     }
 }

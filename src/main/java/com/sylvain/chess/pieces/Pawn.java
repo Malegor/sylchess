@@ -16,7 +16,7 @@ public class Pawn extends PieceOnBoard {
     @Override
     public Set<Square> getControlledSquares(ChessBoard board) {
         final Set<Square> controlled = new HashSet<>();
-        int updateRow = this.color == Color.WHITE ? 1 : -1;
+        final int updateRow = ChessBoard.getPawnDirection(color);
         if (square.getColumn() > 1) controlled.add(square.move(-1, updateRow));
         if (square.getColumn() < ChessBoard.BOARD_COLS) controlled.add(square.move(1, updateRow));
         return controlled;

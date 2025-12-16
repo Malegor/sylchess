@@ -30,4 +30,9 @@ public abstract class PieceOnBoard {
         }
         return controlled;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(this.printOnBoard()) + this.square;
+    }
 }

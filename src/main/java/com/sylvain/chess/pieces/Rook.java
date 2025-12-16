@@ -7,7 +7,7 @@ import com.sylvain.chess.board.Square;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Rook extends PieceOnBoard {
+public class Rook extends PieceForCastling {
     public Rook(Color color, Square square) {
         super(color, square);
     }

@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class King extends PieceOnBoard {
+public class King extends PieceForCastling {
 
     public King(Color color, Square square) {
         super(color, square);
