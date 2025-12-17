@@ -20,4 +20,14 @@ public class NoPiece extends PieceOnBoard {
     public char printOnBoard() {
         return ' ';
     }
+
+    @Override
+    public boolean isPossiblePromotion() {
+        return false;
+    }
+
+    @Override
+    public PieceOnBoard at(Square square) {
+        return new NoPiece(this.color, square);
+    }
 }

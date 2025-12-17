@@ -24,4 +24,14 @@ public class Queen extends PieceOnBoard {
     public char printOnBoard() {
         return this.color == Color.WHITE ? 'Q' : 'q';
     }
+
+    @Override
+    public boolean isPossiblePromotion() {
+        return true;
+    }
+
+    @Override
+    public PieceOnBoard at(Square square) {
+        return new Queen(this.color, square);
+    }
 }

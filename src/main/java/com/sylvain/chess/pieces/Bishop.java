@@ -26,4 +26,14 @@ public class Bishop extends PieceOnBoard {
     public char printOnBoard() {
         return this.color == Color.WHITE ? 'B' : 'b';
     }
+
+    @Override
+    public boolean isPossiblePromotion() {
+        return true;
+    }
+
+    @Override
+    public PieceOnBoard at(Square square) {
+        return new Bishop(this.color, square);
+    }
 }

@@ -26,4 +26,14 @@ public class Pawn extends PieceOnBoard {
     public char printOnBoard() {
         return this.color == Color.WHITE ? 'P' : 'p';
     }
+
+    @Override
+    public boolean isPossiblePromotion() {
+        return false;
+    }
+
+    @Override
+    public PieceOnBoard at(Square square) {
+        return new Pawn(this.color, square);
+    }
 }

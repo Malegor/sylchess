@@ -17,3 +17,6 @@
 1000 consider data on clock?
 
 Improv - introduce data structures (ex: diagonals) on possible moves to prune out when there is a piece on the way?
+
+
+TODO: puzzles -> starting position is the classical one (ex: pawns, castling etc.)

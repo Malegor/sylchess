@@ -1,25 +1,29 @@
 package com.sylvain.chess.board;
 
 import com.sylvain.chess.Color;
+import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.pieces.NoPiece;
 import com.sylvain.chess.pieces.*;
 import lombok.extern.java.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Log
 public class ChessBoard {
     public static final int BOARD_COLS = 8;
     public static final int BOARD_ROWS = 8;
-    private final List<Map<Square, PieceOnBoard>> piecesByColor;
+    private final Map<Color, Map<Square, PieceOnBoard>> piecesByColor;
     private final Map<Square, PieceOnBoard> allPieces;
     private final Map<Color, King> kings;
 
     public ChessBoard() {
-        this.piecesByColor = List.of(new HashMap<>(16), new HashMap<>(16));
+        this.piecesByColor = Map.of(Color.WHITE, new HashMap<>(16), Color.BLACK, new HashMap<>(16));
         this.allPieces = new HashMap<>(32);
         this.kings = new HashMap<>(2);
     }
@@ -33,6 +37,10 @@ public class ChessBoard {
 
     public static int getFirstRow(final Color color) {
         return color == Color.WHITE ? 1 : 8;
+    }
+
+    public static int getPromotionRow(final Color color) {
+        return color == Color.WHITE ? 8 : 1;
     }
 
     public static int getPawnDirection(final Color color) {
@@ -67,8 +75,12 @@ public class ChessBoard {
         return j >= 1 && j <= BOARD_ROWS;
     }
 
+    private Color getOppositeColor(final Color color) {
+        return color == Color.WHITE ? Color.BLACK : Color.WHITE;
+    }
+
     public void addPiece(final PieceOnBoard piece) {
-        final PieceOnBoard oldPieceColor = this.piecesByColor.get(piece.getColor().getIndex()).put(piece.getSquare(), piece);
+        final PieceOnBoard oldPieceColor = this.piecesByColor.get(piece.getColor()).put(piece.getSquare(), piece);
         final PieceOnBoard oldPiece = this.allPieces.put(piece.getSquare(), piece);
         if (piece instanceof King) {
             this.kings.put(piece.getColor(), (King) piece);
@@ -102,9 +114,9 @@ public class ChessBoard {
         for (int i = 1; i <= BOARD_ROWS; i++) {
             final List<PieceOnBoard> piecesAtRow = new ArrayList<>(BOARD_COLS);
             for (int j = 1; j <= BOARD_COLS; j++) {
-                PieceOnBoard piece = this.piecesByColor.get(Color.WHITE.getIndex()).get(new Square(j, i));
+                PieceOnBoard piece = this.piecesByColor.get(Color.WHITE).get(new Square(j, i));
                 if (piece == null) {
-                    piece = this.piecesByColor.get(Color.BLACK.getIndex()).get(new Square(j, i));
+                    piece = this.piecesByColor.get(Color.BLACK).get(new Square(j, i));
                 }
                 if (piece == null) {
                     // No piece at the given square
@@ -118,16 +130,72 @@ public class ChessBoard {
     }
 
     public boolean hasPieceAt(final Square square) {
-        return this.allPieces.containsKey(square);
+        return this.getPieceAt(square) != null;
+    }
+
+    public PieceOnBoard getPieceAt(final Square square) {
+        return this.allPieces.get(square);
     }
 
     public List<PieceOnBoard> piecesCheckingKing(final Color color) {
         final List<PieceOnBoard> piecesChecking = new ArrayList<>(2);
-        for (Map.Entry<Square, PieceOnBoard> squarePiece : this.piecesByColor.get(1 - color.getIndex()).entrySet()) {
+        for (Map.Entry<Square, PieceOnBoard> squarePiece : this.piecesByColor.get(this.getOppositeColor(color)).entrySet()) {
             if (squarePiece.getValue().getControlledSquares(this).contains(this.kings.get(color).getSquare())) {
                 piecesChecking.add(squarePiece.getValue());
             }
         }
         return piecesChecking;
+    }
+
+    public void movePiece(final PieceOnBoard origin, final PieceOnBoard destination) {
+        this.removePiece(origin);
+        this.addPiece(destination);
+    }
+
+    public void removePiece(final PieceOnBoard piece) {
+        this.piecesByColor.get(piece.getColor()).remove(piece.getSquare());
+        this.allPieces.remove(piece.getSquare());
+        if (piece instanceof King)
+            this.kings.remove(piece.getColor());
+    }
+
+    public Set<Move> getAllValidMoves(final Color color) {
+        final Set<Move> validMoves = new HashSet<>();
+        for (PieceOnBoard piece : this.piecesByColor.get(color).values()) {
+            if (piece instanceof Pawn) {
+                for (int incrementRow = 1; incrementRow <= 2; incrementRow++) {
+                    for (int incrementCol = -1 ; incrementCol <= 1 ; incrementCol++) {
+                        Square newSquare = piece.getSquare().move(incrementCol, incrementRow);
+                        if (newSquare.getRow() <= ChessBoard.BOARD_ROWS
+                                && newSquare.getColumn() <= ChessBoard.BOARD_COLS) {
+                            if (newSquare.getRow() < ChessBoard.BOARD_ROWS) {
+                                Move possibleMove = new Move(Map.of(piece, new Pawn(piece.getColor(), newSquare)), this);
+                                if (possibleMove.isValidMove()) {
+                                    validMoves.add(possibleMove);
+                                }
+                            }
+                            else {
+                                // Promotion
+                                Move possibleMove = new Move(Map.of(piece, new Knight(piece.getColor(), newSquare)), this);
+                                if (possibleMove.isValidMove()) {
+                                    validMoves.add(possibleMove);
+                                    validMoves.add(new Move(Map.of(piece, new Rook(piece.getColor(), newSquare)), this));
+                                    validMoves.add(new Move(Map.of(piece, new Bishop(piece.getColor(), newSquare)), this));
+                                    validMoves.add(new Move(Map.of(piece, new Queen(piece.getColor(), newSquare)), this));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                Set<Square> squares = piece.getControlledSquares(this).stream().
+                        filter(square -> !this.hasPieceAt(square) || piece.getColor() != this.getPieceAt(square).getColor()).collect(Collectors.toSet());
+                for (Square square : squares) {
+                    validMoves.add(new Move(Map.of(piece, piece.at(square)), this));
+                }
+            }
+        }
+        return validMoves;
     }
 }

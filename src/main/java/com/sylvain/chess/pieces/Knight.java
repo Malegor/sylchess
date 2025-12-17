@@ -29,4 +29,14 @@ public class Knight extends PieceOnBoard {
     public char printOnBoard() {
         return this.color == Color.WHITE ? 'N' : 'n';
     }
+
+    @Override
+    public boolean isPossiblePromotion() {
+        return true;
+    }
+
+    @Override
+    public PieceOnBoard at(Square square) {
+        return new Knight(this.color, square);
+    }
 }

@@ -3,17 +3,24 @@ package com.sylvain.chess.pieces;
 import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@AllArgsConstructor
 @Getter
 public abstract class PieceOnBoard {
     protected final Color color;
     protected Square square;
+    @Setter
+    private boolean hasAlreadyMoved;
+
+    public PieceOnBoard(final Color color, final Square startingSquare) {
+        this.color = color;
+        this.square = startingSquare;
+        this.hasAlreadyMoved = false;
+    }
 
     public abstract Set<Square> getControlledSquares(final ChessBoard board);
 
@@ -35,4 +42,8 @@ public abstract class PieceOnBoard {
     public String toString() {
         return String.valueOf(this.printOnBoard()) + this.square;
     }
+
+    public abstract boolean isPossiblePromotion();
+
+    public abstract PieceOnBoard at(final Square square);
 }

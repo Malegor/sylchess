@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class King extends PieceForCastling {
+public class King extends PieceOnBoard {
 
     public King(Color color, Square square) {
         super(color, square);
@@ -32,5 +32,15 @@ public class King extends PieceForCastling {
     @Override
     public char printOnBoard() {
         return this.color == Color.WHITE ? 'K' : 'k';
+    }
+
+    @Override
+    public boolean isPossiblePromotion() {
+        return false;
+    }
+
+    @Override
+    public PieceOnBoard at(Square square) {
+        return new King(this.color, square);
     }
 }
