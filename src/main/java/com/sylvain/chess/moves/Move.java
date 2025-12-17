@@ -27,19 +27,20 @@ public class Move {
         }
         final Map.Entry<PieceOnBoard, PieceOnBoard> piece = this.moveToNewSquare.entrySet().iterator().next();
         final Color color = piece.getKey().getColor();
-        if (color == piece.getValue().getColor())
+        if (color != piece.getValue().getColor())
             return false;
         if (this.moveToNewSquare.size() > 1) {
             // Castling rules
             // En passant (?)
             // TODO
         }
-        // TODO: object orient this piece of code
+        // TODO: object orient this piece of code (remove instanceof)
         else if (this.moveToNewSquare.entrySet().iterator().next().getKey() instanceof Pawn) {
             // 1- a pawn can move straight or capture in diagonal (special case for the starting position)
-            if (Math.abs(piece.getValue().getSquare().getColumn() - piece.getKey().getSquare().getColumn()) > 1
-                        || piece.getValue().getSquare().getRow() - piece.getKey().getSquare().getRow() > 2 * ChessBoard.getPawnDirection(color)
-                        || piece.getValue().getSquare().getRow() - piece.getKey().getSquare().getRow() < ChessBoard.getPawnDirection(color))
+          int rowIncrement = ChessBoard.getPawnDirection(color) * (piece.getValue().getSquare().getRow() - piece.getKey().getSquare().getRow());
+          if (Math.abs(piece.getValue().getSquare().getColumn() - piece.getKey().getSquare().getColumn()) > 1
+                        || rowIncrement > 2
+                        || rowIncrement < 1)
                 return false;
             if (piece.getValue().getSquare().getColumn() == piece.getKey().getSquare().getColumn()) {
                 // This is not a capture, no piece can be on the way.
@@ -53,7 +54,7 @@ public class Move {
             else {
                 // Capture
                 final PieceOnBoard pieceAtDestination = this.board.getPieceAt(piece.getValue().getSquare());
-                if (pieceAtDestination == null || pieceAtDestination.getColor() != color)
+                if (pieceAtDestination == null || pieceAtDestination.getColor() == color)
                     return false;
             }
             if (piece.getValue().getSquare().getRow() - piece.getKey().getSquare().getRow() == 2 * ChessBoard.getPawnDirection(color)
@@ -92,7 +93,7 @@ public class Move {
             this.board.removePiece(entry.getValue());
             this.board.addPiece(entry.getKey());
         }
-        this.board.addPiece(this.captured);
+        if (this.captured != null) this.board.addPiece(this.captured);
     }
 
     @Override

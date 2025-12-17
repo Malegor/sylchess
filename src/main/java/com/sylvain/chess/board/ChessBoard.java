@@ -161,14 +161,13 @@ public class ChessBoard {
 
     public Set<Move> getAllValidMoves(final Color color) {
         final Set<Move> validMoves = new HashSet<>();
-        for (PieceOnBoard piece : this.piecesByColor.get(color).values()) {
+        for (PieceOnBoard piece : new HashSet<>(this.piecesByColor.get(color).values())) {
             if (piece instanceof Pawn) {
                 for (int incrementRow = 1; incrementRow <= 2; incrementRow++) {
                     for (int incrementCol = -1 ; incrementCol <= 1 ; incrementCol++) {
-                        Square newSquare = piece.getSquare().move(incrementCol, incrementRow);
-                        if (newSquare.getRow() <= ChessBoard.BOARD_ROWS
-                                && newSquare.getColumn() <= ChessBoard.BOARD_COLS) {
-                            if (newSquare.getRow() < ChessBoard.BOARD_ROWS) {
+                        Square newSquare = piece.getSquare().move(incrementCol, incrementRow * getPawnDirection(color));
+                        if (isInBoard(newSquare)) {
+                            if (newSquare.getRow() != getPromotionRow(color)) {
                                 Move possibleMove = new Move(Map.of(piece, new Pawn(piece.getColor(), newSquare)), this);
                                 if (possibleMove.isValidMove()) {
                                     validMoves.add(possibleMove);
