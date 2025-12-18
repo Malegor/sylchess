@@ -18,8 +18,6 @@ public class Move {
         this.board = board;
         this.captured = null;
     }
-    // OBS: map because of special moves (en passant, castling...)
-    // OBS: only in case of promo, the first POB is a pawn and the second one is another piece.
 
     public boolean isValidMove() {
         if (this.moveToNewSquare.isEmpty()) {
@@ -61,8 +59,8 @@ public class Move {
                         && piece.getKey().isHasAlreadyMoved())
                 return false;
             // 2- The pawn is at its one-before-last row and the next position (getValue) is a piece that is not a pawn or a king.
-            if (piece.getValue().getSquare().getRow() == ChessBoard.getPromotionRow(color)) {
-                return piece.getValue().isPossiblePromotion();
+            if (piece.getValue().getSquare().getRow() == ChessBoard.getPromotionRow(color) && !piece.getValue().isPossiblePromotion()) {
+                return false;
             }
         }
         this.simulate();
@@ -98,6 +96,6 @@ public class Move {
 
     @Override
     public String toString() {
-        return "Move{" + moveToNewSquare + '}';
+        return "Move" + moveToNewSquare;
     }
 }

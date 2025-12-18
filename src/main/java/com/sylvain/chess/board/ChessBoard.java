@@ -138,17 +138,21 @@ public class ChessBoard {
     }
 
     public List<PieceOnBoard> piecesCheckingKing(final Color color) {
-        final List<PieceOnBoard> piecesChecking = new ArrayList<>(2);
-        for (Map.Entry<Square, PieceOnBoard> squarePiece : this.piecesByColor.get(this.getOppositeColor(color)).entrySet()) {
-            if (squarePiece.getValue().getControlledSquares(this).contains(this.kings.get(color).getSquare())) {
-                piecesChecking.add(squarePiece.getValue());
-            }
+      if (!this.kings.containsKey(color))
+        return List.of();
+      final List<PieceOnBoard> piecesChecking = new ArrayList<>(2);
+      for (Map.Entry<Square, PieceOnBoard> squarePiece : this.piecesByColor.get(this.getOppositeColor(color)).entrySet()) {
+        if (squarePiece.getValue().getControlledSquares(this).contains(this.kings.get(color).getSquare())) {
+          piecesChecking.add(squarePiece.getValue());
         }
-        return piecesChecking;
+      }
+      return piecesChecking;
     }
 
     public void movePiece(final PieceOnBoard origin, final PieceOnBoard destination) {
         this.removePiece(origin);
+        final PieceOnBoard captured = this.getPieceAt(destination.getSquare());
+        if (captured != null) this.removePiece(captured);
         this.addPiece(destination);
     }
 
@@ -191,7 +195,8 @@ public class ChessBoard {
                 Set<Square> squares = piece.getControlledSquares(this).stream().
                         filter(square -> !this.hasPieceAt(square) || piece.getColor() != this.getPieceAt(square).getColor()).collect(Collectors.toSet());
                 for (Square square : squares) {
-                    validMoves.add(new Move(Map.of(piece, piece.at(square)), this));
+                  Move move = new Move(Map.of(piece, piece.at(square)), this);
+                  if (move.isValidMove()) validMoves.add(move);
                 }
             }
         }
