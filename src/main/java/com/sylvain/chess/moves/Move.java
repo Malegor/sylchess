@@ -29,7 +29,6 @@ public class Move {
             return false;
         if (this.moveToNewSquare.size() > 1) {
             // Castling rules
-            // En passant (?)
             // TODO
         }
         // TODO: object orient this piece of code (remove instanceof)
@@ -50,7 +49,7 @@ public class Move {
                 }
             }
             else {
-                // Capture
+                // Capture or en-passant
                 final PieceOnBoard pieceAtDestination = this.board.getPieceAt(piece.getValue().getSquare());
                 if (pieceAtDestination == null || pieceAtDestination.getColor() == color)
                     return false;
@@ -74,15 +73,15 @@ public class Move {
 
     private void simulate() {
         for (Map.Entry<PieceOnBoard, PieceOnBoard> move : this.moveToNewSquare.entrySet()) {
-            this.captured = this.board.getPieceAt(move.getValue().getSquare());
+            this.captured = this.board.getPieceAt(move.getValue().getSquare()); // TODO: en passant(?)
             this.board.movePiece(move.getKey(), move.getValue());
         }
     }
 
     public void apply() {
         this.simulate();
-        for (Map.Entry<PieceOnBoard, PieceOnBoard> move : this.moveToNewSquare.entrySet()) {
-            move.getValue().setHasAlreadyMoved(true);
+        for (PieceOnBoard piece : this.moveToNewSquare.values()) {
+            piece.setHasAlreadyMoved(true);
         }
     }
 
