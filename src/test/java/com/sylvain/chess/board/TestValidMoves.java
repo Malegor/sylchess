@@ -10,6 +10,7 @@ import com.sylvain.chess.pieces.Rook;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -91,5 +92,27 @@ public class TestValidMoves {
     final Set<Move> allValidMoves = board.getAllValidMoves(Color.WHITE);
     System.out.println(allValidMoves);
     Assert.assertTrue(allValidMoves.isEmpty());
+  }
+
+  @Test
+  public void testEnPassant() {
+    final ChessBoard board = new ChessBoard();
+    final Pawn whitePawn = new Pawn(Color.WHITE, new Square(2, 2));
+    board.addPiece(whitePawn);
+    final Pawn blackPawn = new Pawn(Color.BLACK, new Square(3, 4));
+    board.addPiece(blackPawn);
+    board.printBoard();
+    final Move previousMove = new Move(Map.of(whitePawn, new Pawn(whitePawn.getColor(), whitePawn.getSquare().move(0, 2))), board);
+    previousMove.apply();
+    board.printBoard();
+    board.setPreviousMove(previousMove);
+    final Set<Move> blackMoves = board.getAllValidMoves(Color.BLACK);
+    System.out.println(blackMoves);
+    Assert.assertEquals(2, blackMoves.size());
+    Assert.assertTrue(blackMoves.stream().map(Move::toString).collect(Collectors.toSet()).contains("Move{pc4=pb3}"));
+    final Move enPassant = blackMoves.stream().filter(m -> m.toString().contains("pb3")).findFirst().orElse(null);
+    Assert.assertNotNull(enPassant);
+    enPassant.apply();
+    board.printBoard();
   }
 }
