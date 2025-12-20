@@ -2,8 +2,16 @@ package com.sylvain.chess.board;
 
 import com.sylvain.chess.Color;
 import com.sylvain.chess.moves.Move;
+import com.sylvain.chess.pieces.Bishop;
+import com.sylvain.chess.pieces.King;
+import com.sylvain.chess.pieces.Knight;
 import com.sylvain.chess.pieces.NoPiece;
-import com.sylvain.chess.pieces.*;
+import com.sylvain.chess.pieces.Pawn;
+import com.sylvain.chess.pieces.PieceOnBoard;
+import com.sylvain.chess.pieces.Queen;
+import com.sylvain.chess.pieces.Rook;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.java.Log;
 
 import java.util.ArrayList;
@@ -21,6 +29,8 @@ public class ChessBoard {
     private final Map<Color, Map<Square, PieceOnBoard>> piecesByColor;
     private final Map<Square, PieceOnBoard> allPieces;
     private final Map<Color, King> kings;
+    @Getter @Setter
+    private Move previousMove = null;
 
     public ChessBoard() {
         this.piecesByColor = Map.of(Color.WHITE, new HashMap<>(16), Color.BLACK, new HashMap<>(16));
@@ -36,18 +46,22 @@ public class ChessBoard {
     }
 
     public static int getFirstRow(final Color color) {
-        return color == Color.WHITE ? 1 : 8;
+        return getRowForColor(1, color);
     }
 
     public static int getPromotionRow(final Color color) {
-        return color == Color.WHITE ? 8 : 1;
+        return getRowForColor(ChessBoard.BOARD_ROWS, color);
     }
 
     public static int getPawnDirection(final Color color) {
         return color == Color.WHITE ? 1 : -1;
     }
 
-    private void putClassicalPositionsForMainPieces(final Color color) {
+  public static int getRowForColor(int row, Color color) {
+      return color == Color.WHITE ? row : ChessBoard.BOARD_ROWS - row + 1;
+  }
+
+  private void putClassicalPositionsForMainPieces(final Color color) {
         final int firstRow = getFirstRow(color);
         this.addPiece(new Rook(color, new Square(1, firstRow)));
         this.addPiece(new Knight(color, new Square(2, firstRow)));
@@ -75,7 +89,7 @@ public class ChessBoard {
         return j >= 1 && j <= BOARD_ROWS;
     }
 
-    private Color getOppositeColor(final Color color) {
+    private static Color getOppositeColor(final Color color) {
         return color == Color.WHITE ? Color.BLACK : Color.WHITE;
     }
 
@@ -141,7 +155,7 @@ public class ChessBoard {
       if (!this.kings.containsKey(color))
         return List.of();
       final List<PieceOnBoard> piecesChecking = new ArrayList<>(2);
-      for (Map.Entry<Square, PieceOnBoard> squarePiece : this.piecesByColor.get(this.getOppositeColor(color)).entrySet()) {
+      for (Map.Entry<Square, PieceOnBoard> squarePiece : this.piecesByColor.get(getOppositeColor(color)).entrySet()) {
         if (squarePiece.getValue().getControlledSquares(this).contains(this.kings.get(color).getSquare())) {
           piecesChecking.add(squarePiece.getValue());
         }
@@ -149,10 +163,8 @@ public class ChessBoard {
       return piecesChecking;
     }
 
-    public void movePiece(final PieceOnBoard origin, final PieceOnBoard destination) {
+    public void simulatePieceMove(final PieceOnBoard origin, final PieceOnBoard destination) {
         this.removePiece(origin);
-        final PieceOnBoard captured = this.getPieceAt(destination.getSquare());
-        if (captured != null) this.removePiece(captured);
         this.addPiece(destination);
     }
 
