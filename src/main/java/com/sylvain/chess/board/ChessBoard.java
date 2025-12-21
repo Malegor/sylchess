@@ -89,7 +89,7 @@ public class ChessBoard {
         return j >= 1 && j <= BOARD_ROWS;
     }
 
-    private static Color getOppositeColor(final Color color) {
+    public static Color getOppositeColor(final Color color) {
         return color == Color.WHITE ? Color.BLACK : Color.WHITE;
     }
 
@@ -154,13 +154,17 @@ public class ChessBoard {
     public List<PieceOnBoard> piecesCheckingKing(final Color color) {
       if (!this.kings.containsKey(color))
         return List.of();
-      final List<PieceOnBoard> piecesChecking = new ArrayList<>(2);
-      for (Map.Entry<Square, PieceOnBoard> squarePiece : this.piecesByColor.get(getOppositeColor(color)).entrySet()) {
-        if (squarePiece.getValue().getControlledSquares(this).contains(this.kings.get(color).getSquare())) {
-          piecesChecking.add(squarePiece.getValue());
+      return this.piecesControllingSquare(this.kings.get(color).getSquare(), getOppositeColor(color));
+    }
+
+    public List<PieceOnBoard> piecesControllingSquare(final Square square, final Color color) {
+      final List<PieceOnBoard> piecesControlling = new ArrayList<>(2);
+      for (Map.Entry<Square, PieceOnBoard> squarePiece : this.piecesByColor.get(color).entrySet()) {
+        if (squarePiece.getValue().getControlledSquares(this).contains(square)) {
+          piecesControlling.add(squarePiece.getValue());
         }
       }
-      return piecesChecking;
+      return piecesControlling;
     }
 
     public void simulatePieceMove(final PieceOnBoard origin, final PieceOnBoard destination) {
@@ -212,6 +216,26 @@ public class ChessBoard {
                 }
             }
         }
+        // Castling
+        final King king = this.kings.get(color);
+        // OBS: more checks could be added in case of puzzles (when we don't know if the piece has already moved or not...)
+        //  && king.getSquare().getRow() == getFirstRow(color) && king.getSquare().getColumn() > 1 && king.getSquare().getColumn() < CB.BOARD_COLUMNS // (960)
+        // or simply king.getSquare().getColumn() == 5 (classical chess)
+        if (king != null && !king.isHasAlreadyMoved()) {
+          final Set<PieceOnBoard> rooks = this.piecesByColor.get(color).values().stream().filter(piece -> piece instanceof Rook && !piece.isHasAlreadyMoved()).collect(Collectors.toSet());
+          for (PieceOnBoard rook : rooks) {
+            // If the rook is on a column after the king's, it is a king-side castle, otherwise a queen-side castle.
+            final Move castle = this.getCastleMove(color, rook, king);
+            if (castle.isValidMove()) validMoves.add(castle);
+          }
+        }
         return validMoves;
     }
+
+  private Move getCastleMove(Color color, PieceOnBoard rook, King king) {
+    boolean isKingSideCastle = rook.getSquare().getColumn() > king.getSquare().getColumn();
+    final int newKingsColumn = isKingSideCastle ? 7 : 3; // Logic under these columns? introduce constants?
+    final int newRooksColumn = newKingsColumn + (isKingSideCastle ? -1 : 1);
+    return new Move(Map.of(king, new King(color, new Square(newKingsColumn, king.getSquare().getRow())), rook, new Rook(color, new Square(newRooksColumn, rook.getSquare().getRow()))), this);
+  }
 }
