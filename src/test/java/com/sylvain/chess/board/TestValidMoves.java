@@ -115,4 +115,37 @@ public class TestValidMoves {
     enPassant.apply();
     board.printBoard();
   }
+
+  @Test
+  public void testCastle() {
+      final ChessBoard board = new ChessBoard();
+      board.addPiece(new King(Color.WHITE, new Square(5, 1)));
+    board.addPiece(new Rook(Color.WHITE, new Square(1, 1)));
+    board.addPiece(new Rook(Color.WHITE, new Square(8, 1)));
+    board.printBoard();
+    final Set<Move> castles = board.getAllValidMoves(Color.WHITE).stream().filter(move -> move.getMoveToNewSquare().size() > 1).collect(Collectors.toSet());
+    System.out.println(castles);
+    Assert.assertEquals(2, castles.size());
+    board.addPiece(new Queen(Color.BLACK, new Square(8, 4)));
+    board.printBoard();
+    final Set<Move> castlesWithCheck = board.getAllValidMoves(Color.WHITE).stream().filter(move -> move.getMoveToNewSquare().size() > 1).collect(Collectors.toSet());
+    System.out.println(castlesWithCheck);
+    Assert.assertTrue(castlesWithCheck.isEmpty());
+    board.addPiece(new Pawn(Color.WHITE, new Square(7, 3)));
+    board.addPiece(new Pawn(Color.BLACK, new Square(1, 2)));
+    board.printBoard();
+    final Set<Move> castlesNotThreatened = board.getAllValidMoves(Color.WHITE).stream().filter(move -> move.getMoveToNewSquare().size() > 1).collect(Collectors.toSet());
+    System.out.println(castlesNotThreatened);
+    Assert.assertEquals(2, castlesNotThreatened.size());
+    board.addPiece(new Pawn(Color.BLACK, new Square(7, 2)));
+    board.printBoard();
+    final Set<Move> castleOnlyOne = board.getAllValidMoves(Color.WHITE).stream().filter(move -> move.getMoveToNewSquare().size() > 1).collect(Collectors.toSet());
+    System.out.println(castleOnlyOne);
+    Assert.assertEquals(1, castleOnlyOne.size());
+    board.addPiece(new Bishop(Color.WHITE, new Square(2, 1)));
+    board.printBoard();
+    final Set<Move> castlesNotAnyMore = board.getAllValidMoves(Color.WHITE).stream().filter(move -> move.getMoveToNewSquare().size() > 1).collect(Collectors.toSet());
+    System.out.println(castlesNotAnyMore);
+    Assert.assertTrue(castlesNotAnyMore.isEmpty());
+  }
 }

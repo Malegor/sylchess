@@ -3,12 +3,16 @@ package com.sylvain.chess.moves;
 import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
+import com.sylvain.chess.pieces.King;
 import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.pieces.PieceOnBoard;
+import com.sylvain.chess.pieces.Rook;
+import lombok.Getter;
 
 import java.util.Map;
 
 public class Move {
+  @Getter
   private final Map<PieceOnBoard, PieceOnBoard> moveToNewSquare;
   private final ChessBoard board;
   private PieceOnBoard captured;
@@ -31,8 +35,34 @@ public class Move {
         if (color != piece.getValue().getColor())
             return false;
         if (this.moveToNewSquare.size() > 1) {
-            // Castling rules
-            // TODO
+            // Castling rules: validate that no piece is on the way to the final destination for both the king and the rook, and that no square is controlled.
+          int minCol = ChessBoard.BOARD_COLS + 1;
+          int maxCol = - 1;
+          int minKing=0, maxKing=0; // OBS: kingRow must be the same as rookRow! (the first row of these pieces' color)
+          King king = null;
+          Rook rook = null;
+          for (Map.Entry<PieceOnBoard, PieceOnBoard> entry : this.moveToNewSquare.entrySet()) {
+            int minEntry = Math.min(entry.getKey().getSquare().getColumn(), entry.getValue().getSquare().getColumn());
+            int maxEntry = Math.max(entry.getKey().getSquare().getColumn(), entry.getValue().getSquare().getColumn());
+            minCol = Math.min(minCol, minEntry);
+            maxCol = Math.max(maxCol, maxEntry);
+            if (entry.getKey() instanceof King) {
+              minKing = minEntry;
+              maxKing = maxEntry;
+              king = (King) entry.getKey();
+            }
+            else rook = (Rook) entry.getKey();
+          }
+          for (int col = minCol; col <= maxCol; col++) {
+            PieceOnBoard pieceInBetween = board.getPieceAt(new Square(col, king.getSquare().getRow()));
+            if (pieceInBetween != null && !pieceInBetween.equals(king) && !pieceInBetween.equals(rook))
+              return false;
+          }
+          for (int col = minKing; col <= maxKing; col++) {
+            // OBS there would be no need to check the new king position, as it will be done at the end of this method.
+            if (!board.piecesControllingSquare(new Square(col, king.getSquare().getRow()), ChessBoard.getOppositeColor(color)).isEmpty())
+              return false;
+          }
         }
         // TODO: object orient this piece of code (remove instanceof)
         else if (this.moveToNewSquare.entrySet().iterator().next().getKey() instanceof Pawn) {
