@@ -188,7 +188,7 @@ public class ChessBoard {
                         Square newSquare = piece.getSquare().move(incrementCol, incrementRow * getPawnDirection(color));
                         if (isInBoard(newSquare)) {
                             if (newSquare.getRow() != getPromotionRow(color)) {
-                                Move possibleMove = new Move(Map.of(piece, new Pawn(piece.getColor(), newSquare)), this);
+                                Move possibleMove = new Move(Map.of(piece, piece.at(newSquare)), this);
                                 if (possibleMove.isValidMove()) {
                                     validMoves.add(possibleMove);
                                 }
