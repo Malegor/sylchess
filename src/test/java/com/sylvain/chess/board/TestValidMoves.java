@@ -69,7 +69,7 @@ public class TestValidMoves {
   }
 
   @Test
-  public void testCheckMate() {
+  public void testCheckmate() {
     final ChessBoard board = new ChessBoard();
     board.addPiece(new King(Color.WHITE, new Square(1,1)));
     board.addPiece(new Pawn(Color.WHITE, new Square(1,2)));
@@ -82,7 +82,7 @@ public class TestValidMoves {
   }
 
   @Test
-  public void testStaleMate() {
+  public void testStalemate() {
     final ChessBoard board = new ChessBoard();
     board.addPiece(new King(Color.WHITE, new Square(1,1)));
     board.addPiece(new Pawn(Color.WHITE, new Square(2,2)));

@@ -238,4 +238,8 @@ public class ChessBoard {
     final int newRooksColumn = newKingsColumn + (isKingSideCastle ? -1 : 1);
     return new Move(Map.of(king, new King(color, new Square(newKingsColumn, king.getSquare().getRow())), rook, new Rook(color, new Square(newRooksColumn, rook.getSquare().getRow()))), this);
   }
+
+  public Map<Square, PieceOnBoard> getPieces(final Color color) {
+      return this.piecesByColor.get(color);
+  }
 }
