@@ -19,6 +19,7 @@ public class TestValidMoves {
     public void testStartingPositions() {
         final ChessBoard board = ChessBoard.startingPositions();
         board.printBoard();
+        System.out.println(board.getPositionString());
         final Set<Move> allValidMovesForWhite = board.getAllValidMoves(Color.WHITE);
         System.out.println(allValidMovesForWhite);
         // 2 moves for each knight and 2 moves for each pawn.

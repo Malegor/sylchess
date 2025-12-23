@@ -24,36 +24,36 @@ import java.util.stream.Collectors;
 
 @Log
 public class ChessBoard {
-    public static final int BOARD_COLS = 8;
-    public static final int BOARD_ROWS = 8;
-    private final Map<Color, Map<Square, PieceOnBoard>> piecesByColor;
-    private final Map<Square, PieceOnBoard> allPieces;
-    private final Map<Color, King> kings;
-    @Getter @Setter
-    private Move previousMove = null;
+  public static final int BOARD_COLS = 8;
+  public static final int BOARD_ROWS = 8;
+  private final Map<Color, Map<Square, PieceOnBoard>> piecesByColor;
+  private final Map<Square, PieceOnBoard> allPieces;
+  private final Map<Color, King> kings;
+  @Getter @Setter
+  private Move previousMove = null;
 
-    public ChessBoard() {
-        this.piecesByColor = Map.of(Color.WHITE, new HashMap<>(16), Color.BLACK, new HashMap<>(16));
-        this.allPieces = new HashMap<>(32);
-        this.kings = new HashMap<>(2);
-    }
+  public ChessBoard() {
+      this.piecesByColor = Map.of(Color.WHITE, new HashMap<>(16), Color.BLACK, new HashMap<>(16));
+      this.allPieces = new HashMap<>(32);
+      this.kings = new HashMap<>(2);
+  }
 
-    public static ChessBoard startingPositions() {
-        final ChessBoard board = new ChessBoard();
-        board.putClassicalPositionsForMainPieces(Color.WHITE);
-        board.putClassicalPositionsForMainPieces(Color.BLACK);
-        return board;
-    }
+  public static ChessBoard startingPositions() {
+      final ChessBoard board = new ChessBoard();
+      board.putClassicalPositionsForMainPieces(Color.WHITE);
+      board.putClassicalPositionsForMainPieces(Color.BLACK);
+      return board;
+  }
 
-    public static int getFirstRow(final Color color) {
-        return getRowForColor(1, color);
-    }
+  public static int getFirstRow(final Color color) {
+      return getRowForColor(1, color);
+  }
 
-    public static int getPromotionRow(final Color color) {
-        return getRowForColor(ChessBoard.BOARD_ROWS, color);
-    }
+  public static int getPromotionRow(final Color color) {
+      return getRowForColor(ChessBoard.BOARD_ROWS, color);
+  }
 
-    public static int getPawnDirection(final Color color) {
+  public static int getPawnDirection(final Color color) {
         return color == Color.WHITE ? 1 : -1;
     }
 
@@ -241,5 +241,13 @@ public class ChessBoard {
 
   public Map<Square, PieceOnBoard> getPieces(final Color color) {
       return this.piecesByColor.get(color);
+  }
+
+  public String getPositionString() {
+    StringBuilder positions = new StringBuilder();
+    for (Square square : this.allPieces.keySet().stream().sorted().toList()) {
+      positions.append(this.allPieces.get(square).toString()).append(";");
+    }
+    return positions.toString();
   }
 }

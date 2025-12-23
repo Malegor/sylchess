@@ -154,4 +154,8 @@ public class Move {
     public PieceOnBoard getDestinationPiece() {
       return this.moveToNewSquare.size() == 1 ? this.moveToNewSquare.values().iterator().next() : null;
     }
+    
+    public boolean involvesPawnOrCapture() {
+      return this.captured != null || this.moveToNewSquare.keySet().iterator().next() instanceof Pawn;
+    }
 }
