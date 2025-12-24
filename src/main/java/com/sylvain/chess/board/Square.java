@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @AllArgsConstructor
 @Getter
-public class Square {
+public class Square implements Comparable<Square> {
     private final int column;
     private final int row;
 
@@ -37,5 +37,10 @@ public class Square {
         // Subtracting 1 from the number gives a 0-based index.
         // Adding this index to 'a' gives the correct character.
         return column >= 1 && column <= 26 ? (char) ('a' + column - 1) : '?';
+    }
+
+    @Override
+    public int compareTo(final Square other) {
+        return  this.getRow() == other.getRow() ?  this.getColumn() - other.getColumn() : this.getRow() - other.getRow();
     }
 }

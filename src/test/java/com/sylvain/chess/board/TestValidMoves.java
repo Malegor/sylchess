@@ -19,6 +19,7 @@ public class TestValidMoves {
     public void testStartingPositions() {
         final ChessBoard board = ChessBoard.startingPositions();
         board.printBoard();
+        System.out.println(board.getPositionString());
         final Set<Move> allValidMovesForWhite = board.getAllValidMoves(Color.WHITE);
         System.out.println(allValidMovesForWhite);
         // 2 moves for each knight and 2 moves for each pawn.
@@ -69,7 +70,7 @@ public class TestValidMoves {
   }
 
   @Test
-  public void testCheckMate() {
+  public void testCheckmate() {
     final ChessBoard board = new ChessBoard();
     board.addPiece(new King(Color.WHITE, new Square(1,1)));
     board.addPiece(new Pawn(Color.WHITE, new Square(1,2)));
@@ -82,7 +83,7 @@ public class TestValidMoves {
   }
 
   @Test
-  public void testStaleMate() {
+  public void testStalemate() {
     final ChessBoard board = new ChessBoard();
     board.addPiece(new King(Color.WHITE, new Square(1,1)));
     board.addPiece(new Pawn(Color.WHITE, new Square(2,2)));
