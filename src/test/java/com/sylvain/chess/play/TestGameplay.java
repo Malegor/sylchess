@@ -3,15 +3,19 @@ package com.sylvain.chess.play;
 import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
+import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.pieces.King;
 import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.pieces.Rook;
 import com.sylvain.chess.play.players.DummyPlayer;
 import com.sylvain.chess.play.players.Player;
+import com.sylvain.chess.utils.CircularIterator;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class TestGameplay {
   @Test
@@ -48,5 +52,61 @@ public class TestGameplay {
     Assert.assertNotNull(status);
     Assert.assertEquals(GameStatus.STALEMATE, status);
     Assert.assertEquals(whitePlayer, game.getLastPlayer());
+  }
+
+  @Test
+  public void testSamePosition() {
+    final Gameplay game = this.getGameWithRepeatedMoves(50);
+    final GameStatus status = game.playGame();
+    Assert.assertNotNull(status);
+    Assert.assertEquals(GameStatus.THREE_TIMES_SAME_POSITION, status);
+    Assert.assertEquals(Color.BLACK, game.getLastPlayer().getColor());
+    // Repetition every 6 moves, as every 3 moves we get the same position but with inverted colors.
+    Assert.assertEquals(12, game.getMoveNumber());
+  }
+
+  @Test
+  public void testMovesWithoutImprovement() {
+    final int numberOfMoves = 10;
+    final Gameplay game = this.getGameWithRepeatedMoves(numberOfMoves);
+    final GameStatus status = game.playGame();
+    Assert.assertNotNull(status);
+    Assert.assertEquals(GameStatus.FIFTY_MOVES, status);
+    Assert.assertEquals(Color.BLACK, game.getLastPlayer().getColor());
+    Assert.assertEquals(numberOfMoves + 2, game.getMoveNumber());
+  }
+
+  private Gameplay getGameWithRepeatedMoves(final int numberOfMovesWithoutCaptureOrPawnMove) {
+    final ChessBoard board = new ChessBoard();
+    final King whiteKing = new King(Color.WHITE, new Square(5, 1));
+    board.addPiece(whiteKing);
+    final Rook blackRook = new Rook(Color.BLACK, new Square(1, 8));
+    board.addPiece(blackRook);
+    board.printBoard();
+    final Player whitePlayer = new Player(Color.WHITE) {
+      private final King square2 = new King(Color.WHITE, new Square(6,1));
+      private final List<Move> moves = List.of(
+              new Move(Map.of(whiteKing, square2), board),
+              new Move(Map.of(square2, whiteKing), board));
+      final CircularIterator<Move> it = new CircularIterator<>(moves);
+      @Override
+      protected Move selectMove(Set<Move> validMoves) {
+        return it.next();
+      }
+    };
+    final Player blackPlayer = new Player(Color.BLACK) {
+      private final Rook square2 = new Rook(Color.BLACK, new Square(1,7));
+      private final Rook square3 = new Rook(Color.BLACK, new Square(1,6));
+      private final List<Move> moves = List.of(
+              new Move(Map.of(blackRook, square2), board),
+              new Move(Map.of(square2, square3), board),
+              new Move(Map.of(square3, blackRook), board));
+      final CircularIterator<Move> it = new CircularIterator<>(moves);
+      @Override
+      protected Move selectMove(Set<Move> validMoves) {
+        return it.next();
+      }
+    };
+    return new Gameplay(board, List.of(whitePlayer, blackPlayer), numberOfMovesWithoutCaptureOrPawnMove, 3);
   }
 }
