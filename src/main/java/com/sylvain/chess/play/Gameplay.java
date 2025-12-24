@@ -21,6 +21,7 @@ public class Gameplay {
   private final int maxNumberOfTimesSamePosition;
   @Getter
   private Player lastPlayer;
+  @Getter
   private int moveNumber;
   private int lastMoveWithCaptureOrPawn;
   private final Map<String, List<Integer>> occurrencesOfPosition;
@@ -50,6 +51,8 @@ public class Gameplay {
       final Move move = player.move(this.board);
       if (move != null) {
         move.apply();
+        System.out.println(move);
+        this.board.printBoard();
         if (move.involvesPawnOrCapture()) {
           this.lastMoveWithCaptureOrPawn = this.moveNumber;
           // TODO: uncomment next line in the case memory is needed
