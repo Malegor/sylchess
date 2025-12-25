@@ -176,16 +176,16 @@ public class ChessBoard {
     public void removePiece(final PieceOnBoard piece) {
         this.piecesByColor.get(piece.getColor()).remove(piece.getSquare());
         this.allPieces.remove(piece.getSquare());
-        // The following should never happen
+        // The following should never happen, provided we keep the king instance the same along the game.
         if (piece instanceof King) {
-          log.severe("The king shouldn't get to be removed! " + piece);
+          //log.severe("The king shouldn't get to be removed! " + piece);
           this.kings.remove(piece.getColor());
         }
     }
 
     public List<Move> getAllValidMoves(final Color color) {
       final List<Move> validMoves = new ArrayList<>();
-      for (PieceOnBoard piece : this.piecesByColor.get(color).values()) {
+      for (PieceOnBoard piece : new ArrayList<>(this.piecesByColor.get(color).values())) {
         if (piece instanceof Pawn) {
             for (int incrementRow = 1; incrementRow <= 2; incrementRow++) {
                 for (int incrementCol = -1 ; incrementCol <= 1 ; incrementCol++) {
@@ -219,21 +219,21 @@ public class ChessBoard {
               if (move.isValidMove()) validMoves.add(move);
             }
         }
+      }
+      // Castling
+      final King king = this.kings.get(color);
+      // OBS: more checks could be added in case of puzzles (when we don't know if the piece has already moved or not...)
+      //  && king.getSquare().getRow() == getFirstRow(color) && king.getSquare().getColumn() > 1 && king.getSquare().getColumn() < CB.BOARD_COLUMNS // (960)
+      // or simply king.getSquare().getColumn() == 5 (classical chess)
+      if (king != null && !king.isHasAlreadyMoved()) {
+        final Set<PieceOnBoard> rooks = this.piecesByColor.get(color).values().stream().filter(piece -> piece instanceof Rook && !piece.isHasAlreadyMoved()).collect(Collectors.toSet());
+        for (PieceOnBoard rook : rooks) {
+          // If the rook is on a column after the king's, it is a king-side castle, otherwise a queen-side castle.
+          final Move castle = this.getCastleMove(color, rook, king);
+          if (castle.isValidMove()) validMoves.add(castle);
         }
-        // Castling
-        final King king = this.kings.get(color);
-        // OBS: more checks could be added in case of puzzles (when we don't know if the piece has already moved or not...)
-        //  && king.getSquare().getRow() == getFirstRow(color) && king.getSquare().getColumn() > 1 && king.getSquare().getColumn() < CB.BOARD_COLUMNS // (960)
-        // or simply king.getSquare().getColumn() == 5 (classical chess)
-        if (king != null && !king.isHasAlreadyMoved()) {
-          final Set<PieceOnBoard> rooks = this.piecesByColor.get(color).values().stream().filter(piece -> piece instanceof Rook && !piece.isHasAlreadyMoved()).collect(Collectors.toSet());
-          for (PieceOnBoard rook : rooks) {
-            // If the rook is on a column after the king's, it is a king-side castle, otherwise a queen-side castle.
-            final Move castle = this.getCastleMove(color, rook, king);
-            if (castle.isValidMove()) validMoves.add(castle);
-          }
-        }
-        return validMoves;
+      }
+      return validMoves;
     }
 
   private Move getCastleMove(Color color, PieceOnBoard rook, King king) {
