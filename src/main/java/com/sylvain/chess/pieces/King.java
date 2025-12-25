@@ -4,9 +4,8 @@ import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class King extends PieceOnBoard {
 
@@ -15,8 +14,8 @@ public class King extends PieceOnBoard {
     }
 
     @Override
-    public Set<Square> getControlledSquares(ChessBoard board) {
-        final Set<Square> controlled = new HashSet<>();
+    public List<Square> getControlledSquares(ChessBoard board) {
+        final List<Square> controlled = new ArrayList<>(8);
         final List<Integer> neighborhood = List.of(-1,0,1);
         for (int i : neighborhood) {
             for (int j : neighborhood) {
@@ -40,7 +39,7 @@ public class King extends PieceOnBoard {
     }
 
     @Override
-    public PieceOnBoard at(Square square) {
+    public King at(Square square) {
         return new King(this.color, square);
     }
 }

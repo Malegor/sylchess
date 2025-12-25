@@ -3,7 +3,7 @@ package com.sylvain.chess.play.players;
 import com.sylvain.chess.Color;
 import com.sylvain.chess.moves.Move;
 
-import java.util.Set;
+import java.util.List;
 
 public class DummyPlayer extends Player {
 
@@ -12,7 +12,7 @@ public class DummyPlayer extends Player {
   }
 
   @Override
-  protected Move selectMove(Set<Move> validMoves) {
-    return validMoves.iterator().next();
+  protected Move selectMove(List<Move> validMoves) {
+    return validMoves.getFirst();
   }
 }

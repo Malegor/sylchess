@@ -6,8 +6,8 @@ import com.sylvain.chess.board.Square;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 public abstract class PieceOnBoard {
@@ -22,12 +22,12 @@ public abstract class PieceOnBoard {
         this.hasAlreadyMoved = false;
     }
 
-    public abstract Set<Square> getControlledSquares(final ChessBoard board);
+    public abstract List<Square> getControlledSquares(final ChessBoard board);
 
     public abstract char printOnBoard();
 
-    protected Set<Square> getControlledSquaresInSingleDirection(final ChessBoard board, final int incrementColumn, final int incrementRow) {
-        final Set<Square> controlled = new HashSet<>(Math.max(ChessBoard.BOARD_COLS, ChessBoard.BOARD_ROWS) - 1);
+    protected List<Square> getControlledSquaresInSingleDirection(final ChessBoard board, final int incrementColumn, final int incrementRow) {
+        final List<Square> controlled = new ArrayList<>(Math.max(ChessBoard.BOARD_COLS, ChessBoard.BOARD_ROWS) - 1);
         boolean foundPiece = false;
         Square newSquare = this.square.move(incrementColumn, incrementRow);
         while (!foundPiece && ChessBoard.isInBoard(newSquare)) {

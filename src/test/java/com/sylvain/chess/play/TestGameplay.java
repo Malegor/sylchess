@@ -15,7 +15,6 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class TestGameplay {
   @Test
@@ -90,7 +89,7 @@ public class TestGameplay {
               new Move(Map.of(square2, whiteKing), board));
       final CircularIterator<Move> it = new CircularIterator<>(moves);
       @Override
-      protected Move selectMove(Set<Move> validMoves) {
+      protected Move selectMove(List<Move> validMoves) {
         return it.next();
       }
     };
@@ -103,7 +102,7 @@ public class TestGameplay {
               new Move(Map.of(square3, blackRook), board));
       final CircularIterator<Move> it = new CircularIterator<>(moves);
       @Override
-      protected Move selectMove(Set<Move> validMoves) {
+      protected Move selectMove(List<Move> validMoves) {
         return it.next();
       }
     };

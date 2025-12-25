@@ -16,7 +16,7 @@ import lombok.extern.java.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +33,7 @@ public class ChessBoard {
   private Move previousMove = null;
 
   public ChessBoard() {
-      this.piecesByColor = Map.of(Color.WHITE, new HashMap<>(16), Color.BLACK, new HashMap<>(16));
+      this.piecesByColor = Map.of(Color.WHITE, new LinkedHashMap<>(16), Color.BLACK, new LinkedHashMap<>(16));
       this.allPieces = new HashMap<>(32);
       this.kings = new HashMap<>(2);
   }
@@ -168,6 +168,7 @@ public class ChessBoard {
     }
 
     public void simulatePieceMove(final PieceOnBoard origin, final PieceOnBoard destination) {
+      //if (origin.getClass() == destination.getClass()) {} // TODO: only change its square attribute? (TODO: rollback move)
         this.removePiece(origin);
         this.addPiece(destination);
     }
@@ -175,46 +176,49 @@ public class ChessBoard {
     public void removePiece(final PieceOnBoard piece) {
         this.piecesByColor.get(piece.getColor()).remove(piece.getSquare());
         this.allPieces.remove(piece.getSquare());
-        if (piece instanceof King)
-            this.kings.remove(piece.getColor());
+        // The following should never happen
+        if (piece instanceof King) {
+          log.severe("The king shouldn't get to be removed! " + piece);
+          this.kings.remove(piece.getColor());
+        }
     }
 
-    public Set<Move> getAllValidMoves(final Color color) {
-        final Set<Move> validMoves = new HashSet<>();
-        for (PieceOnBoard piece : new HashSet<>(this.piecesByColor.get(color).values())) {
-            if (piece instanceof Pawn) {
-                for (int incrementRow = 1; incrementRow <= 2; incrementRow++) {
-                    for (int incrementCol = -1 ; incrementCol <= 1 ; incrementCol++) {
-                        Square newSquare = piece.getSquare().move(incrementCol, incrementRow * getPawnDirection(color));
-                        if (isInBoard(newSquare)) {
-                            if (newSquare.getRow() != getPromotionRow(color)) {
-                                Move possibleMove = new Move(Map.of(piece, piece.at(newSquare)), this);
-                                if (possibleMove.isValidMove()) {
-                                    validMoves.add(possibleMove);
-                                }
+    public List<Move> getAllValidMoves(final Color color) {
+      final List<Move> validMoves = new ArrayList<>();
+      for (PieceOnBoard piece : this.piecesByColor.get(color).values()) {
+        if (piece instanceof Pawn) {
+            for (int incrementRow = 1; incrementRow <= 2; incrementRow++) {
+                for (int incrementCol = -1 ; incrementCol <= 1 ; incrementCol++) {
+                    Square newSquare = piece.getSquare().move(incrementCol, incrementRow * getPawnDirection(color));
+                    if (isInBoard(newSquare)) {
+                        if (newSquare.getRow() != getPromotionRow(color)) {
+                            Move possibleMove = new Move(Map.of(piece, piece.at(newSquare)), this);
+                            if (possibleMove.isValidMove()) {
+                                validMoves.add(possibleMove);
                             }
-                            else {
-                                // Promotion
-                                Move possibleMove = new Move(Map.of(piece, new Knight(piece.getColor(), newSquare)), this);
-                                if (possibleMove.isValidMove()) {
-                                    validMoves.add(possibleMove);
-                                    validMoves.add(new Move(Map.of(piece, new Rook(piece.getColor(), newSquare)), this));
-                                    validMoves.add(new Move(Map.of(piece, new Bishop(piece.getColor(), newSquare)), this));
-                                    validMoves.add(new Move(Map.of(piece, new Queen(piece.getColor(), newSquare)), this));
-                                }
+                        }
+                        else {
+                            // Promotion
+                            Move possibleMove = new Move(Map.of(piece, new Knight(piece.getColor(), newSquare)), this);
+                            if (possibleMove.isValidMove()) {
+                                validMoves.add(possibleMove);
+                                validMoves.add(new Move(Map.of(piece, new Rook(piece.getColor(), newSquare)), this));
+                                validMoves.add(new Move(Map.of(piece, new Bishop(piece.getColor(), newSquare)), this));
+                                validMoves.add(new Move(Map.of(piece, new Queen(piece.getColor(), newSquare)), this));
                             }
                         }
                     }
                 }
             }
-            else {
-                Set<Square> squares = piece.getControlledSquares(this).stream().
-                        filter(square -> !this.hasPieceAt(square) || piece.getColor() != this.getPieceAt(square).getColor()).collect(Collectors.toSet());
-                for (Square square : squares) {
-                  Move move = new Move(Map.of(piece, piece.at(square)), this);
-                  if (move.isValidMove()) validMoves.add(move);
-                }
+        }
+        else {
+            Set<Square> squares = piece.getControlledSquares(this).stream().
+                    filter(square -> !this.hasPieceAt(square) || piece.getColor() != this.getPieceAt(square).getColor()).collect(Collectors.toSet());
+            for (Square square : squares) {
+              Move move = new Move(Map.of(piece, piece.at(square)), this);
+              if (move.isValidMove()) validMoves.add(move);
             }
+        }
         }
         // Castling
         final King king = this.kings.get(color);
