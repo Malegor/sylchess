@@ -5,6 +5,9 @@ import com.sylvain.chess.moves.Move;
 
 import java.util.List;
 
+/**
+ * A player that always plays its first available move.
+ */
 public class DummyPlayer extends Player {
 
   public DummyPlayer(Color color) {
