@@ -15,6 +15,7 @@ import java.util.logging.Level;
 
 @Log
 public class Gameplay {
+  @Getter
   private final ChessBoard board;
   private final List<Player> players;
   private final int numberOfMovesWithoutCaptureOrPawnMove;
