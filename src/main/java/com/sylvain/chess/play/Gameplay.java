@@ -15,6 +15,7 @@ import java.util.logging.Level;
 
 @Log
 public class Gameplay {
+  @Getter
   private final ChessBoard board;
   private final List<Player> players;
   private final int numberOfMovesWithoutCaptureOrPawnMove;
@@ -52,14 +53,14 @@ public class Gameplay {
       positionRepetitions.add(this.moveNumber);
       if (positionRepetitions.size() >= this.maxNumberOfTimesSamePosition) {
         log.info("Same position has already been repeated! " + positionRepetitions);
-        return GameStatus.THREE_TIMES_SAME_POSITION;
+        return GameStatus.SEVERAL_TIMES_SAME_POSITION;
       }
       // OBS: the following condition only works if the game doesn't exclude players (ex: in a chess game of 3 or more players)
       if (player.equals(players.getFirst()))
         this.moveNumber++;
       if (this.moveNumber - this.lastMoveWithCaptureOrPawn >  this.numberOfMovesWithoutCaptureOrPawnMove) {
         log.info(this.numberOfMovesWithoutCaptureOrPawnMove + " moves have been played without any improvement! (since move " + this.lastMoveWithCaptureOrPawn + ")");
-        return GameStatus.FIFTY_MOVES;
+        return GameStatus.UNIMPROVING_MOVES;
       }
       this.lastPlayer = player;
       final Move move = player.move(this.board);

@@ -4,8 +4,8 @@ import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Queen extends PieceOnBoard {
     public Queen(Color color, Square square) {
@@ -13,8 +13,8 @@ public class Queen extends PieceOnBoard {
     }
 
     @Override
-    public Set<Square> getControlledSquares(ChessBoard board) {
-        final Set<Square> controlled = new HashSet<>(14);
+    public List<Square> getControlledSquares(ChessBoard board) {
+        final List<Square> controlled = new ArrayList<>(14);
         controlled.addAll(new Bishop(this.color, this.square).getControlledSquares(board));
         controlled.addAll(new Rook(this.color, this.square).getControlledSquares(board));
         return controlled;
@@ -31,7 +31,7 @@ public class Queen extends PieceOnBoard {
     }
 
     @Override
-    public PieceOnBoard at(Square square) {
+    public Queen at(Square square) {
         return new Queen(this.color, square);
     }
 }

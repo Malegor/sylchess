@@ -15,7 +15,6 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class TestGameplay {
   @Test
@@ -59,7 +58,7 @@ public class TestGameplay {
     final Gameplay game = this.getGameWithRepeatedMoves(50);
     final GameStatus status = game.playGame();
     Assert.assertNotNull(status);
-    Assert.assertEquals(GameStatus.THREE_TIMES_SAME_POSITION, status);
+    Assert.assertEquals(GameStatus.SEVERAL_TIMES_SAME_POSITION, status);
     Assert.assertEquals(Color.BLACK, game.getLastPlayer().getColor());
     // Repetition every 6 moves, as every 3 moves we get the same position but with inverted colors.
     Assert.assertEquals(12, game.getMoveNumber());
@@ -71,7 +70,7 @@ public class TestGameplay {
     final Gameplay game = this.getGameWithRepeatedMoves(numberOfMoves);
     final GameStatus status = game.playGame();
     Assert.assertNotNull(status);
-    Assert.assertEquals(GameStatus.FIFTY_MOVES, status);
+    Assert.assertEquals(GameStatus.UNIMPROVING_MOVES, status);
     Assert.assertEquals(Color.BLACK, game.getLastPlayer().getColor());
     Assert.assertEquals(numberOfMoves + 2, game.getMoveNumber());
   }
@@ -90,7 +89,7 @@ public class TestGameplay {
               new Move(Map.of(square2, whiteKing), board));
       final CircularIterator<Move> it = new CircularIterator<>(moves);
       @Override
-      protected Move selectMove(Set<Move> validMoves) {
+      protected Move selectMove(List<Move> validMoves) {
         return it.next();
       }
     };
@@ -103,7 +102,7 @@ public class TestGameplay {
               new Move(Map.of(square3, blackRook), board));
       final CircularIterator<Move> it = new CircularIterator<>(moves);
       @Override
-      protected Move selectMove(Set<Move> validMoves) {
+      protected Move selectMove(List<Move> validMoves) {
         return it.next();
       }
     };

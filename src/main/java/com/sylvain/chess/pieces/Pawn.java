@@ -4,8 +4,8 @@ import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Pawn extends PieceOnBoard {
 
@@ -14,8 +14,8 @@ public class Pawn extends PieceOnBoard {
     }
 
     @Override
-    public Set<Square> getControlledSquares(ChessBoard board) {
-        final Set<Square> controlled = new HashSet<>();
+    public List<Square> getControlledSquares(ChessBoard board) {
+        final List<Square> controlled = new ArrayList<>(2);
         final int updateRow = ChessBoard.getPawnDirection(color);
         if (square.getColumn() > 1) controlled.add(square.move(-1, updateRow));
         if (square.getColumn() < ChessBoard.BOARD_COLS) controlled.add(square.move(1, updateRow));
@@ -33,7 +33,7 @@ public class Pawn extends PieceOnBoard {
     }
 
     @Override
-    public PieceOnBoard at(Square square) {
+    public Pawn at(Square square) {
         return new Pawn(this.color, square);
     }
 }

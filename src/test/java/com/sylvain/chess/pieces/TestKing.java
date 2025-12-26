@@ -7,7 +7,7 @@ import lombok.extern.java.Log;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Set;
+import java.util.List;
 
 @Log
 public class TestKing {
@@ -17,7 +17,7 @@ public class TestKing {
         for (int i = 1; i <= ChessBoard.BOARD_COLS; i++) {
             for (int j = 1; j <= ChessBoard.BOARD_ROWS; j++) {
                 final Square startingSquare = new Square(i, j);
-                final Set<Square> squares = new King(Color.WHITE, startingSquare).getControlledSquares(new ChessBoard());
+                final List<Square> squares = new King(Color.WHITE, startingSquare).getControlledSquares(new ChessBoard());
                 System.out.println(startingSquare + " : " + squares);
                 for (Square square : squares) {
                     Assert.assertTrue(ChessBoard.isInBoard(square));

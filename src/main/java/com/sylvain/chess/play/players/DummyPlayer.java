@@ -3,8 +3,11 @@ package com.sylvain.chess.play.players;
 import com.sylvain.chess.Color;
 import com.sylvain.chess.moves.Move;
 
-import java.util.Set;
+import java.util.List;
 
+/**
+ * A player that always plays its first available move.
+ */
 public class DummyPlayer extends Player {
 
   public DummyPlayer(Color color) {
@@ -12,7 +15,7 @@ public class DummyPlayer extends Player {
   }
 
   @Override
-  protected Move selectMove(Set<Move> validMoves) {
-    return validMoves.iterator().next();
+  protected Move selectMove(List<Move> validMoves) {
+    return validMoves.getFirst();
   }
 }
