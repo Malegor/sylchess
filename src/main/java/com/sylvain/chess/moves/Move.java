@@ -73,7 +73,7 @@ public class Move {
                       || rowIncrement < 1)
               return false;
         if (piece.getValue().getSquare().getColumn() == piece.getKey().getSquare().getColumn()) {
-            // This is not a capture, no piece can be on the way.
+          // This is not a capture, no piece can be on the way.
           Square square = piece.getKey().getSquare();
           if (ChessBoard.getPawnDirection(color) * (piece.getValue().getSquare().getRow() - square.getRow()) == 2
                   && ChessBoard.getRowForColor(square.getRow(), color) > 2) {
@@ -86,22 +86,24 @@ public class Move {
           }
         }
         else {
-            // Capture or en-passant
-            if (this.captured == null) {
-              // Validate en-passant
-              final PieceOnBoard potentialPieceEnPassant = this.board.getPieceAt(piece.getValue().getSquare().move(0, - ChessBoard.getPawnDirection(color)));
-              this.captured = potentialPieceEnPassant;
-              if (!(potentialPieceEnPassant instanceof Pawn) ||
-                      (this.board.getPreviousMove() != null ?
-                      !(this.board.getPreviousMove().getDestinationPiece() instanceof Pawn)
-                      || (ChessBoard.getPawnDirection(color) * this.board.getPreviousMove().getDestinationPiece().getSquare().getRow()
-                              - this.board.getPreviousMove().moveToNewSquare.values().iterator().next().getSquare().getRow()) >= 2 :
-                              potentialPieceEnPassant.getSquare().getRow() != ChessBoard.getRowForColor(3, color)))
-                return false;
-            }
-            if (this.captured == null || this.captured.getColor() == color) {
+          // Capture or en-passant
+          if (ChessBoard.getPawnDirection(color) * (piece.getValue().getSquare().getRow() - piece.getKey().getSquare().getRow()) == 2)
+            return false;
+          if (this.captured == null) {
+            // Validate en-passant
+            final PieceOnBoard potentialPieceEnPassant = this.board.getPieceAt(piece.getValue().getSquare().move(0, - ChessBoard.getPawnDirection(color)));
+            this.captured = potentialPieceEnPassant;
+            if (!(potentialPieceEnPassant instanceof Pawn) ||
+                    (this.board.getPreviousMove() != null ?
+                    !(this.board.getPreviousMove().getDestinationPiece() instanceof Pawn)
+                    || (ChessBoard.getPawnDirection(color) * this.board.getPreviousMove().getDestinationPiece().getSquare().getRow()
+                            - this.board.getPreviousMove().moveToNewSquare.values().iterator().next().getSquare().getRow()) >= 2 :
+                            potentialPieceEnPassant.getSquare().getRow() != ChessBoard.getRowForColor(3, color)))
               return false;
-            }
+          }
+          if (this.captured == null || this.captured.getColor() == color) {
+            return false;
+          }
         }
         if (piece.getValue().getSquare().getRow() - piece.getKey().getSquare().getRow() == 2 * ChessBoard.getPawnDirection(color)
                     && ChessBoard.getPawnDirection(color) * piece.getKey().getSquare().getRow() >= 3)
