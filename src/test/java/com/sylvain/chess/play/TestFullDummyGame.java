@@ -12,7 +12,7 @@ public class TestFullDummyGame {
   @Test
   public void testFullDummyGame() {
     final ChessBoard board = ChessBoard.startingPositions();
-    final Gameplay play = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)), 5, 2);
+    final Gameplay play = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)));
     final GameStatus gameStatus = play.playGame();
     System.out.println(gameStatus + " after " + play.getMoveNumber() + " moves.");
   }

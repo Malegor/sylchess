@@ -68,6 +68,7 @@ public class Gameplay {
         move.apply();
         log.info(this.moveNumber + " - " + move);
         this.board.printBoard();
+        this.board.validateInternalDataStructures();
         if (move.involvesPawnOrCapture()) {
           this.lastMoveWithCaptureOrPawn = this.moveNumber;
           // TODO: uncomment next line in the case memory is needed
