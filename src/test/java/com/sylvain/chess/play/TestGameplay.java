@@ -75,6 +75,16 @@ public class TestGameplay {
     Assert.assertEquals(numberOfMoves + 2, game.getMoveNumber());
   }
 
+  @Test
+  public void testOnlyKings() {
+    final ChessBoard board = new ChessBoard();
+    board.addPiece(new King(Color.WHITE, new Square(1,1)));
+    board.addPiece(new King(Color.BLACK, new Square(8,8)));
+    final Gameplay game = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)));
+    final GameStatus status = game.playGame();
+    Assert.assertEquals(GameStatus.ONLY_KINGS, status);
+  }
+
   private Gameplay getGameWithRepeatedMoves(final int numberOfMovesWithoutCaptureOrPawnMove) {
     final ChessBoard board = new ChessBoard();
     final King whiteKing = new King(Color.WHITE, new Square(5, 1));
