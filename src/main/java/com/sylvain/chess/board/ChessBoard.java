@@ -254,4 +254,21 @@ public class ChessBoard {
     }
     return positions.toString();
   }
+
+  public void validateInternalDataStructures() {
+    int piecesByColor = 0;
+    for (Map.Entry<Color, Map<Square, PieceOnBoard>> square : this.piecesByColor.entrySet()) {
+      piecesByColor += square.getValue().size();
+    }
+    if (piecesByColor != allPieces.size())
+      log.severe("Inconsistent number of pieces!");
+    for (Map.Entry<Square, PieceOnBoard> square : allPieces.entrySet()) {
+      if (!square.getKey().equals(square.getValue().getSquare()))
+        log.severe("Inconsistent square for all pieces!");
+      final Color color = square.getValue().getColor();
+      final PieceOnBoard piece = this.piecesByColor.get(color).get(square.getKey());
+      if (piece == null || !piece.equals(square.getValue()))
+        log.severe("Inconsistent piece between both data structures!");
+    }
+  }
 }
