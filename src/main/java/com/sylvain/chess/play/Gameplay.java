@@ -2,12 +2,15 @@ package com.sylvain.chess.play;
 
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.moves.Move;
+import com.sylvain.chess.pieces.King;
+import com.sylvain.chess.pieces.PieceOnBoard;
 import com.sylvain.chess.play.players.Player;
 import com.sylvain.chess.utils.CircularIterator;
 import lombok.Getter;
 import lombok.extern.java.Log;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +77,9 @@ public class Gameplay {
           // TODO: uncomment next line in the case memory is needed
           //this.occurrencesOfPosition.clear();
         }
+        if (this.onlyKingsOnBoard()) {
+          return GameStatus.ONLY_KINGS;
+        }
       }
       else {
         // OBS: in case of checkmate, remove the player and continue with the other ones? (ex: chess with 3 or 4 players)
@@ -82,6 +88,17 @@ public class Gameplay {
     }
     log.log(Level.SEVERE, "Error! No more players can play.");
     return null;
+  }
+
+  private boolean onlyKingsOnBoard() {
+    for (final Player player : this.players) {
+      Collection<PieceOnBoard> playerPieces = this.board.getPieces(player.getColor()).values();
+      for (PieceOnBoard piece : playerPieces)
+        if (!(piece instanceof King)) {
+          return false;
+        }
+    }
+    return true;
   }
 
   private boolean isKingUnderCheck(final Player player) {

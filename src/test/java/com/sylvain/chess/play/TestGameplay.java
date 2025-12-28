@@ -83,6 +83,7 @@ public class TestGameplay {
     final Gameplay game = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)));
     final GameStatus status = game.playGame();
     Assert.assertEquals(GameStatus.ONLY_KINGS, status);
+    Assert.assertEquals(1, game.getMoveNumber());
   }
 
   private Gameplay getGameWithRepeatedMoves(final int numberOfMovesWithoutCaptureOrPawnMove) {
