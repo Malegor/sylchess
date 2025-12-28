@@ -3,13 +3,13 @@ package com.sylvain.chess.pieces;
 import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
 
-@Log
+@Log4j2
 public class TestKing {
     @Test
     public void testControlledSquares() {
@@ -28,6 +28,6 @@ public class TestKing {
                 totalSquares += squares.size();
             }
         }
-        log.info("Total controlled: " + totalSquares);
+      log.info("Total controlled: {}", totalSquares);
     }
 }
