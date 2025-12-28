@@ -7,16 +7,16 @@ import com.sylvain.chess.pieces.PieceOnBoard;
 import com.sylvain.chess.play.players.Player;
 import com.sylvain.chess.utils.CircularIterator;
 import lombok.Getter;
-import lombok.extern.java.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
-@Log
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 public class Gameplay {
   @Getter
   private final ChessBoard board;
@@ -86,7 +86,7 @@ public class Gameplay {
         return !this.board.getPieces(player.getColor()).isEmpty() && !this.isKingUnderCheck(player) ? GameStatus.STALEMATE : GameStatus.CHECKMATE;
       }
     }
-    log.log(Level.SEVERE, "Error! No more players can play.");
+    log.error("Error! No more players can play.");
     return null;
   }
 

@@ -12,7 +12,7 @@ import com.sylvain.chess.pieces.Queen;
 import com.sylvain.chess.pieces.Rook;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Log
+@Log4j2
 public class ChessBoard {
   public static final int BOARD_COLS = 8;
   public static final int BOARD_ROWS = 8;
@@ -100,7 +100,7 @@ public class ChessBoard {
             this.kings.put(piece.getColor(), (King) piece);
         }
         if (oldPieceColor != null || oldPiece != null) {
-            log.warning("The following piece was already on the board! " + oldPieceColor + " - " + oldPiece);
+            log.warn("The following piece was already on the board! " + oldPieceColor + " - " + oldPiece);
         }
     }
 
@@ -261,14 +261,14 @@ public class ChessBoard {
       piecesByColor += square.getValue().size();
     }
     if (piecesByColor != allPieces.size())
-      log.severe("Inconsistent number of pieces!");
+      log.error("Inconsistent number of pieces!");
     for (Map.Entry<Square, PieceOnBoard> square : allPieces.entrySet()) {
       if (!square.getKey().equals(square.getValue().getSquare()))
-        log.severe("Inconsistent square for all pieces!");
+        log.error("Inconsistent square for all pieces!");
       final Color color = square.getValue().getColor();
       final PieceOnBoard piece = this.piecesByColor.get(color).get(square.getKey());
       if (piece == null || !piece.equals(square.getValue()))
-        log.severe("Inconsistent piece between both data structures!");
+        log.error("Inconsistent piece between both data structures!");
     }
   }
 }
