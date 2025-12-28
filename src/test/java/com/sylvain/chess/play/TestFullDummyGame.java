@@ -15,6 +15,7 @@ public class TestFullDummyGame {
     final Gameplay play = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)));
     final GameStatus gameStatus = play.playGame();
     System.out.println(gameStatus + " after " + play.getMoveNumber() + " moves.");
+    // OBS: checkmate moving white's king!
   }
 
   @Test
