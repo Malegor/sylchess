@@ -226,17 +226,17 @@ public class ChessBoard {
       //  && king.getSquare().getRow() == getFirstRow(color) && king.getSquare().getColumn() > 1 && king.getSquare().getColumn() < CB.BOARD_COLUMNS // (960)
       // or simply king.getSquare().getColumn() == 5 (classical chess)
       if (king != null && !king.isHasAlreadyMoved()) {
-        final Set<PieceOnBoard> rooks = this.piecesByColor.get(color).values().stream().filter(piece -> piece instanceof Rook && !piece.isHasAlreadyMoved()).collect(Collectors.toSet());
-        for (PieceOnBoard rook : rooks) {
+        final Set<Rook> rooks = this.piecesByColor.get(color).values().stream().filter(piece -> piece instanceof Rook && !piece.isHasAlreadyMoved()).map(piece -> (Rook) piece).collect(Collectors.toSet());
+        for (Rook rook : rooks) {
           // If the rook is on a column after the king's, it is a king-side castle, otherwise a queen-side castle.
-          final Move castle = this.getCastleMove(color, rook, king);
+          final Move castle = this.getCastleMove(king, rook);
           if (castle.isValidMove()) validMoves.add(castle);
         }
       }
       return validMoves;
     }
 
-  private Move getCastleMove(Color color, PieceOnBoard rook, King king) {
+  private Move getCastleMove(final King king, final Rook rook) {
     boolean isKingSideCastle = rook.getSquare().getColumn() > king.getSquare().getColumn();
     final int newKingsColumn = isKingSideCastle ? 7 : 3; // Logic under these columns? introduce constants?
     final int newRooksColumn = newKingsColumn + (isKingSideCastle ? -1 : 1);
