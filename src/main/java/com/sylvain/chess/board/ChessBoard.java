@@ -186,26 +186,26 @@ public class ChessBoard {
     public List<Move> getAllValidMoves(final Color color) {
       final List<Move> validMoves = new ArrayList<>();
       for (PieceOnBoard piece : new ArrayList<>(this.piecesByColor.get(color).values())) {
-        if (piece instanceof Pawn) {
+        if (piece instanceof Pawn pawn) {
             for (int incrementRow = 1; incrementRow <= 2; incrementRow++) {
                 for (int incrementCol = -1 ; incrementCol <= 1 ; incrementCol++) {
-                    Square newSquare = piece.getSquare().move(incrementCol, incrementRow * getPawnDirection(color));
+                    Square newSquare = pawn.getSquare().move(incrementCol, incrementRow * getPawnDirection(color));
                     if (isInBoard(newSquare)) {
                         if (newSquare.getRow() != getPromotionRow(color)) {
-                            Move possibleMove = new Move(Map.of(piece, piece.at(newSquare)), this);
+                            Move possibleMove = new Move(Map.of(pawn, pawn.at(newSquare)), this);
                             if (possibleMove.isValidMove()) {
                                 validMoves.add(possibleMove);
                             }
                         }
                         else {
-                            // Promotion
-                            Move possibleMove = new Move(Map.of(piece, new Knight(piece.getColor(), newSquare)), this);
-                            if (possibleMove.isValidMove()) {
-                                validMoves.add(possibleMove);
-                                validMoves.add(new Move(Map.of(piece, new Rook(piece.getColor(), newSquare)), this));
-                                validMoves.add(new Move(Map.of(piece, new Bishop(piece.getColor(), newSquare)), this));
-                                validMoves.add(new Move(Map.of(piece, new Queen(piece.getColor(), newSquare)), this));
-                            }
+                          // Promotion
+                          Move possibleMove = new Move(Map.of(pawn, pawn.toQueen(newSquare)), this);
+                          if (possibleMove.isValidMove()) {
+                            validMoves.add(possibleMove);
+                            validMoves.add(new Move(Map.of(pawn, pawn.toKnight(newSquare)), this));
+                            validMoves.add(new Move(Map.of(pawn, pawn.toRook(newSquare)), this));
+                            validMoves.add(new Move(Map.of(pawn, pawn.toBishop(newSquare)), this));
+                          }
                         }
                     }
                 }
@@ -226,21 +226,21 @@ public class ChessBoard {
       //  && king.getSquare().getRow() == getFirstRow(color) && king.getSquare().getColumn() > 1 && king.getSquare().getColumn() < CB.BOARD_COLUMNS // (960)
       // or simply king.getSquare().getColumn() == 5 (classical chess)
       if (king != null && !king.isHasAlreadyMoved()) {
-        final Set<PieceOnBoard> rooks = this.piecesByColor.get(color).values().stream().filter(piece -> piece instanceof Rook && !piece.isHasAlreadyMoved()).collect(Collectors.toSet());
-        for (PieceOnBoard rook : rooks) {
+        final Set<Rook> rooks = this.piecesByColor.get(color).values().stream().filter(piece -> piece instanceof Rook && !piece.isHasAlreadyMoved()).map(piece -> (Rook) piece).collect(Collectors.toSet());
+        for (Rook rook : rooks) {
           // If the rook is on a column after the king's, it is a king-side castle, otherwise a queen-side castle.
-          final Move castle = this.getCastleMove(color, rook, king);
+          final Move castle = this.getCastleMove(king, rook);
           if (castle.isValidMove()) validMoves.add(castle);
         }
       }
       return validMoves;
     }
 
-  private Move getCastleMove(Color color, PieceOnBoard rook, King king) {
+  private Move getCastleMove(final King king, final Rook rook) {
     boolean isKingSideCastle = rook.getSquare().getColumn() > king.getSquare().getColumn();
     final int newKingsColumn = isKingSideCastle ? 7 : 3; // Logic under these columns? introduce constants?
     final int newRooksColumn = newKingsColumn + (isKingSideCastle ? -1 : 1);
-    return new Move(Map.of(king, new King(color, new Square(newKingsColumn, king.getSquare().getRow())), rook, new Rook(color, new Square(newRooksColumn, rook.getSquare().getRow()))), this);
+    return new Move(Map.of(king, king.at(new Square(newKingsColumn, king.getSquare().getRow())), rook, rook.at(new Square(newRooksColumn, rook.getSquare().getRow()))), this);
   }
 
   public Map<Square, PieceOnBoard> getPieces(final Color color) {
