@@ -36,4 +36,15 @@ public class Pawn extends PieceOnBoard {
     public Pawn at(Square square) {
         return new Pawn(this.color, square);
     }
+
+    public Rook toRook(Square square) {
+        return new Rook(this.color, square);
+    }
+    public Bishop toBishop(Square square) {
+        return new Bishop(this.color, square);
+    }
+    public Knight toKnight(Square square) {
+        return new Knight(this.color, square);
+    }
+    public Queen toQueen(Square square) {return new Queen(this.color, square);}
 }
