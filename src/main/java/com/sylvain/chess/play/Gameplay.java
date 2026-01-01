@@ -55,21 +55,21 @@ public class Gameplay {
       final List<Integer> positionRepetitions = this.occurrencesOfPosition.computeIfAbsent(player.getColor() + ";" + this.board.getPositionString(), k -> new ArrayList<>(2));
       positionRepetitions.add(this.moveNumber);
       if (positionRepetitions.size() >= this.maxNumberOfTimesSamePosition) {
-        log.info("Same position has already been repeated! " + positionRepetitions);
+        log.info("Same position has already been repeated! {}", positionRepetitions);
         return GameStatus.SEVERAL_TIMES_SAME_POSITION;
       }
       // OBS: the following condition only works if the game doesn't exclude players (ex: in a chess game of 3 or more players)
       if (player.equals(players.getFirst()))
         this.moveNumber++;
       if (this.moveNumber - this.lastMoveWithCaptureOrPawn >  this.numberOfMovesWithoutCaptureOrPawnMove) {
-        log.info(this.numberOfMovesWithoutCaptureOrPawnMove + " moves have been played without any improvement! (since move " + this.lastMoveWithCaptureOrPawn + ")");
+        log.info("{} moves have been played without any improvement! (since move {})", this.numberOfMovesWithoutCaptureOrPawnMove, this.lastMoveWithCaptureOrPawn);
         return GameStatus.UNIMPROVING_MOVES;
       }
       this.lastPlayer = player;
       final Move move = player.move(this.board);
       if (move != null) {
         move.apply();
-        log.info(this.moveNumber + " - " + move);
+        log.info("{} - {}", this.moveNumber, move);
         this.board.printBoard();
         this.board.validateInternalDataStructures();
         if (move.involvesPawnOrCapture()) {
@@ -86,8 +86,7 @@ public class Gameplay {
         return !this.board.getPieces(player.getColor()).isEmpty() && !this.isKingUnderCheck(player) ? GameStatus.STALEMATE : GameStatus.CHECKMATE;
       }
     }
-    log.error("Error! No more players can play.");
-    return null;
+    throw new IllegalStateException("Error! No more players can play.");
   }
 
   private boolean onlyKingsOnBoard() {

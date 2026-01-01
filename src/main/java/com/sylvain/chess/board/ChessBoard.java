@@ -261,14 +261,14 @@ public class ChessBoard {
       piecesByColor += square.getValue().size();
     }
     if (piecesByColor != allPieces.size())
-      log.error("Inconsistent number of pieces!");
+      throw new IllegalStateException("Inconsistent number of pieces!");
     for (Map.Entry<Square, PieceOnBoard> square : allPieces.entrySet()) {
       if (!square.getKey().equals(square.getValue().getSquare()))
-        log.error("Inconsistent square for all pieces!");
+        throw new IllegalStateException("Inconsistent square for all pieces!");
       final Color color = square.getValue().getColor();
       final PieceOnBoard piece = this.piecesByColor.get(color).get(square.getKey());
       if (piece == null || !piece.equals(square.getValue()))
-        log.error("Inconsistent piece between both data structures!");
+        throw new IllegalStateException("Inconsistent piece between both data structures!");
     }
   }
 }
