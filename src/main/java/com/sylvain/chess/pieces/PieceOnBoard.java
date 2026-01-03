@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 public abstract class PieceOnBoard {
@@ -46,4 +47,24 @@ public abstract class PieceOnBoard {
     public abstract boolean isPossiblePromotion();
 
     public abstract PieceOnBoard at(final Square square);
+
+    private interface PieceFactory {
+        PieceOnBoard create(final Color color, final Square square);
+    }
+
+    public static PieceOnBoard createPiece(final char pieceChar, final Square square) {
+        final Color color =  Character.isUpperCase(pieceChar) ? Color.WHITE : Color.BLACK;
+        final Map<Character, PieceFactory> factories = Map.of(
+                'p', Pawn::new,
+                'n', Knight::new,
+                'b', Bishop::new,
+                'r', Rook::new,
+                'q', Queen::new,
+                'k', King::new
+        );
+        final PieceFactory factory = factories.get(Character.toLowerCase(pieceChar));
+        if (factory == null)
+            throw new IllegalArgumentException("Unknown piece character: " + pieceChar);
+        return factory.create(color, square);
+    }
 }
