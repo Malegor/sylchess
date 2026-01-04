@@ -226,7 +226,7 @@ public class ChessBoard {
       //  && king.getSquare().getRow() == getFirstRow(color) && king.getSquare().getColumn() > 1 && king.getSquare().getColumn() < CB.BOARD_COLUMNS // (960)
       // or simply king.getSquare().getColumn() == 5 (classical chess)
       if (king != null && !king.isHasAlreadyMoved()) {
-        final Set<Rook> rooks = this.piecesByColor.get(color).values().stream().filter(piece -> piece instanceof Rook && !piece.isHasAlreadyMoved()).map(piece -> (Rook) piece).collect(Collectors.toSet());
+        final Set<Rook> rooks = this.getUnmovedRooks(color);
         for (Rook rook : rooks) {
           // If the rook is on a column after the king's, it is a king-side castle, otherwise a queen-side castle.
           final Move castle = this.getCastleMove(king, rook);
@@ -236,11 +236,27 @@ public class ChessBoard {
       return validMoves;
     }
 
+  /**
+   * @param color
+   * @return A set containing the rooks that didn't move yet.
+   */
+  public Set<Rook> getUnmovedRooks(final Color color) {
+    return this.piecesByColor.get(color).values().stream().filter(piece -> piece instanceof Rook && !piece.isHasAlreadyMoved()).map(piece -> (Rook) piece).collect(Collectors.toSet());
+  }
+
   private Move getCastleMove(final King king, final Rook rook) {
-    boolean isKingSideCastle = rook.getSquare().getColumn() > king.getSquare().getColumn();
+    final boolean isKingSideCastle = areValidForCastle(king, rook, true);
     final int newKingsColumn = isKingSideCastle ? 7 : 3; // Logic under these columns? introduce constants?
     final int newRooksColumn = newKingsColumn + (isKingSideCastle ? -1 : 1);
     return new Move(Map.of(king, king.at(new Square(newKingsColumn, king.getSquare().getRow())), rook, rook.at(new Square(newRooksColumn, rook.getSquare().getRow()))), this);
+  }
+
+  public static boolean areValidForCastle(final King king, final Rook rook, final boolean isKingSideCastle) {
+    final int kingSideMultiplier = isKingSideCastle? -1 : 1;
+    final Square kingSquare = king.getSquare();
+    final Square rookSquare = rook.getSquare();
+    final Color color = king.getColor();
+    return rook.getColor() == color && kingSquare.getRow() == rookSquare.getRow() && kingSquare.getRow() == getFirstRow(color) && kingSideMultiplier * (kingSquare.getColumn() - rookSquare.getColumn()) > 0;
   }
 
   public Map<Square, PieceOnBoard> getPieces(final Color color) {
@@ -270,5 +286,9 @@ public class ChessBoard {
       if (piece == null || !piece.equals(square.getValue()))
         throw new IllegalStateException("Inconsistent piece between both data structures!");
     }
+  }
+
+  public King getKing(final Color color) {
+    return this.kings.get(color);
   }
 }

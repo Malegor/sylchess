@@ -59,7 +59,7 @@ public class Move {
             return false;
         }
         for (int col = minKing; col <= maxKing; col++) {
-          // OBS there would be no need to check the new king position, as it will be done at the end of this method.
+          // OBS: there would be no need to check the new king position, as it will be done at the end of this method.
           if (!board.piecesControllingSquare(new Square(col, king.getSquare().getRow()), ChessBoard.getOppositeColor(color)).isEmpty())
             return false;
         }

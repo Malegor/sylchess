@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
 
 public class TestLoadPosition {
 
@@ -37,11 +38,24 @@ public class TestLoadPosition {
   }
 
   @Test
+  public void testMateIn4Board() {
+    final ChessBoard chessBoard = FenDecoder.loadBoard("4q3/1p3R1p/r3r3/4p1kP/p1Pp2P1/1P1P3K/6P1/5R2");
+    chessBoard.printBoard();
+    System.out.println(chessBoard.getPositionString());
+    Assert.assertEquals("Rf1;Pg2;Pb3;Pd3;Kh3;pa4;Pc4;pd4;Pg4;pe5;kg5;Ph5;ra6;re6;pb7;Rf7;ph7;qe8;", chessBoard.getPositionString());
+  }
+
+  @Test
   public void testLoadStartingPositions() throws IOException {
     final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
     final InputStream is = classloader.getResourceAsStream("fen/starting.fen");
     final Gameplay gameplay = FenDecoder.loadPosition(new String(is.readAllBytes(), StandardCharsets.UTF_8));
+    gameplay.playGame(0);
     Assert.assertEquals(Color.BLACK, gameplay.getLastPlayer().getColor());
+    for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
+      Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
+      Assert.assertEquals(2, gameplay.getBoard().getUnmovedRooks(color).size());
+    }
   }
 
   @Test
@@ -51,5 +65,35 @@ public class TestLoadPosition {
     final Gameplay gameplay = FenDecoder.loadPosition(new String(is.readAllBytes(), StandardCharsets.UTF_8));
     gameplay.playGame(0);
     Assert.assertEquals(Color.WHITE, gameplay.getLastPlayer().getColor());
+    for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
+      Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
+      Assert.assertEquals(2, gameplay.getBoard().getUnmovedRooks(color).size());
+    }
+  }
+
+  @Test
+  public void testMateIn3() throws IOException {
+    final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+    final InputStream is = classloader.getResourceAsStream("fen/mate3.fen");
+    final Gameplay gameplay = FenDecoder.loadPosition(new String(is.readAllBytes(), StandardCharsets.UTF_8));
+    gameplay.playGame(0);
+    Assert.assertEquals(Color.BLACK, gameplay.getLastPlayer().getColor());
+    for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
+      Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
+      Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(color).isEmpty());
+    }
+  }
+
+  @Test
+  public void testMateIn4() throws IOException {
+    final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+    final InputStream is = classloader.getResourceAsStream("fen/mate4.fen");
+    final Gameplay gameplay = FenDecoder.loadPosition(new String(is.readAllBytes(), StandardCharsets.UTF_8));
+    gameplay.playGame(0);
+    Assert.assertEquals(Color.BLACK, gameplay.getLastPlayer().getColor());
+    for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
+      Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
+      Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(color).isEmpty());
+    }
   }
 }
