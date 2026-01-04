@@ -7,12 +7,17 @@ import com.sylvain.chess.board.Square;
 import java.util.List;
 
 public class NoPiece extends PieceOnBoard {
-    public NoPiece(Color color, Square square) {
-        super(color, square);
+    public NoPiece(final Color color, final Square square) {
+        super(color, square, false);
     }
 
     @Override
-    public List<Square> getControlledSquares(ChessBoard board) {
+    public NoPiece at(final Square square) {
+        return new NoPiece(this.color, square);
+    }
+
+    @Override
+    public List<Square> getControlledSquares(final ChessBoard board) {
         return List.of();
     }
 
@@ -24,10 +29,5 @@ public class NoPiece extends PieceOnBoard {
     @Override
     public boolean isPossiblePromotion() {
         return false;
-    }
-
-    @Override
-    public NoPiece at(Square square) {
-        return new NoPiece(this.color, square);
     }
 }

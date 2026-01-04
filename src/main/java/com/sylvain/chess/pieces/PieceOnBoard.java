@@ -3,6 +3,7 @@ package com.sylvain.chess.pieces;
 import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,17 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
+@AllArgsConstructor
 public abstract class PieceOnBoard {
     protected final Color color;
     protected Square square;
     @Setter
-    private boolean hasAlreadyMoved;
-
-    public PieceOnBoard(final Color color, final Square startingSquare) {
-        this.color = color;
-        this.square = startingSquare;
-        this.hasAlreadyMoved = false;
-    }
+    protected boolean hasAlreadyMoved;
 
     public abstract List<Square> getControlledSquares(final ChessBoard board);
 
