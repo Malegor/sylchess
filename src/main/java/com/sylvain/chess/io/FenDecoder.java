@@ -3,7 +3,9 @@ package com.sylvain.chess.io;
 import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
+import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.pieces.King;
+import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.pieces.PieceOnBoard;
 import com.sylvain.chess.pieces.Rook;
 import com.sylvain.chess.play.Gameplay;
@@ -11,6 +13,7 @@ import com.sylvain.chess.play.players.DummyPlayer;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,11 +28,19 @@ public class FenDecoder {
     final ChessBoard board = loadBoard(fenArray[0]);
     final Color color = getNextColor(fenArray[1]);
     configureImpossibleCastles(fenArray[2], board);
-    final String enPassantSquare = fenArray[3];
-    final String numberOfMovesWithoutImprovement = fenArray[4];
-    final String moveNumber = fenArray[5];
+    configureLastMove(fenArray[3], board, ChessBoard.getOppositeColor(color));
+    final int numberOfMovesWithoutImprovement = Integer.parseInt(fenArray[4]);
+    final int moveNumber = Integer.parseInt(fenArray[5]);
     // TODO: read other fields
     return new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)), color); // TODO: players?
+  }
+
+  private static void configureLastMove(final String fenEnPassant, final ChessBoard board, final Color color) {
+    if (fenEnPassant.equals("-"))
+      return;
+    final Square enPassantSquare = board.getSquare(fenEnPassant);
+    final Pawn pawn = (Pawn) board.getPieceAt(enPassantSquare.move(0, ChessBoard.getPawnDirection(color)));
+    board.setPreviousMove(new Move(Map.of(pawn.at(pawn.getSquare().move(0, - 2 * ChessBoard.getPawnDirection(color))), pawn), board));
   }
 
   private static Color getNextColor(final String fenColor) {

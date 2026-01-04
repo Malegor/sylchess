@@ -54,6 +54,7 @@ public class TestLoadPosition {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
       Assert.assertEquals(2, gameplay.getBoard().getUnmovedRooks(color).size());
     }
+    Assert.assertNull(gameplay.getBoard().getPreviousMove());
   }
 
   @Test
@@ -65,6 +66,7 @@ public class TestLoadPosition {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
       Assert.assertEquals(2, gameplay.getBoard().getUnmovedRooks(color).size());
     }
+    Assert.assertNotNull(gameplay.getBoard().getPreviousMove());
   }
 
   @Test
@@ -76,6 +78,7 @@ public class TestLoadPosition {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
       Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(color).isEmpty());
     }
+    Assert.assertNull(gameplay.getBoard().getPreviousMove());
   }
 
   @Test
@@ -87,6 +90,7 @@ public class TestLoadPosition {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
       Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(color).isEmpty());
     }
+    Assert.assertNull(gameplay.getBoard().getPreviousMove());
   }
 
   private static Gameplay loadPositionFromFile(final String fileName) throws IOException {
