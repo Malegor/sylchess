@@ -117,6 +117,6 @@ public class TestGameplay {
         return it.next();
       }
     };
-    return new Gameplay(board, List.of(whitePlayer, blackPlayer), numberOfMovesWithoutCaptureOrPawnMove, 3);
+    return new Gameplay(board, List.of(whitePlayer, blackPlayer), null, numberOfMovesWithoutCaptureOrPawnMove, 3);
   }
 }

@@ -1,5 +1,6 @@
 package com.sylvain.chess.play;
 
+import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.pieces.King;
@@ -29,8 +30,9 @@ public class Gameplay {
   private int moveNumber;
   private int lastMoveWithCaptureOrPawn;
   private final Map<String, List<Integer>> occurrencesOfPosition;
+  private final Color firstPlayingColor;
 
-  public Gameplay(final ChessBoard board, final List<Player> players, final int numberOfMovesWithoutCaptureOrPawnMove, final int maxNumberOfTimesSamePosition) {
+  public Gameplay(final ChessBoard board, final List<Player> players, final Color firstPlayingColor, final int numberOfMovesWithoutCaptureOrPawnMove, final int maxNumberOfTimesSamePosition) {
     this.board = board;
     this.players = players;
     this.numberOfMovesWithoutCaptureOrPawnMove = numberOfMovesWithoutCaptureOrPawnMove;
@@ -39,16 +41,33 @@ public class Gameplay {
     this.lastMoveWithCaptureOrPawn = 1;
     this.occurrencesOfPosition = new HashMap<>(20);
     this.lastPlayer = players.getLast();
+    this.firstPlayingColor = firstPlayingColor;
+  }
+
+  public Gameplay(final ChessBoard board, final List<Player> players, final Color firstPlayingColor) {
+    this(board, players, firstPlayingColor, 50, 3);
   }
 
   public Gameplay(final ChessBoard board, final List<Player> players) {
-    this(board, players, 50, 3);
+    this(board, players, null);
   }
 
   public GameStatus playGame() {
+    return playGame(1000);
+  }
+
+  public GameStatus playGame(final int numberOfMoves) {
     final CircularIterator<Player> it = new CircularIterator<>(this.players);
+    if (this.firstPlayingColor != null) {
+      while (it.hasNext()) {
+        if (it.peek().getColor() == this.firstPlayingColor) {
+          break;
+        }
+        else this.lastPlayer = it.next();
+      }
+    }
     while (it.hasNext()) {
-      Player player = it.next();
+      final Player player = it.next();
       // OBS: small flaw here: in the rule, the en passant or castling possible moves should be considered for the repetition...
       // For example, if the rook hadn't moved before the first occurrence and then moved before the second one, the repeated position would not really a repetition.
       // Considering it would complicate a lot the validation and in practice it is not essential for most applications of the rule.
@@ -61,6 +80,8 @@ public class Gameplay {
       // OBS: the following condition only works if the game doesn't exclude players (ex: in a chess game of 3 or more players)
       if (player.equals(players.getFirst()))
         this.moveNumber++;
+      if (this.moveNumber >= numberOfMoves)
+        return GameStatus.PLAYING;
       if (this.moveNumber - this.lastMoveWithCaptureOrPawn >  this.numberOfMovesWithoutCaptureOrPawnMove) {
         log.info("{} moves have been played without any improvement! (since move {})", this.numberOfMovesWithoutCaptureOrPawnMove, this.lastMoveWithCaptureOrPawn);
         return GameStatus.UNIMPROVING_MOVES;
