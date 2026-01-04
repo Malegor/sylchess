@@ -47,9 +47,7 @@ public class TestLoadPosition {
 
   @Test
   public void testLoadStartingPositions() throws IOException {
-    final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-    final InputStream is = classloader.getResourceAsStream("fen/starting.fen");
-    final Gameplay gameplay = FenDecoder.loadPosition(new String(is.readAllBytes(), StandardCharsets.UTF_8));
+    final Gameplay gameplay = loadPositionFromFile("fen/starting.fen");
     gameplay.playGame(0);
     Assert.assertEquals(Color.BLACK, gameplay.getLastPlayer().getColor());
     for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
@@ -60,9 +58,7 @@ public class TestLoadPosition {
 
   @Test
   public void testAfterMovingPawn() throws IOException {
-    final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-    final InputStream is = classloader.getResourceAsStream("fen/after-pawn.fen");
-    final Gameplay gameplay = FenDecoder.loadPosition(new String(is.readAllBytes(), StandardCharsets.UTF_8));
+    final Gameplay gameplay = loadPositionFromFile("fen/after-pawn.fen");
     gameplay.playGame(0);
     Assert.assertEquals(Color.WHITE, gameplay.getLastPlayer().getColor());
     for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
@@ -73,9 +69,7 @@ public class TestLoadPosition {
 
   @Test
   public void testMateIn3() throws IOException {
-    final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-    final InputStream is = classloader.getResourceAsStream("fen/mate3.fen");
-    final Gameplay gameplay = FenDecoder.loadPosition(new String(is.readAllBytes(), StandardCharsets.UTF_8));
+    final Gameplay gameplay = loadPositionFromFile("fen/mate3.fen");
     gameplay.playGame(0);
     Assert.assertEquals(Color.BLACK, gameplay.getLastPlayer().getColor());
     for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
@@ -86,14 +80,18 @@ public class TestLoadPosition {
 
   @Test
   public void testMateIn4() throws IOException {
-    final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-    final InputStream is = classloader.getResourceAsStream("fen/mate4.fen");
-    final Gameplay gameplay = FenDecoder.loadPosition(new String(is.readAllBytes(), StandardCharsets.UTF_8));
+    final Gameplay gameplay = loadPositionFromFile("fen/mate4.fen");
     gameplay.playGame(0);
     Assert.assertEquals(Color.BLACK, gameplay.getLastPlayer().getColor());
     for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
       Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(color).isEmpty());
     }
+  }
+
+  private static Gameplay loadPositionFromFile(final String fileName) throws IOException {
+    final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+    final InputStream is = classloader.getResourceAsStream(fileName);
+    return FenDecoder.loadPosition(new String(is.readAllBytes(), StandardCharsets.UTF_8));
   }
 }

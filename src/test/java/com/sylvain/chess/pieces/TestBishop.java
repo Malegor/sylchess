@@ -22,7 +22,7 @@ public class TestBishop {
                 Assert.assertTrue(squares.size() >= 7 && squares.size() <= 13);
                 for (Square square : squares) {
                     Assert.assertTrue(ChessBoard.isInBoard(square));
-                    Assert.assertEquals(Math.abs(square.getColumn() - i), Math.abs(square.getRow() - j));
+                    Assert.assertEquals(Math.abs(square.column() - i), Math.abs(square.row() - j));
                 }
                 totalSquares += squares.size();
             }

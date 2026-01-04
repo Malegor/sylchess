@@ -57,8 +57,8 @@ public class FenDecoder {
     final Set<Rook> rooks = board.getUnmovedRooks(color);
     final King king = board.getKing(color);
     final boolean isKingSide = Character.toLowerCase(castleChar) == 'k';
-    return king.getSquare().getRow() != ChessBoard.getFirstRow(king.getColor()) ? rooks :
-            rooks.stream().filter(rook -> rook.getSquare().getRow() != ChessBoard.getFirstRow(rook.getColor()) || ChessBoard.areValidForCastle(king, rook, isKingSide)).collect(Collectors.toSet());
+    return king.getSquare().row() != ChessBoard.getFirstRow(king.getColor()) ? rooks :
+            rooks.stream().filter(rook -> rook.getSquare().row() != ChessBoard.getFirstRow(rook.getColor()) || ChessBoard.areValidForCastle(king, rook, isKingSide)).collect(Collectors.toSet());
   }
 
   public static ChessBoard loadBoard(final String fenBoard) {

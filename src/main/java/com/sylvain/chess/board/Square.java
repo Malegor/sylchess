@@ -1,16 +1,6 @@
 package com.sylvain.chess.board;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-import java.util.Objects;
-
-@AllArgsConstructor
-@Getter
-public class Square implements Comparable<Square> {
-    private final int column;
-    private final int row;
-
+public record Square(int column, int row) implements Comparable<Square> {
     public Square move(final int column, final int row) {
         return new Square(this.column + column, this.row + row);
     }
@@ -22,13 +12,8 @@ public class Square implements Comparable<Square> {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(this.column, this.row);
-    }
-
-    @Override
     public String toString() {
-        return String.valueOf(getColumnLetter(this.column)) + this.getRow();
+        return String.valueOf(getColumnLetter(this.column)) + this.row();
     }
 
     private static char getColumnLetter(final int column) {
@@ -41,6 +26,6 @@ public class Square implements Comparable<Square> {
 
     @Override
     public int compareTo(final Square other) {
-        return  this.getRow() == other.getRow() ?  this.getColumn() - other.getColumn() : this.getRow() - other.getRow();
+        return this.row() == other.row() ? this.column() - other.column() : this.row() - other.row();
     }
 }

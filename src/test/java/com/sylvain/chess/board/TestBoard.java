@@ -27,4 +27,16 @@ public class TestBoard {
         final ChessBoard board = ChessBoard.startingPositions();
         board.printBoard();
     }
+
+    @Test
+    public void testGetSquare() {
+        final ChessBoard board = new ChessBoard();
+        Assert.assertThrows(IllegalArgumentException.class, () -> {board.getSquare("");});
+        Assert.assertThrows(IllegalArgumentException.class, () -> {board.getSquare("a3a");});
+        Assert.assertThrows(IllegalArgumentException.class, () -> {board.getSquare("a9");});
+        Assert.assertThrows(IllegalArgumentException.class, () -> {board.getSquare("j1");});
+        Assert.assertEquals(new Square(1, 1),  board.getSquare("a1"));
+        Assert.assertEquals(new Square(8, 8),  board.getSquare("h8"));
+        Assert.assertEquals(new Square(5, 1),  board.getSquare("e1"));
+    }
 }

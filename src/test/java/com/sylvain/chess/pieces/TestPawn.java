@@ -20,8 +20,8 @@ public class TestPawn {
             Assert.assertEquals((i == 1 || i == ChessBoard.BOARD_COLS) ? 1 : 2, squares.size());
             for (Square square : squares) {
                 Assert.assertTrue(ChessBoard.isInBoard(square));
-                Assert.assertEquals(1, square.getRow() - startingSquare.getRow());
-                Assert.assertEquals(1, Math.abs(square.getColumn() - startingSquare.getColumn()));
+                Assert.assertEquals(1, square.row() - startingSquare.row());
+                Assert.assertEquals(1, Math.abs(square.column() - startingSquare.column()));
             }
         }
     }

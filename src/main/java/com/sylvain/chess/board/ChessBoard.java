@@ -78,7 +78,7 @@ public class ChessBoard {
     }
 
     public static boolean isInBoard(final Square square) {
-        return isColumnInBoard(square.getColumn()) && isRowInBoard(square.getRow());
+        return isColumnInBoard(square.column()) && isRowInBoard(square.row());
     }
 
     public static boolean isColumnInBoard(final int i) {
@@ -191,7 +191,7 @@ public class ChessBoard {
                 for (int incrementCol = -1 ; incrementCol <= 1 ; incrementCol++) {
                     Square newSquare = pawn.getSquare().move(incrementCol, incrementRow * getPawnDirection(color));
                     if (isInBoard(newSquare)) {
-                        if (newSquare.getRow() != getPromotionRow(color)) {
+                        if (newSquare.row() != getPromotionRow(color)) {
                             Move possibleMove = new Move(Map.of(pawn, pawn.at(newSquare)), this);
                             if (possibleMove.isValidMove()) {
                                 validMoves.add(possibleMove);
@@ -248,7 +248,7 @@ public class ChessBoard {
     final boolean isKingSideCastle = areValidForCastle(king, rook, true);
     final int newKingsColumn = isKingSideCastle ? 7 : 3; // Logic under these columns? introduce constants?
     final int newRooksColumn = newKingsColumn + (isKingSideCastle ? -1 : 1);
-    return new Move(Map.of(king, king.at(new Square(newKingsColumn, king.getSquare().getRow())), rook, rook.at(new Square(newRooksColumn, rook.getSquare().getRow()))), this);
+    return new Move(Map.of(king, king.at(new Square(newKingsColumn, king.getSquare().row())), rook, rook.at(new Square(newRooksColumn, rook.getSquare().row()))), this);
   }
 
   public static boolean areValidForCastle(final King king, final Rook rook, final boolean isKingSideCastle) {
@@ -256,7 +256,7 @@ public class ChessBoard {
     final Square kingSquare = king.getSquare();
     final Square rookSquare = rook.getSquare();
     final Color color = king.getColor();
-    return rook.getColor() == color && kingSquare.getRow() == rookSquare.getRow() && kingSquare.getRow() == getFirstRow(color) && kingSideMultiplier * (kingSquare.getColumn() - rookSquare.getColumn()) > 0;
+    return rook.getColor() == color && kingSquare.row() == rookSquare.row() && kingSquare.row() == getFirstRow(color) && kingSideMultiplier * (kingSquare.column() - rookSquare.column()) > 0;
   }
 
   public Map<Square, PieceOnBoard> getPieces(final Color color) {
@@ -290,5 +290,14 @@ public class ChessBoard {
 
   public King getKing(final Color color) {
     return this.kings.get(color);
+  }
+
+  public Square getSquare(final String squareName) {
+    final char firstColumn = 'a';
+    final char firstRow = '1';
+    if (squareName.length() != 2 || squareName.charAt(0) < firstColumn || squareName.charAt(0) > (char) (firstColumn + ChessBoard.BOARD_COLS - 1)
+        || squareName.charAt(1) < firstRow || squareName.charAt(1) > (char) (firstRow + ChessBoard.BOARD_ROWS - 1))
+      throw new IllegalArgumentException("Invalid square name: " + squareName);
+    return new Square(squareName.charAt(0) - firstColumn + 1, squareName.charAt(1) - '0');
   }
 }

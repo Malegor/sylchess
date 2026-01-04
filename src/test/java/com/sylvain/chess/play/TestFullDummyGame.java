@@ -14,16 +14,15 @@ public class TestFullDummyGame {
   @Test
   public void testFullDummyGame() {
     final ChessBoard board = ChessBoard.startingPositions();
-    final Gameplay play = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)));
+    final Gameplay play = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)), null, 5, 2);
     final GameStatus gameStatus = play.playGame();
     System.out.println(gameStatus + " after " + play.getMoveNumber() + " moves.");
-    // OBS: checkmate by moving white's king!
-    Assert.assertEquals(GameStatus.CHECKMATE, gameStatus);
+    Assert.assertEquals(GameStatus.UNIMPROVING_MOVES, gameStatus);
     Assert.assertEquals(57, play.getMoveNumber());
     int numberOfUnmovedPawns = 0;
     for (PieceOnBoard piece : board.getPieces(Color.WHITE).values()) {
       // OBS: one single pawn didn't move during the game
-      if (piece.getSquare().getRow() != 2 || !(piece instanceof Pawn))
+      if (piece.getSquare().row() != 2 || !(piece instanceof Pawn))
         Assert.assertTrue(piece.isHasAlreadyMoved());
       else {
         numberOfUnmovedPawns++;

@@ -36,8 +36,8 @@ public class Pawn extends PieceOnBoard {
     public List<Square> getControlledSquares(final ChessBoard board) {
         final List<Square> controlled = new ArrayList<>(2);
         final int updateRow = ChessBoard.getPawnDirection(color);
-        if (square.getColumn() > 1) controlled.add(square.move(-1, updateRow));
-        if (square.getColumn() < ChessBoard.BOARD_COLS) controlled.add(square.move(1, updateRow));
+        if (square.column() > 1) controlled.add(square.move(-1, updateRow));
+        if (square.column() < ChessBoard.BOARD_COLS) controlled.add(square.move(1, updateRow));
         return controlled;
     }
 
