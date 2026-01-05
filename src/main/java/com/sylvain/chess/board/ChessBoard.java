@@ -237,7 +237,7 @@ public class ChessBoard {
     }
 
   /**
-   * @param color
+   * @param color - The color of the rooks to find.
    * @return A set containing the rooks that didn't move yet.
    */
   public Set<Rook> getUnmovedRooks(final Color color) {

@@ -2,6 +2,9 @@ package com.sylvain.chess.io;
 
 import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
+import com.sylvain.chess.board.Square;
+import com.sylvain.chess.moves.Move;
+import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.play.Gameplay;
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,6 +12,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Set;
 
 public class TestLoadPosition {
@@ -67,6 +71,9 @@ public class TestLoadPosition {
       Assert.assertEquals(2, gameplay.getBoard().getUnmovedRooks(color).size());
     }
     Assert.assertNotNull(gameplay.getBoard().getPreviousMove());
+    final Square startingSquare = new Square(4, 4);
+    final Pawn blackPawn = new Pawn(Color.BLACK, startingSquare);
+    Assert.assertTrue((new Move(Map.of(blackPawn, blackPawn.at(startingSquare.move(1, -1))), gameplay.getBoard())).isValidMove());
   }
 
   @Test
