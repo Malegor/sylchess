@@ -71,8 +71,8 @@ public class TestGameplay {
     final GameStatus status = game.playGame();
     Assert.assertNotNull(status);
     Assert.assertEquals(GameStatus.UNIMPROVING_MOVES, status);
-    Assert.assertEquals(Color.BLACK, game.getLastPlayer().getColor());
-    Assert.assertEquals(numberOfMoves + 2, game.getMoveNumber());
+    Assert.assertEquals(Color.WHITE, game.getLastPlayer().getColor());
+    Assert.assertEquals(numberOfMoves + 1, game.getMoveNumber());
   }
 
   @Test
@@ -86,7 +86,7 @@ public class TestGameplay {
     Assert.assertEquals(1, game.getMoveNumber());
   }
 
-  private Gameplay getGameWithRepeatedMoves(final int numberOfMovesWithoutCaptureOrPawnMove) {
+  private Gameplay getGameWithRepeatedMoves(final int maxNumberOfMovesWithoutCaptureOrPawnMove) {
     final ChessBoard board = new ChessBoard();
     final King whiteKing = new King(Color.WHITE, new Square(5, 1));
     board.addPiece(whiteKing);
@@ -117,6 +117,6 @@ public class TestGameplay {
         return it.next();
       }
     };
-    return new Gameplay(board, List.of(whitePlayer, blackPlayer), null, numberOfMovesWithoutCaptureOrPawnMove, 3);
+    return new Gameplay(board, List.of(whitePlayer, blackPlayer), null, maxNumberOfMovesWithoutCaptureOrPawnMove, 3);
   }
 }
