@@ -27,11 +27,10 @@ public class Gameplay {
   private final int maxNumberOfTimesSamePosition;
   @Getter
   private Player lastPlayer;
-  @Getter
+  @Getter @Setter
   private int moveNumber;
-  @Setter
   private int halfMoveNumber;
-  @Setter
+  @Getter @Setter
   private int lastMoveWithCaptureOrPawn;
   private final Map<String, List<Integer>> occurrencesOfPosition;
   private final Color firstPlayingColor;

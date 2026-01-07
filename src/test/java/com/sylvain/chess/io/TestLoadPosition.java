@@ -59,6 +59,8 @@ public class TestLoadPosition {
       Assert.assertEquals(2, gameplay.getBoard().getUnmovedRooks(color).size());
     }
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
+    Assert.assertEquals(2, gameplay.getMoveNumber());
+    Assert.assertEquals(1, gameplay.getLastMoveWithCaptureOrPawn());
   }
 
   @Test
@@ -74,6 +76,8 @@ public class TestLoadPosition {
     final Square startingSquare = new Square(4, 4);
     final Pawn blackPawn = new Pawn(Color.BLACK, startingSquare);
     Assert.assertTrue((new Move(Map.of(blackPawn, blackPawn.at(startingSquare.move(1, -1))), gameplay.getBoard())).isValidMove());
+    Assert.assertEquals(1, gameplay.getMoveNumber());
+    Assert.assertEquals(1, gameplay.getLastMoveWithCaptureOrPawn());
   }
 
   @Test
@@ -86,6 +90,8 @@ public class TestLoadPosition {
       Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(color).isEmpty());
     }
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
+    Assert.assertEquals(2, gameplay.getMoveNumber());
+    Assert.assertEquals(1, gameplay.getLastMoveWithCaptureOrPawn());
   }
 
   @Test
@@ -98,6 +104,8 @@ public class TestLoadPosition {
       Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(color).isEmpty());
     }
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
+    Assert.assertEquals(2, gameplay.getMoveNumber());
+    Assert.assertEquals(1, gameplay.getLastMoveWithCaptureOrPawn());
   }
 
   private static Gameplay loadPositionFromFile(final String fileName) throws IOException {

@@ -31,8 +31,10 @@ public class FenDecoder {
     configureLastMove(fenArray[3], board, ChessBoard.getOppositeColor(color));
     final int numberOfMovesWithoutImprovement = Integer.parseInt(fenArray[4]);
     final int moveNumber = Integer.parseInt(fenArray[5]);
-    // TODO: read other fields
-    return new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)), color); // TODO: players?
+    final Gameplay gameplay = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)), color); // TODO: players?
+    gameplay.setMoveNumber(moveNumber);
+    gameplay.setLastMoveWithCaptureOrPawn(2 * (moveNumber-1) - numberOfMovesWithoutImprovement + 1);
+    return gameplay;
   }
 
   private static void configureLastMove(final String fenEnPassant, final ChessBoard board, final Color color) {
