@@ -8,12 +8,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Queen extends PieceOnBoard {
-    public Queen(Color color, Square square) {
-        super(color, square);
+    public Queen(final Color color, final Square square) {
+        this(color, square, false);
+    }
+
+    public Queen(final Color color, final Square square, final boolean hasAlreadyMoved) {
+        super(color, square, hasAlreadyMoved);
     }
 
     @Override
-    public List<Square> getControlledSquares(ChessBoard board) {
+    public Queen at(final Square square) {
+        return new Queen(this.color, square, this.hasAlreadyMoved);
+    }
+
+    @Override
+    public List<Square> getControlledSquares(final ChessBoard board) {
         final List<Square> controlled = new ArrayList<>(14);
         controlled.addAll(new Bishop(this.color, this.square).getControlledSquares(board));
         controlled.addAll(new Rook(this.color, this.square).getControlledSquares(board));
@@ -28,10 +37,5 @@ public class Queen extends PieceOnBoard {
     @Override
     public boolean isPossiblePromotion() {
         return true;
-    }
-
-    @Override
-    public Queen at(Square square) {
-        return new Queen(this.color, square);
     }
 }

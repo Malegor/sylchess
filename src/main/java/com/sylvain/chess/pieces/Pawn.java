@@ -9,16 +9,35 @@ import java.util.List;
 
 public class Pawn extends PieceOnBoard {
 
-    public Pawn(Color color, Square square) {
-        super(color, square);
+    public Pawn(final Color color, final Square startingSquare) {
+        this(color, startingSquare, false);
+    }
+
+    public Pawn(final Color color, final Square square, final boolean hasAlreadyMoved) {
+        super(color, square, hasAlreadyMoved);
     }
 
     @Override
-    public List<Square> getControlledSquares(ChessBoard board) {
+    public Pawn at(final Square square) {
+        return new Pawn(this.color, square, this.hasAlreadyMoved);
+    }
+    public Rook toRook(final Square square) {
+        return new Rook(this.color, square, this.hasAlreadyMoved);
+    }
+    public Bishop toBishop(final Square square) {
+        return new Bishop(this.color, square, this.hasAlreadyMoved);
+    }
+    public Knight toKnight(final Square square) {
+        return new Knight(this.color, square, this.hasAlreadyMoved);
+    }
+    public Queen toQueen(final Square square) {return new Queen(this.color, square, this.hasAlreadyMoved);}
+
+    @Override
+    public List<Square> getControlledSquares(final ChessBoard board) {
         final List<Square> controlled = new ArrayList<>(2);
         final int updateRow = ChessBoard.getPawnDirection(color);
-        if (square.getColumn() > 1) controlled.add(square.move(-1, updateRow));
-        if (square.getColumn() < ChessBoard.BOARD_COLS) controlled.add(square.move(1, updateRow));
+        if (square.column() > 1) controlled.add(square.move(-1, updateRow));
+        if (square.column() < ChessBoard.BOARD_COLS) controlled.add(square.move(1, updateRow));
         return controlled;
     }
 
@@ -31,20 +50,4 @@ public class Pawn extends PieceOnBoard {
     public boolean isPossiblePromotion() {
         return false;
     }
-
-    @Override
-    public Pawn at(Square square) {
-        return new Pawn(this.color, square);
-    }
-
-    public Rook toRook(Square square) {
-        return new Rook(this.color, square);
-    }
-    public Bishop toBishop(Square square) {
-        return new Bishop(this.color, square);
-    }
-    public Knight toKnight(Square square) {
-        return new Knight(this.color, square);
-    }
-    public Queen toQueen(Square square) {return new Queen(this.color, square);}
 }

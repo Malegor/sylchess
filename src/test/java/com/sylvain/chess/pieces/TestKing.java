@@ -21,9 +21,9 @@ public class TestKing {
                 System.out.println(startingSquare + " : " + squares);
                 for (Square square : squares) {
                     Assert.assertTrue(ChessBoard.isInBoard(square));
-                    Assert.assertTrue(Math.abs(square.getColumn() - startingSquare.getColumn()) <= 1);
-                    Assert.assertTrue(Math.abs(square.getRow() - startingSquare.getRow()) <= 1);
-                    Assert.assertTrue(square.getColumn() != startingSquare.getColumn() || square.getRow() != startingSquare.getRow());
+                    Assert.assertTrue(Math.abs(square.column() - startingSquare.column()) <= 1);
+                    Assert.assertTrue(Math.abs(square.row() - startingSquare.row()) <= 1);
+                    Assert.assertTrue(square.column() != startingSquare.column() || square.row() != startingSquare.row());
                 }
                 totalSquares += squares.size();
             }

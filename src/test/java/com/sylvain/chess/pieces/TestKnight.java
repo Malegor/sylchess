@@ -22,7 +22,7 @@ public class TestKnight {
                 Assert.assertTrue(squares.size() >= 2 && squares.size() <= 8);
                 for (Square square : squares) {
                     Assert.assertTrue(ChessBoard.isInBoard(square));
-                    Assert.assertEquals(3, Math.abs(square.getColumn() - i) + Math.abs(square.getRow() - j));
+                    Assert.assertEquals(3, Math.abs(square.column() - i) + Math.abs(square.row() - j));
                 }
                 totalSquares += squares.size();
             }

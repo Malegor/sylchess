@@ -2,6 +2,8 @@ package com.sylvain.chess.play;
 
 import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
+import com.sylvain.chess.pieces.Pawn;
+import com.sylvain.chess.pieces.PieceOnBoard;
 import com.sylvain.chess.play.players.DummyPlayer;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,10 +14,25 @@ public class TestFullDummyGame {
   @Test
   public void testFullDummyGame() {
     final ChessBoard board = ChessBoard.startingPositions();
-    final Gameplay play = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)));
+    final Gameplay play = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)), null, 5, 2);
     final GameStatus gameStatus = play.playGame();
     System.out.println(gameStatus + " after " + play.getMoveNumber() + " moves.");
-    // OBS: checkmate moving white's king!
+    Assert.assertEquals(GameStatus.UNIMPROVING_MOVES, gameStatus);
+    Assert.assertEquals(57, play.getMoveNumber());
+    int numberOfUnmovedPawns = 0;
+    for (PieceOnBoard piece : board.getPieces(Color.WHITE).values()) {
+      // OBS: one single pawn didn't move during the game
+      if (piece.getSquare().row() != 2 || !(piece instanceof Pawn))
+        Assert.assertTrue(piece.isHasAlreadyMoved());
+      else {
+        numberOfUnmovedPawns++;
+        Assert.assertFalse(piece.isHasAlreadyMoved());
+      }
+    }
+    for (PieceOnBoard piece : board.getPieces(Color.BLACK).values()) {
+      Assert.assertTrue(piece.isHasAlreadyMoved());
+    }
+    Assert.assertEquals(1, numberOfUnmovedPawns);
   }
 
   @Test
@@ -25,7 +42,7 @@ public class TestFullDummyGame {
     String consistentGamePositionString = null;
     for(int i = 0; i < 5; i++) {
       final ChessBoard board = ChessBoard.startingPositions();
-      final Gameplay play = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)), 5, 2);
+      final Gameplay play = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)), null, 5, 2);
       final GameStatus gameStatus = play.playGame();
       System.out.println(gameStatus + " after " + play.getMoveNumber() + " moves.");
       if (consistentGameStatus != null) {

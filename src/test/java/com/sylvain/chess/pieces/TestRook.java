@@ -22,7 +22,7 @@ public class TestRook {
                 Assert.assertEquals(14, squares.size());
                 for (Square square : squares) {
                     Assert.assertTrue(ChessBoard.isInBoard(square));
-                    Assert.assertTrue(square.getColumn() == i ^ square.getRow() == j);
+                    Assert.assertTrue(square.column() == i ^ square.row() == j);
                 }
                 totalSquares += squares.size();
             }

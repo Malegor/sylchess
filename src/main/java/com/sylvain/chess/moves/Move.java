@@ -42,8 +42,8 @@ public class Move {
         King king = null;
         Rook rook = null;
         for (Map.Entry<PieceOnBoard, PieceOnBoard> entry : this.moveToNewSquare.entrySet()) {
-          int minEntry = Math.min(entry.getKey().getSquare().getColumn(), entry.getValue().getSquare().getColumn());
-          int maxEntry = Math.max(entry.getKey().getSquare().getColumn(), entry.getValue().getSquare().getColumn());
+          int minEntry = Math.min(entry.getKey().getSquare().column(), entry.getValue().getSquare().column());
+          int maxEntry = Math.max(entry.getKey().getSquare().column(), entry.getValue().getSquare().column());
           minCol = Math.min(minCol, minEntry);
           maxCol = Math.max(maxCol, maxEntry);
           if (entry.getKey() instanceof King) {
@@ -54,32 +54,32 @@ public class Move {
           else rook = (Rook) entry.getKey();
         }
         for (int col = minCol; col <= maxCol; col++) {
-          PieceOnBoard pieceInBetween = board.getPieceAt(new Square(col, king.getSquare().getRow()));
+          PieceOnBoard pieceInBetween = board.getPieceAt(new Square(col, king.getSquare().row()));
           if (pieceInBetween != null && !pieceInBetween.equals(king) && !pieceInBetween.equals(rook))
             return false;
         }
         for (int col = minKing; col <= maxKing; col++) {
-          // OBS there would be no need to check the new king position, as it will be done at the end of this method.
-          if (!board.piecesControllingSquare(new Square(col, king.getSquare().getRow()), ChessBoard.getOppositeColor(color)).isEmpty())
+          // OBS: there would be no need to check the new king position, as it will be done at the end of this method.
+          if (!board.piecesControllingSquare(new Square(col, king.getSquare().row()), ChessBoard.getOppositeColor(color)).isEmpty())
             return false;
         }
       }
       // TODO: object orient this piece of code (remove instanceof)
       else if (this.moveToNewSquare.entrySet().iterator().next().getKey() instanceof Pawn) {
           // 1- a pawn can move straight or capture in diagonal (special case for the starting position)
-        int rowIncrement = ChessBoard.getPawnDirection(color) * (piece.getValue().getSquare().getRow() - piece.getKey().getSquare().getRow());
-        if (Math.abs(piece.getValue().getSquare().getColumn() - piece.getKey().getSquare().getColumn()) > 1
+        int rowIncrement = ChessBoard.getPawnDirection(color) * (piece.getValue().getSquare().row() - piece.getKey().getSquare().row());
+        if (Math.abs(piece.getValue().getSquare().column() - piece.getKey().getSquare().column()) > 1
                       || rowIncrement > 2
                       || rowIncrement < 1)
               return false;
-        if (piece.getValue().getSquare().getColumn() == piece.getKey().getSquare().getColumn()) {
+        if (piece.getValue().getSquare().column() == piece.getKey().getSquare().column()) {
           // This is not a capture, no piece can be on the way.
           Square square = piece.getKey().getSquare();
-          if (ChessBoard.getPawnDirection(color) * (piece.getValue().getSquare().getRow() - square.getRow()) == 2
-                  && ChessBoard.getRowForColor(square.getRow(), color) > 2) {
+          if (ChessBoard.getPawnDirection(color) * (piece.getValue().getSquare().row() - square.row()) == 2
+                  && ChessBoard.getRowForColor(square.row(), color) > 2) {
             return false;
           }
-          while (ChessBoard.getPawnDirection(color) * (piece.getValue().getSquare().getRow() - square.getRow()) > 0) {
+          while (ChessBoard.getPawnDirection(color) * (piece.getValue().getSquare().row() - square.row()) > 0) {
               square = square.move(0, ChessBoard.getPawnDirection(color));
               if (this.board.hasPieceAt(square))
                   return false;
@@ -87,7 +87,7 @@ public class Move {
         }
         else {
           // Capture or en-passant
-          if (ChessBoard.getPawnDirection(color) * (piece.getValue().getSquare().getRow() - piece.getKey().getSquare().getRow()) == 2)
+          if (ChessBoard.getPawnDirection(color) * (piece.getValue().getSquare().row() - piece.getKey().getSquare().row()) == 2)
             return false;
           if (this.captured == null) {
             // Validate en-passant
@@ -96,20 +96,20 @@ public class Move {
             if (!(potentialPieceEnPassant instanceof Pawn) ||
                     (this.board.getPreviousMove() != null ?
                     !(this.board.getPreviousMove().getDestinationPiece() instanceof Pawn)
-                    || (ChessBoard.getPawnDirection(color) * this.board.getPreviousMove().getDestinationPiece().getSquare().getRow()
-                            - this.board.getPreviousMove().moveToNewSquare.values().iterator().next().getSquare().getRow()) >= 2 :
-                            potentialPieceEnPassant.getSquare().getRow() != ChessBoard.getRowForColor(3, color)))
+                    || (ChessBoard.getPawnDirection(color) * this.board.getPreviousMove().getDestinationPiece().getSquare().row()
+                            - this.board.getPreviousMove().moveToNewSquare.values().iterator().next().getSquare().row()) >= 2 :
+                            potentialPieceEnPassant.getSquare().row() != ChessBoard.getRowForColor(3, color)))
               return false;
           }
           if (this.captured == null || this.captured.getColor() == color) {
             return false;
           }
         }
-        if (piece.getValue().getSquare().getRow() - piece.getKey().getSquare().getRow() == 2 * ChessBoard.getPawnDirection(color)
-                    && ChessBoard.getPawnDirection(color) * piece.getKey().getSquare().getRow() >= 3)
+        if (piece.getValue().getSquare().row() - piece.getKey().getSquare().row() == 2 * ChessBoard.getPawnDirection(color)
+                    && ChessBoard.getPawnDirection(color) * piece.getKey().getSquare().row() >= 3)
             return false;
         // 2- The pawn is at its one-before-last row and the next position (getValue) is a piece that is not a pawn or a king.
-        if (piece.getValue().getSquare().getRow() == ChessBoard.getPromotionRow(color) && !piece.getValue().isPossiblePromotion()) {
+        if (piece.getValue().getSquare().row() == ChessBoard.getPromotionRow(color) && !piece.getValue().isPossiblePromotion()) {
             return false;
         }
       }

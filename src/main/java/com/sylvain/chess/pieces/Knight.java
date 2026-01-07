@@ -8,13 +8,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Knight extends PieceOnBoard {
+    public Knight(final Color color, final Square square) {
+        this(color, square, false);
+    }
 
-    public Knight(Color color, Square square) {
-        super(color, square);
+    public Knight(final Color color, final Square square, final boolean hasAlreadyMoved) {
+        super(color, square, hasAlreadyMoved);
     }
 
     @Override
-    public List<Square> getControlledSquares(ChessBoard board) {
+    public Knight at(final Square square) {
+        return new Knight(this.color, square, this.hasAlreadyMoved);
+    }
+
+    @Override
+    public List<Square> getControlledSquares(final ChessBoard board) {
         final List<Integer> knightJump = List.of(-2, -1, 1, 2);
         return knightJump.stream()
                 .flatMap(i -> knightJump.stream()
@@ -32,10 +40,5 @@ public class Knight extends PieceOnBoard {
     @Override
     public boolean isPossiblePromotion() {
         return true;
-    }
-
-    @Override
-    public Knight at(Square square) {
-        return new Knight(this.color, square);
     }
 }
