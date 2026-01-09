@@ -7,6 +7,8 @@ import com.sylvain.chess.board.Square;
 import java.util.List;
 
 public class NoPiece extends PieceOnBoard {
+    public static char NAME = ' ';
+
     public NoPiece(final Color color, final Square square) {
         super(color, square, false);
     }
@@ -22,8 +24,8 @@ public class NoPiece extends PieceOnBoard {
     }
 
     @Override
-    public char printOnBoard() {
-        return ' ';
+    public Character getName() {
+        return NAME;
     }
 
     @Override

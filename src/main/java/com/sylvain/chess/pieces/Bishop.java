@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Bishop extends PieceOnBoard {
+    public static char NAME_LC = 'b';
+
     public Bishop(final Color color, final Square square) {
         this(color, square, false);
     }
@@ -32,8 +34,8 @@ public class Bishop extends PieceOnBoard {
     }
 
     @Override
-    public char printOnBoard() {
-        return this.color == Color.WHITE ? 'B' : 'b';
+    public Character getName() {
+        return NAME_LC;
     }
 
     @Override

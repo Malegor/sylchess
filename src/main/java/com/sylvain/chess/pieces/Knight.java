@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Knight extends PieceOnBoard {
+    public static char NAME_LC = 'n';
+
     public Knight(final Color color, final Square square) {
         this(color, square, false);
     }
@@ -33,8 +35,8 @@ public class Knight extends PieceOnBoard {
     }
 
     @Override
-    public char printOnBoard() {
-        return this.color == Color.WHITE ? 'N' : 'n';
+    public Character getName() {
+        return NAME_LC;
     }
 
     @Override

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Pawn extends PieceOnBoard {
+    public static char NAME_LC = 'p';
 
     public Pawn(final Color color, final Square startingSquare) {
         this(color, startingSquare, false);
@@ -42,8 +43,8 @@ public class Pawn extends PieceOnBoard {
     }
 
     @Override
-    public char printOnBoard() {
-        return this.color == Color.WHITE ? 'P' : 'p';
+    public Character getName() {
+        return NAME_LC;
     }
 
     @Override
