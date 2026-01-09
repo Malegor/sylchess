@@ -5,6 +5,7 @@ import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 import com.sylvain.chess.pieces.King;
 import com.sylvain.chess.pieces.PieceOnBoard;
+import com.sylvain.chess.pieces.Queen;
 import com.sylvain.chess.pieces.Rook;
 import com.sylvain.chess.play.Gameplay;
 
@@ -17,12 +18,14 @@ public class FenSaver {
     final Character colorString = ChessBoard.getOppositeColor(game.getLastPlayer().getColor()).getFenName();
     final String allPossibleCastles = getPossibleCastles(game.getBoard());
     final String possibleEnPassantSquare = getPossibleEnPassant(game.getBoard());
-    //final int
-    return null;
+    final int moveNumber = game.getMoveNumber();
+    final int numberOfHalfMovesWithoutImprovement = moveNumber / 2 - game.getLastHalfMoveWithCaptureOrPawn();
+    return boardString + FenLoader.SEP + colorString + FenLoader.SEP + allPossibleCastles + FenLoader.SEP + possibleEnPassantSquare + FenLoader.SEP +
+            numberOfHalfMovesWithoutImprovement + FenLoader.SEP + moveNumber;
   }
 
   private static String getPossibleEnPassant(final ChessBoard board) {
-    return board.getPreviousMove() == null || !board.getPreviousMove().isPawnTwoSquareMove() ? "-" :
+    return board.getPreviousMove() == null || !board.getPreviousMove().isPawnTwoSquareMove() ? FenLoader.NONE :
             board.getPreviousMove().getDestinationPiece().getSquare().move(0, - ChessBoard.getPawnDirection(board.getPreviousMove().getColor())).toString();
   }
 
@@ -35,7 +38,7 @@ public class FenSaver {
         for (boolean kingSide : List.of(Boolean.TRUE, Boolean.FALSE)) {
           for (Rook rook: rooks) {
             if (!rook.isHasAlreadyMoved() && ChessBoard.areValidSquaresForCastle(king, rook, kingSide)) {
-              builder.append(color.change().apply(kingSide ? 'k' : 'q'));
+              builder.append(color.change().apply(kingSide ? King.NAME_LC : Queen.NAME_LC));
               // OBS: in special games starting with over 2 rooks, this could lead to the same castle several times...
               // TODO: FEN in 960 is not the same
             }
@@ -43,7 +46,7 @@ public class FenSaver {
         }
       }
     }
-    return builder.isEmpty() ? "-" : builder.toString();
+    return builder.isEmpty() ? FenLoader.NONE : builder.toString();
   }
 
   public static String getBoardString(final ChessBoard board) {

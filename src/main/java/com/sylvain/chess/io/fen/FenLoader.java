@@ -23,6 +23,7 @@ public class FenLoader {
 
   public static final String SEP = " ";
   public static final String ROW_SEP = "/";
+  public static final String NONE = "-";
 
   public static Gameplay loadPosition(final String fen) {
     final String[] fenArray = fen.split(SEP);
@@ -32,16 +33,16 @@ public class FenLoader {
     final Color color = getNextColor(fenArray[1].toCharArray()[0]);
     configureImpossibleCastles(fenArray[2], board);
     configureLastMove(fenArray[3], board, ChessBoard.getOppositeColor(color));
-    final int numberOfMovesWithoutImprovement = Integer.parseInt(fenArray[4]);
+    final int numberOfHalfMovesWithoutImprovement = Integer.parseInt(fenArray[4]);
     final int moveNumber = Integer.parseInt(fenArray[5]);
     final Gameplay gameplay = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)), color); // TODO: players?
     gameplay.setMoveNumber(moveNumber);
-    gameplay.setLastHalfMoveWithCaptureOrPawn(2 * (moveNumber-1) - numberOfMovesWithoutImprovement + 1);
+    gameplay.setLastHalfMoveWithCaptureOrPawn(2 * (moveNumber-1) - numberOfHalfMovesWithoutImprovement + 1);
     return gameplay;
   }
 
   private static void configureLastMove(final String fenEnPassant, final ChessBoard board, final Color color) {
-    if (fenEnPassant.equals("-"))
+    if (fenEnPassant.equals(NONE))
       return;
     final Square enPassantSquare = board.getSquare(fenEnPassant);
     final Pawn pawn = (Pawn) board.getPieceAt(enPassantSquare.move(0, ChessBoard.getPawnDirection(color)));
