@@ -36,7 +36,7 @@ public class FenLoader {
     final int moveNumber = Integer.parseInt(fenArray[5]);
     final Gameplay gameplay = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)), color); // TODO: players?
     gameplay.setMoveNumber(moveNumber);
-    gameplay.setLastMoveWithCaptureOrPawn(2 * (moveNumber-1) - numberOfMovesWithoutImprovement + 1);
+    gameplay.setLastHalfMoveWithCaptureOrPawn(2 * (moveNumber-1) - numberOfMovesWithoutImprovement + 1);
     return gameplay;
   }
 
@@ -61,6 +61,7 @@ public class FenLoader {
   private static void configureImpossibleCastles(final String fenCastles, final ChessBoard board) {
     final Set<Character> allPossibleCastles = fenCastles.chars().mapToObj(c -> (char) c).collect(Collectors.toSet());
     final Set<Character> castleChars = Set.of('K', 'Q', 'k', 'q');
+    // TODO: FEN in 960 is not the same
     for (final char castle : castleChars) {
       if (!allPossibleCastles.contains(castle)) {
         for (final Rook rook : findRookForCastle(castle, board)) {
@@ -76,7 +77,7 @@ public class FenLoader {
     final King king = board.getKing(color);
     final boolean isKingSide = Character.toLowerCase(castleChar) == King.NAME_LC;
     return king.getSquare().row() != ChessBoard.getFirstRow(king.getColor()) ? rooks :
-            rooks.stream().filter(rook -> rook.getSquare().row() != ChessBoard.getFirstRow(rook.getColor()) || ChessBoard.areValidForCastle(king, rook, isKingSide)).collect(Collectors.toSet());
+            rooks.stream().filter(rook -> rook.getSquare().row() != ChessBoard.getFirstRow(rook.getColor()) || ChessBoard.areValidSquaresForCastle(king, rook, isKingSide)).collect(Collectors.toSet());
   }
 
   public static ChessBoard loadBoard(final String fenBoard) {

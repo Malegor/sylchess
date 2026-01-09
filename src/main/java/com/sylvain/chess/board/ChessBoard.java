@@ -245,13 +245,13 @@ public class ChessBoard {
   }
 
   private Move getCastleMove(final King king, final Rook rook) {
-    final boolean isKingSideCastle = areValidForCastle(king, rook, true);
+    final boolean isKingSideCastle = areValidSquaresForCastle(king, rook, true);
     final int newKingsColumn = isKingSideCastle ? 7 : 3; // Logic under these columns? introduce constants?
     final int newRooksColumn = newKingsColumn + (isKingSideCastle ? -1 : 1);
     return new Move(Map.of(king, king.at(new Square(newKingsColumn, king.getSquare().row())), rook, rook.at(new Square(newRooksColumn, rook.getSquare().row()))), this);
   }
 
-  public static boolean areValidForCastle(final King king, final Rook rook, final boolean isKingSideCastle) {
+  public static boolean areValidSquaresForCastle(final King king, final Rook rook, final boolean isKingSideCastle) {
     final int kingSideMultiplier = isKingSideCastle? -1 : 1;
     final Square kingSquare = king.getSquare();
     final Square rookSquare = rook.getSquare();
@@ -299,5 +299,9 @@ public class ChessBoard {
         || squareName.charAt(1) < firstRow || squareName.charAt(1) > (char) (firstRow + ChessBoard.BOARD_ROWS - 1))
       throw new IllegalArgumentException("Invalid square name: " + squareName);
     return new Square(squareName.charAt(0) - firstColumn + 1, squareName.charAt(1) - '0');
+  }
+
+  public List<Color> getColors() {
+    return this.piecesByColor.keySet().stream().sorted().collect(Collectors.toList());
   }
 }

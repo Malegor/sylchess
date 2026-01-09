@@ -160,4 +160,14 @@ public class Move {
     public boolean involvesPawnOrCapture() {
       return this.captured != null || this.moveToNewSquare.keySet().iterator().next() instanceof Pawn;
     }
+
+    public boolean isPawnTwoSquareMove() {
+      final Map.Entry<PieceOnBoard, PieceOnBoard> moveEntry = this.moveToNewSquare.entrySet().iterator().next();
+      return this.moveToNewSquare.size() == 1 && moveEntry.getValue() instanceof Pawn &&
+              ChessBoard.getPawnDirection(moveEntry.getKey().getColor()) * (moveEntry.getValue().getSquare().row() - moveEntry.getKey().getSquare().row()) == 2;
+    }
+
+    public Color getColor() {
+      return this.moveToNewSquare.values().iterator().next().getColor();
+    }
 }

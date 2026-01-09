@@ -31,7 +31,7 @@ public class Gameplay {
   private int moveNumber;
   private int halfMoveNumber;
   @Getter @Setter
-  private int lastMoveWithCaptureOrPawn;
+  private int lastHalfMoveWithCaptureOrPawn;
   private final Map<String, List<Integer>> occurrencesOfPosition;
   private final Color firstPlayingColor;
 
@@ -42,7 +42,7 @@ public class Gameplay {
     this.maxNumberOfTimesSamePosition = maxNumberOfTimesSamePosition;
     this.moveNumber = 0;
     this.halfMoveNumber = 0;
-    this.lastMoveWithCaptureOrPawn = 1;
+    this.lastHalfMoveWithCaptureOrPawn = 1;
     this.occurrencesOfPosition = new HashMap<>(20);
     this.lastPlayer = players.getLast();
     this.firstPlayingColor = firstPlayingColor;
@@ -87,8 +87,8 @@ public class Gameplay {
         this.moveNumber++;
       if (this.moveNumber >= numberOfMoves)
         return GameStatus.PLAYING;
-      if (this.halfMoveNumber - this.lastMoveWithCaptureOrPawn > 2 * this.maxNumberOfMovesWithoutCaptureOrPawnMove) {
-        log.info("{} moves have been played without any improvement! (since move {})", this.maxNumberOfMovesWithoutCaptureOrPawnMove, this.lastMoveWithCaptureOrPawn);
+      if (this.halfMoveNumber - this.lastHalfMoveWithCaptureOrPawn > 2 * this.maxNumberOfMovesWithoutCaptureOrPawnMove) {
+        log.info("{} moves have been played without any improvement! (since half move {})", this.maxNumberOfMovesWithoutCaptureOrPawnMove, this.lastHalfMoveWithCaptureOrPawn);
         return GameStatus.UNIMPROVING_MOVES;
       }
       this.lastPlayer = player;
@@ -99,7 +99,7 @@ public class Gameplay {
         this.board.printBoard();
         this.board.validateInternalDataStructures();
         if (move.involvesPawnOrCapture()) {
-          this.lastMoveWithCaptureOrPawn = this.halfMoveNumber;
+          this.lastHalfMoveWithCaptureOrPawn = this.halfMoveNumber;
           // TODO: uncomment next line in the case memory is needed
           //this.occurrencesOfPosition.clear();
         }
