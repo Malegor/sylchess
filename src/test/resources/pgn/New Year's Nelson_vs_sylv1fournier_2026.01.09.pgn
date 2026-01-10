@@ -1,0 +1,20 @@
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2026.01.09"]
+[Round "?"]
+[White "New Year's Nelson"]
+[Black "sylv1fournier"]
+[Result "0-1"]
+[Variant "Chess960"]
+[SetUp "1"]
+[FEN "rnnbqkbr/pppppppp/8/8/8/8/PPPPPPPP/RNNBQKBR w HAha - 0 1"]
+[BlackElo "984"]
+[WhiteElo "1375"]
+[Termination "by checkmate"]
+[EndDate "2026.01.09"]
+[Link "https://www.chess.com/game/computer/522847679"]
+
+1. f4 d5 2. g4 Nd6 3. Nc3 f6 4. Qh4 e5 5. g5 fxg5 6. fxg5 Qf7+ 7. Qf2 Bxg5 8. d4
+e4 9. Qxf7+ Bxf7 10. h4 Be7 11. e3 O-O 12. Kf2 Nd7 13. Nb1 Bh5+ 14. Ke1 Bxd1 15.
+Kxd1 Rf1+ 16. Kd2 Nc4+ 17. Kc3 Rxc1 18. a3 Rf8 19. Kb3 Rff1 20. h5 Rxb1 21. Rxb1
+Rxb1 22. h6 Rxb2+ 23. Kc3 Ndb6 24. hxg7 Na4# 0-1

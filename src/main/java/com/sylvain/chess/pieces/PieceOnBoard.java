@@ -21,7 +21,11 @@ public abstract class PieceOnBoard {
 
     public abstract List<Square> getControlledSquares(final ChessBoard board);
 
-    public abstract char printOnBoard();
+    public Character printOnBoard() {
+        return this.color == null ? this.getName() : this.color.change().apply(this.getName());
+    }
+
+    protected abstract Character getName();
 
     protected List<Square> getControlledSquaresInSingleDirection(final ChessBoard board, final int incrementColumn, final int incrementRow) {
         final List<Square> controlled = new ArrayList<>(Math.max(ChessBoard.BOARD_COLS, ChessBoard.BOARD_ROWS) - 1);
@@ -49,18 +53,22 @@ public abstract class PieceOnBoard {
     }
 
     public static PieceOnBoard createPiece(final char pieceChar, final Square square) {
-        final Color color =  Character.isUpperCase(pieceChar) ? Color.WHITE : Color.BLACK;
+        final Color color = getColor(pieceChar);
         final Map<Character, PieceFactory> factories = Map.of(
-                'p', Pawn::new,
-                'n', Knight::new,
-                'b', Bishop::new,
-                'r', Rook::new,
-                'q', Queen::new,
-                'k', King::new
+                Pawn.NAME_LC, Pawn::new,
+                Knight.NAME_LC, Knight::new,
+                Bishop.NAME_LC, Bishop::new,
+                Rook.NAME_LC, Rook::new,
+                Queen.NAME_LC, Queen::new,
+                King.NAME_LC, King::new
         );
         final PieceFactory factory = factories.get(Character.toLowerCase(pieceChar));
         if (factory == null)
             throw new IllegalArgumentException("Unknown piece character: " + pieceChar);
         return factory.create(color, square);
+    }
+
+    public static Color getColor(char pieceChar) {
+      return Character.isUpperCase(pieceChar) ? Color.WHITE : Color.BLACK;
     }
 }

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Queen extends PieceOnBoard {
+    public static char NAME_LC = 'q';
+
     public Queen(final Color color, final Square square) {
         this(color, square, false);
     }
@@ -30,8 +32,8 @@ public class Queen extends PieceOnBoard {
     }
 
     @Override
-    public char printOnBoard() {
-        return this.color == Color.WHITE ? 'Q' : 'q';
+    public Character getName() {
+        return NAME_LC;
     }
 
     @Override

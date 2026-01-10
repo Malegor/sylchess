@@ -1,4 +1,4 @@
-package com.sylvain.chess.io;
+package com.sylvain.chess.io.fen;
 
 import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
@@ -19,43 +19,50 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Log4j2
-public class FenDecoder {
+public class FenLoader {
+
+  public static final String SEP = " ";
+  public static final String ROW_SEP = "/";
+  public static final String NONE = "-";
 
   public static Gameplay loadPosition(final String fen) {
-    final String[] fenArray = fen.split(" ");
+    final String[] fenArray = fen.split(SEP);
     if (fenArray.length < 6)
       throw new IllegalArgumentException("Invalid fen (missing arguments): " + fen);
     final ChessBoard board = loadBoard(fenArray[0]);
-    final Color color = getNextColor(fenArray[1]);
+    final Color color = getNextColor(fenArray[1].toCharArray()[0]);
     configureImpossibleCastles(fenArray[2], board);
     configureLastMove(fenArray[3], board, ChessBoard.getOppositeColor(color));
-    final int numberOfMovesWithoutImprovement = Integer.parseInt(fenArray[4]);
+    final int numberOfHalfMovesWithoutImprovement = Integer.parseInt(fenArray[4]);
     final int moveNumber = Integer.parseInt(fenArray[5]);
     final Gameplay gameplay = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)), color); // TODO: players?
     gameplay.setMoveNumber(moveNumber);
-    gameplay.setLastMoveWithCaptureOrPawn(2 * (moveNumber-1) - numberOfMovesWithoutImprovement + 1);
+    gameplay.setLastHalfMoveWithCaptureOrPawn(2 * (moveNumber-1) - numberOfHalfMovesWithoutImprovement + 1);
     return gameplay;
   }
 
   private static void configureLastMove(final String fenEnPassant, final ChessBoard board, final Color color) {
-    if (fenEnPassant.equals("-"))
+    if (fenEnPassant.equals(NONE))
       return;
     final Square enPassantSquare = board.getSquare(fenEnPassant);
     final Pawn pawn = (Pawn) board.getPieceAt(enPassantSquare.move(0, ChessBoard.getPawnDirection(color)));
     board.setPreviousMove(new Move(Map.of(pawn.at(pawn.getSquare().move(0, - 2 * ChessBoard.getPawnDirection(color))), pawn), board));
   }
 
-  private static Color getNextColor(final String fenColor) {
+  private static Color getNextColor(final Character fenColor) {
     // OBS: here we permit the configuration of any other string for blacks
-    if (!Set.of("w", "b").contains(fenColor)) {
-      log.warn("Color is not 'w' or 'b'; it will be considered as WHITE: {}", fenColor);
+    final Character whiteFen = Color.WHITE.getFenName();
+    final Character blackFen = Color.BLACK.getFenName();
+    if (!Set.of(whiteFen, blackFen).contains(fenColor)) {
+      log.warn("Color '{}' is not '{}' or '{}'; it will be considered as WHITE.", fenColor, whiteFen, blackFen);
     }
-    return Objects.equals(fenColor, "b") ? Color.BLACK : Color.WHITE;
+    return Objects.equals(fenColor, 'b') ? Color.BLACK : Color.WHITE;
   }
 
   private static void configureImpossibleCastles(final String fenCastles, final ChessBoard board) {
     final Set<Character> allPossibleCastles = fenCastles.chars().mapToObj(c -> (char) c).collect(Collectors.toSet());
     final Set<Character> castleChars = Set.of('K', 'Q', 'k', 'q');
+    // TODO: FEN in 960 is not the same
     for (final char castle : castleChars) {
       if (!allPossibleCastles.contains(castle)) {
         for (final Rook rook : findRookForCastle(castle, board)) {
@@ -66,17 +73,17 @@ public class FenDecoder {
   }
 
   private static Set<Rook> findRookForCastle(final char castleChar, final ChessBoard board) {
-    final Color color = Character.isUpperCase(castleChar) ? Color.WHITE : Color.BLACK;
+    final Color color = PieceOnBoard.getColor(castleChar);
     final Set<Rook> rooks = board.getUnmovedRooks(color);
     final King king = board.getKing(color);
-    final boolean isKingSide = Character.toLowerCase(castleChar) == 'k';
+    final boolean isKingSide = Character.toLowerCase(castleChar) == King.NAME_LC;
     return king.getSquare().row() != ChessBoard.getFirstRow(king.getColor()) ? rooks :
-            rooks.stream().filter(rook -> rook.getSquare().row() != ChessBoard.getFirstRow(rook.getColor()) || ChessBoard.areValidForCastle(king, rook, isKingSide)).collect(Collectors.toSet());
+            rooks.stream().filter(rook -> rook.getSquare().row() != ChessBoard.getFirstRow(rook.getColor()) || ChessBoard.areValidSquaresForCastle(king, rook, isKingSide)).collect(Collectors.toSet());
   }
 
   public static ChessBoard loadBoard(final String fenBoard) {
     final ChessBoard board = new ChessBoard();
-    final String[] fenByRow = fenBoard.split("/");
+    final String[] fenByRow = fenBoard.split(ROW_SEP);
     if (fenByRow.length != ChessBoard.BOARD_ROWS)
       throw new IllegalArgumentException("Invalid fen board (invalid rows): " + fenBoard);
     for (int row = 0; row < fenByRow.length; row++) {

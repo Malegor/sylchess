@@ -1,0 +1,22 @@
+[Event "Play vs Bot"]
+[Site "Chess.com"]
+[Date "2025.10.07"]
+[Round "-"]
+[White "sylv1fournier"]
+[Black "Edith-BOT"]
+[Result "1-0"]
+[Variant "Chess960"]
+[SetUp "1"]
+[FEN "qbrnknbr/pppppppp/8/8/8/8/PPPPPPPP/QBRNKNBR w HChc - 0 1"]
+[WhiteElo "400"]
+[BlackElo "1300"]
+[TimeControl "?"]
+[EndDate "2025.10.07"]
+[Termination "sylv1fournier won by checkmate"]
+
+1. b3 b6 2. Qxg7 Ng6 3. f3 h6 4. c4 c6 5. Bxg6 fxg6 6. Qxh8 Kf7 7. Bd4 Ne6 8.
+Bb2 h5 9. Ng3 b5 10. Ne3 Bxg3+ 11. hxg3 Rf8 12. Qh6 Qb8 13. Kf2 a5 14. d4 a4 15.
+d5 Nc5 16. Qg7+ Ke8 17. Qxg6+ Bf7 18. Qg5 axb3 19. axb3 cxd5 20. Nxd5 Ne4+ 21.
+fxe4 Bxd5+ 22. Kg1 Bxe4 23. Qxh5+ Kd8 24. Qe5 Qb7 25. Rh8 Rxh8 26. Qxh8+ Kc7 27.
+Qe5+ Kd8 28. Rf1 d6 29. Qe6 bxc4 30. Rf8+ Kc7 31. Qxe7+ Kb6 32. Bd4+ Ka6 33.
+Qxd6+ Ka5 34. Ra8+ Qxa8 35. Qb6# 1-0
