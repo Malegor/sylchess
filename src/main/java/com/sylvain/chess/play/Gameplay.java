@@ -40,8 +40,8 @@ public class Gameplay {
     this.players = players;
     this.maxNumberOfMovesWithoutCaptureOrPawnMove = maxNumberOfMovesWithoutCaptureOrPawnMove;
     this.maxNumberOfTimesSamePosition = maxNumberOfTimesSamePosition;
-    this.moveNumber = 0;
-    this.halfMoveNumber = 0;
+    this.moveNumber = 1;
+    this.halfMoveNumber = 1;
     this.lastHalfMoveWithCaptureOrPawn = 1;
     this.occurrencesOfPosition = new HashMap<>(20);
     this.lastPlayer = players.getLast();
@@ -81,10 +81,6 @@ public class Gameplay {
         log.info("Same position has already been repeated! {}", positionRepetitions);
         return GameStatus.SEVERAL_TIMES_SAME_POSITION;
       }
-      this.halfMoveNumber++;
-      // OBS: the following condition only works if the game doesn't exclude players (ex: in a chess game of 3 or more players)
-      if (player.equals(players.getFirst()))
-        this.moveNumber++;
       if (this.moveNumber >= numberOfMoves)
         return GameStatus.PLAYING;
       if (this.halfMoveNumber - this.lastHalfMoveWithCaptureOrPawn > 2 * this.maxNumberOfMovesWithoutCaptureOrPawnMove) {
@@ -111,6 +107,10 @@ public class Gameplay {
         // OBS: in case of checkmate, remove the player and continue with the other ones? (ex: chess with 3 or 4 players)
         return !this.board.getPieces(player.getColor()).isEmpty() && !this.isKingUnderCheck(player) ? GameStatus.STALEMATE : GameStatus.CHECKMATE;
       }
+      this.halfMoveNumber++;
+      // OBS: the following condition only works if the game doesn't exclude players (ex: in a chess game of 3 or more players)
+      if (player.equals(players.getLast()))
+        this.moveNumber++;
     }
     throw new IllegalStateException("Error! No more players can play.");
   }

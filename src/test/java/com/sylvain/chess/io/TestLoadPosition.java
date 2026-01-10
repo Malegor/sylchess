@@ -69,7 +69,7 @@ public class TestLoadPosition {
       Assert.assertEquals(2, gameplay.getBoard().getUnmovedRooks(color).size());
     }
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
-    Assert.assertEquals(2, gameplay.getMoveNumber());
+    Assert.assertEquals(1, gameplay.getMoveNumber());
     Assert.assertEquals(1, gameplay.getLastHalfMoveWithCaptureOrPawn());
   }
 
@@ -100,7 +100,7 @@ public class TestLoadPosition {
       Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(color).isEmpty());
     }
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
-    Assert.assertEquals(2, gameplay.getMoveNumber());
+    Assert.assertEquals(1, gameplay.getMoveNumber());
     Assert.assertEquals(1, gameplay.getLastHalfMoveWithCaptureOrPawn());
   }
 
@@ -114,7 +114,7 @@ public class TestLoadPosition {
       Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(color).isEmpty());
     }
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
-    Assert.assertEquals(2, gameplay.getMoveNumber());
+    Assert.assertEquals(1, gameplay.getMoveNumber());
     Assert.assertEquals(1, gameplay.getLastHalfMoveWithCaptureOrPawn());
   }
 

@@ -61,7 +61,7 @@ public class TestGameplay {
     Assert.assertEquals(GameStatus.SEVERAL_TIMES_SAME_POSITION, status);
     Assert.assertEquals(Color.BLACK, game.getLastPlayer().getColor());
     // Repetition every 6 moves, as every 3 moves we get the same position but with inverted colors.
-    Assert.assertEquals(12, game.getMoveNumber());
+    Assert.assertEquals(13, game.getMoveNumber());
   }
 
   @Test
