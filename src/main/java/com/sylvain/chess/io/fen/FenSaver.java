@@ -18,10 +18,10 @@ public class FenSaver {
     final Character colorString = ChessBoard.getOppositeColor(game.getLastPlayer().getColor()).getFenName();
     final String allPossibleCastles = getPossibleCastles(game.getBoard());
     final String possibleEnPassantSquare = getPossibleEnPassant(game.getBoard());
-    final int moveNumber = game.getMoveNumber();
-    final int numberOfHalfMovesWithoutImprovement = moveNumber / 2 - game.getLastHalfMoveWithCaptureOrPawn();
+    final int halfMoveNumber = game.getHalfMoveNumber();
+    final int numberOfHalfMovesWithoutImprovement = halfMoveNumber - game.getLastHalfMoveWithCaptureOrPawn();
     return boardString + FenLoader.SEP + colorString + FenLoader.SEP + allPossibleCastles + FenLoader.SEP + possibleEnPassantSquare + FenLoader.SEP +
-            numberOfHalfMovesWithoutImprovement + FenLoader.SEP + moveNumber;
+            numberOfHalfMovesWithoutImprovement + FenLoader.SEP + game.getMoveNumber();
   }
 
   private static String getPossibleEnPassant(final ChessBoard board) {

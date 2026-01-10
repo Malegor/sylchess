@@ -29,6 +29,7 @@ public class Gameplay {
   private Player lastPlayer;
   @Getter @Setter
   private int moveNumber;
+  @Getter
   private int halfMoveNumber;
   @Getter @Setter
   private int lastHalfMoveWithCaptureOrPawn;

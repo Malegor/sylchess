@@ -61,7 +61,8 @@ public class TestLoadPosition {
 
   @Test
   public void testLoadStartingPositions() throws IOException {
-    final Gameplay gameplay = loadPositionFromFile("fen/starting.fen");
+    final String fileName = "fen/starting.fen";
+    final Gameplay gameplay = loadPositionFromFile(fileName);
     gameplay.playGame(0);
     Assert.assertEquals(Color.BLACK, gameplay.getLastPlayer().getColor());
     for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
@@ -71,11 +72,13 @@ public class TestLoadPosition {
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
     Assert.assertEquals(1, gameplay.getMoveNumber());
     Assert.assertEquals(1, gameplay.getLastHalfMoveWithCaptureOrPawn());
+    Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
   }
 
   @Test
   public void testAfterMovingPawn() throws IOException {
-    final Gameplay gameplay = loadPositionFromFile("fen/after-pawn.fen");
+    final String fileName = "fen/after-pawn.fen";
+    final Gameplay gameplay = loadPositionFromFile(fileName);
     gameplay.playGame(0);
     Assert.assertEquals(Color.WHITE, gameplay.getLastPlayer().getColor());
     for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
@@ -86,13 +89,17 @@ public class TestLoadPosition {
     final Square startingSquare = new Square(4, 4);
     final Pawn blackPawn = new Pawn(Color.BLACK, startingSquare);
     Assert.assertTrue((new Move(Map.of(blackPawn, blackPawn.at(startingSquare.move(1, -1))), gameplay.getBoard())).isValidMove());
+    // OBS: this pawn didn't exist in the board, it has to be removed (as the rollback method will restore the key's position).
+    gameplay.getBoard().removePiece(blackPawn);
     Assert.assertEquals(1, gameplay.getMoveNumber());
     Assert.assertEquals(1, gameplay.getLastHalfMoveWithCaptureOrPawn());
+    Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
   }
 
   @Test
   public void testMateIn3() throws IOException {
-    final Gameplay gameplay = loadPositionFromFile("fen/mate3.fen");
+    final String fileName = "fen/mate3.fen";
+    final Gameplay gameplay = loadPositionFromFile(fileName);
     gameplay.playGame(0);
     Assert.assertEquals(Color.BLACK, gameplay.getLastPlayer().getColor());
     for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
@@ -102,11 +109,13 @@ public class TestLoadPosition {
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
     Assert.assertEquals(1, gameplay.getMoveNumber());
     Assert.assertEquals(1, gameplay.getLastHalfMoveWithCaptureOrPawn());
+    Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
   }
 
   @Test
   public void testMateIn4() throws IOException {
-    final Gameplay gameplay = loadPositionFromFile("fen/mate4.fen");
+    final String fileName = "fen/mate4.fen";
+    final Gameplay gameplay = loadPositionFromFile(fileName);
     gameplay.playGame(0);
     Assert.assertEquals(Color.BLACK, gameplay.getLastPlayer().getColor());
     for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
@@ -116,11 +125,16 @@ public class TestLoadPosition {
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
     Assert.assertEquals(1, gameplay.getMoveNumber());
     Assert.assertEquals(1, gameplay.getLastHalfMoveWithCaptureOrPawn());
+    Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
   }
 
   private static Gameplay loadPositionFromFile(final String fileName) throws IOException {
+    return FenLoader.loadPosition(loadStringFromFile(fileName));
+  }
+
+  private static String loadStringFromFile(final String fileName) throws IOException {
     final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
     final InputStream is = classloader.getResourceAsStream(fileName);
-    return FenLoader.loadPosition(new String(is.readAllBytes(), StandardCharsets.UTF_8));
+    return new String(is.readAllBytes(), StandardCharsets.UTF_8);
   }
 }
