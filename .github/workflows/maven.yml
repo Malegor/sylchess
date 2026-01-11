@@ -1,0 +1,21 @@
+name: Java CI
+
+on:
+  pull_request:
+    branches: [ "master" ] # Run when a PR is opened against main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build and Test with Maven
+        # This command fails if tests fail, which fails the workflow
+        run: mvn --batch-mode clean test 
+
