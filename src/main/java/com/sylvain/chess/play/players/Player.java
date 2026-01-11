@@ -9,13 +9,19 @@ import lombok.Getter;
 import java.util.List;
 
 @AllArgsConstructor
-@Getter
 public abstract class Player {
+  @Getter
   private final Color color;
+  private final ChessBoard board;
 
-  public Move move(final ChessBoard board) {
-    final List<Move> validMoves = board.getAllValidMoves(this.color);
-    return validMoves.isEmpty() ? null : this.selectMove(validMoves);
+  public Move move() {
+    final List<Move> validMoves = this.board.findAllValidMoves(this.color);
+    if (validMoves.isEmpty())
+      return null;
+    final Move selectedMove = this.selectMove(validMoves);
+    if (!validMoves.contains(selectedMove))
+      throw new IllegalArgumentException("Invalid move " + selectedMove);
+    return selectedMove;
   }
 
   protected abstract Move selectMove(final List<Move> validMoves);

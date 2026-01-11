@@ -89,7 +89,7 @@ public class Gameplay {
         return GameStatus.UNIMPROVING_MOVES;
       }
       this.lastPlayer = player;
-      final Move move = player.move(this.board);
+      final Move move = player.move();
       if (move != null) {
         move.apply();
         log.info("{} - {}", this.moveNumber, move);

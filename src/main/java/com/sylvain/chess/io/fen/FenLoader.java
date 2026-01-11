@@ -35,7 +35,7 @@ public class FenLoader {
     configureLastMove(fenArray[3], board, ChessBoard.getOppositeColor(color));
     final int numberOfHalfMovesWithoutImprovement = Integer.parseInt(fenArray[4]);
     final int moveNumber = Integer.parseInt(fenArray[5]);
-    final Gameplay gameplay = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)), color); // TODO: players?
+    final Gameplay gameplay = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE, board), new DummyPlayer(Color.BLACK, board)), color); // TODO: players?
     gameplay.setMoveNumber(moveNumber);
     gameplay.setLastHalfMoveWithCaptureOrPawn(2 * (moveNumber-1) - numberOfHalfMovesWithoutImprovement + 1);
     return gameplay;

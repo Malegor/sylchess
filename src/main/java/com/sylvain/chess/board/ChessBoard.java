@@ -183,7 +183,7 @@ public class ChessBoard {
         }
     }
 
-    public List<Move> getAllValidMoves(final Color color) {
+    public List<Move> findAllValidMoves(final Color color) {
       final List<Move> validMoves = new ArrayList<>();
       for (PieceOnBoard piece : new ArrayList<>(this.piecesByColor.get(color).values())) {
         if (piece instanceof Pawn pawn) {
