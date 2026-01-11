@@ -25,8 +25,8 @@ public class TestGameplay {
     board.addPiece(new Pawn(Color.WHITE, new Square(2,2)));
     board.addPiece(new Rook(Color.BLACK, new Square(8,1)));
     board.printBoard();
-    final DummyPlayer whitePlayer = new DummyPlayer(Color.WHITE);
-    final DummyPlayer blackPlayer = new DummyPlayer(Color.BLACK);
+    final DummyPlayer whitePlayer = new DummyPlayer(Color.WHITE, board);
+    final DummyPlayer blackPlayer = new DummyPlayer(Color.BLACK, board);
     final List<Player> players = List.of(whitePlayer, blackPlayer);
     final Gameplay game = new Gameplay(board, players);
     final GameStatus status = game.playGame();
@@ -43,8 +43,8 @@ public class TestGameplay {
     board.addPiece(new Pawn(Color.BLACK, new Square(3,2)));
     board.addPiece(new Pawn(Color.BLACK, new Square(2,3)));
     board.printBoard();
-    final DummyPlayer whitePlayer = new DummyPlayer(Color.WHITE);
-    final DummyPlayer blackPlayer = new DummyPlayer(Color.BLACK);
+    final DummyPlayer whitePlayer = new DummyPlayer(Color.WHITE, board);
+    final DummyPlayer blackPlayer = new DummyPlayer(Color.BLACK, board);
     final List<Player> players = List.of(whitePlayer, blackPlayer);
     final Gameplay game = new Gameplay(board, players);
     final GameStatus status = game.playGame();
@@ -80,7 +80,7 @@ public class TestGameplay {
     final ChessBoard board = new ChessBoard();
     board.addPiece(new King(Color.WHITE, new Square(1,1)));
     board.addPiece(new King(Color.BLACK, new Square(8,8)));
-    final Gameplay game = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE), new DummyPlayer(Color.BLACK)));
+    final Gameplay game = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE, board), new DummyPlayer(Color.BLACK, board)));
     final GameStatus status = game.playGame();
     Assert.assertEquals(GameStatus.ONLY_KINGS, status);
     Assert.assertEquals(1, game.getMoveNumber());
@@ -93,7 +93,7 @@ public class TestGameplay {
     final Rook blackRook = new Rook(Color.BLACK, new Square(1, 8));
     board.addPiece(blackRook);
     board.printBoard();
-    final Player whitePlayer = new Player(Color.WHITE) {
+    final Player whitePlayer = new Player(Color.WHITE, board) {
       private final King square2 = new King(Color.WHITE, new Square(6,1));
       private final List<Move> moves = List.of(
               new Move(Map.of(whiteKing, square2), board),
@@ -104,7 +104,7 @@ public class TestGameplay {
         return it.next();
       }
     };
-    final Player blackPlayer = new Player(Color.BLACK) {
+    final Player blackPlayer = new Player(Color.BLACK, board) {
       private final Rook square2 = new Rook(Color.BLACK, new Square(1,7));
       private final Rook square3 = new Rook(Color.BLACK, new Square(1,6));
       private final List<Move> moves = List.of(

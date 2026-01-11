@@ -36,7 +36,7 @@ public class TestPawn {
         board.addPiece(new Pawn(Color.BLACK, new Square(3, 5)));
         board.addPiece(new Pawn(Color.BLACK, new Square(4, 5)));
         board.addPiece(new Pawn(Color.BLACK, new Square(5, 5)));
-        final List<Move> allValidMoves = board.getAllValidMoves(Color.WHITE);
+        final List<Move> allValidMoves = board.findAllValidMoves(Color.WHITE);
         System.out.println(allValidMoves);
         Assert.assertEquals(2, allValidMoves.size());
     }
@@ -51,7 +51,7 @@ public class TestPawn {
         board.addPiece(new Pawn(Color.WHITE, new Square(3, 3)));
         board.addPiece(new Pawn(Color.WHITE, new Square(4, 3)));
         board.addPiece(new Pawn(Color.WHITE, new Square(5, 3)));
-        final List<Move> allValidMoves = board.getAllValidMoves(Color.BLACK);
+        final List<Move> allValidMoves = board.findAllValidMoves(Color.BLACK);
         System.out.println(allValidMoves);
         Assert.assertEquals(2, allValidMoves.size());
     }

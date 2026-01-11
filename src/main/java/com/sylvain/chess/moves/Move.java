@@ -10,6 +10,7 @@ import com.sylvain.chess.pieces.Rook;
 import lombok.Getter;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class Move {
   @Getter
@@ -170,4 +171,16 @@ public class Move {
     public Color getColor() {
       return this.moveToNewSquare.values().iterator().next().getColor();
     }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    final Move move = (Move) o;
+    return Objects.equals(this.toString(), move.toString());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(this.toString());
+  }
 }
