@@ -7,6 +7,7 @@ import com.sylvain.chess.pieces.King;
 import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.pieces.Queen;
 import com.sylvain.chess.pieces.Rook;
+import com.sylvain.chess.play.players.Player;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -149,5 +150,20 @@ public class TestValidMoves {
     final Set<Move> castlesNotAnyMore = board.findAllValidMoves(Color.WHITE).stream().filter(move -> move.getMoveToNewSquare().size() > 1).collect(Collectors.toSet());
     System.out.println(castlesNotAnyMore);
     Assert.assertTrue(castlesNotAnyMore.isEmpty());
+  }
+
+  @Test
+  public void testInvalidMove() {
+    final ChessBoard board = new ChessBoard();
+    board.addPiece(new King(Color.WHITE, new Square(1,1)));
+    board.addPiece(new King(Color.BLACK, new Square(8,8)));
+    final Player player = new Player(Color.WHITE, board) {
+      @Override
+      protected Move selectMove(final List<Move> validMoves) {
+        final King king = board.getKing(Color.WHITE);
+        return new Move(Map.of(king, king.at(king.getSquare().move(2,1))), board);
+      }
+    };
+    Assert.assertThrows(IllegalArgumentException.class, player::move);
   }
 }
