@@ -86,6 +86,21 @@ public class TestGameplay {
     Assert.assertEquals(1, game.getMoveNumber());
   }
 
+  @Test
+  public void testInvalidMove() {
+    final ChessBoard board = new ChessBoard();
+    board.addPiece(new King(Color.WHITE, new Square(1,1)));
+    board.addPiece(new King(Color.BLACK, new Square(8,8)));
+    final Player player = new Player(Color.WHITE, board) {
+      @Override
+      protected Move selectMove(final List<Move> validMoves) {
+        final King king = board.getKing(Color.WHITE);
+        return new Move(Map.of(king, king.at(king.getSquare().move(2,1))), board);
+      }
+    };
+    Assert.assertThrows(IllegalArgumentException.class, player::move);
+  }
+
   private Gameplay getGameWithRepeatedMoves(final int maxNumberOfMovesWithoutCaptureOrPawnMove) {
     final ChessBoard board = new ChessBoard();
     final King whiteKing = new King(Color.WHITE, new Square(5, 1));
