@@ -12,6 +12,8 @@ import java.util.List;
 public abstract class Player {
   @Getter
   private final Color color;
+  @Getter
+  private final String name;
   private final ChessBoard board;
 
   public Move move() {
