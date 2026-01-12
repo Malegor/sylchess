@@ -11,10 +11,10 @@ import java.util.List;
 @AllArgsConstructor
 public abstract class Player {
   @Getter
-  private final Color color;
+  protected final Color color;
   @Getter
-  private final String name;
-  private final ChessBoard board;
+  protected final String name;
+  protected final ChessBoard board;
 
   public Move move() {
     final List<Move> validMoves = this.board.findAllValidMoves(this.color);

@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class TestValidMoves {
     @Test
     public void testStartingPositions() {
-        final ChessBoard board = ChessBoard.startingPositions();
+        final ChessBoard board = ChessBoard.defaultBoard();
         board.printBoard();
         System.out.println(board.getPositionString());
         final List<Move> allValidMovesForWhite = board.findAllValidMoves(Color.WHITE);

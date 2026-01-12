@@ -93,7 +93,7 @@ public class TestGameplay {
     final Rook blackRook = new Rook(Color.BLACK, new Square(1, 8));
     board.addPiece(blackRook);
     board.printBoard();
-    final Player whitePlayer = new Player(Color.WHITE, board) {
+    final Player whitePlayer = new Player(Color.WHITE, "White", board) {
       private final King square2 = new King(Color.WHITE, new Square(6,1));
       private final List<Move> moves = List.of(
               new Move(Map.of(whiteKing, square2), board),
@@ -104,7 +104,7 @@ public class TestGameplay {
         return it.next();
       }
     };
-    final Player blackPlayer = new Player(Color.BLACK, board) {
+    final Player blackPlayer = new Player(Color.BLACK, "Black", board) {
       private final Rook square2 = new Rook(Color.BLACK, new Square(1,7));
       private final Rook square3 = new Rook(Color.BLACK, new Square(1,6));
       private final List<Move> moves = List.of(
