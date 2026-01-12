@@ -1,22 +1,12 @@
-0 static
 1 possible modes: classic chess / 960 / other?
-1 starting position: could be start of one game mode or puzzle position (OBS: what of castling and en passant?)
-1 entry: take starting position (puzzle) or game mode ; list of moves (to be specified)
-1 from entry, returns: Invalid move / White wins / Black wins / Draw / On play
-1 From a given position + which turn: invalid position / pate / mate / chess / on play
-1 Read a specific position (txt format? json? csv?) + which turn
-1 rules of chess: castling, en passant, promo etc.
-1 move: castling (2 pieces at the same time), promo (piece -> another piece)...
-1 unit tests
-1 txt chess board
-1 regular move: piece c/ move span
-1 special moves: castle, en passant
-1 From a given position + which turn: list of all valid moves
 2 ability to solve puzzles leading to mate, by exploring every possible move (1st version)
-
-1000 consider data on clock?
-
 Improv - introduce data structures (ex: diagonals) on possible moves to prune out when there is a piece on the way?
 
+Future:
+consider data on clock?
+allow other pieces names (ex: distinct languages)
 
-TODO: puzzles -> starting position is the classical one (ex: pawns, castling etc.)
+Alternative rules:
+two or more kings --> small changes?
+several players for same color --> test it! (ex: interactive player + automatic)
+first phase before game: player chooses the positions of each piece
