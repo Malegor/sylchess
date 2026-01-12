@@ -13,10 +13,10 @@ public record Square(int column, int row) implements Comparable<Square> {
 
     @Override
     public String toString() {
-        return String.valueOf(getColumnLetter(this.column)) + this.row();
+        return String.valueOf(getColumnLetter()) + this.row();
     }
 
-    private static char getColumnLetter(final int column) {
+    public char getColumnLetter() {
         // Check if the number is within the valid range (1-26).--> TODO: throw exception?
         // 'a' has an ASCII value of 97.
         // Subtracting 1 from the number gives a 0-based index.

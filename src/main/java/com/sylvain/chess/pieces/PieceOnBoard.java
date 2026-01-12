@@ -48,6 +48,10 @@ public abstract class PieceOnBoard {
 
     public abstract PieceOnBoard at(final Square square);
 
+    public PieceOnBoard move(final int columnDiff, final int rowDiff) {
+        return this.at(this.square.move(columnDiff, rowDiff));
+    }
+
     private interface PieceFactory {
         PieceOnBoard create(final Color color, final Square square);
     }

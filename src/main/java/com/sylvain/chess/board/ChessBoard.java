@@ -244,7 +244,7 @@ public class ChessBoard {
     return this.piecesByColor.get(color).values().stream().filter(piece -> piece instanceof Rook && !piece.isHasAlreadyMoved()).map(piece -> (Rook) piece).collect(Collectors.toSet());
   }
 
-  private Move getCastleMove(final King king, final Rook rook) {
+  public Move getCastleMove(final King king, final Rook rook) {
     final boolean isKingSideCastle = areValidSquaresForCastle(king, rook, true);
     final int newKingsColumn = isKingSideCastle ? 7 : 3; // Logic under these columns? introduce constants?
     final int newRooksColumn = newKingsColumn + (isKingSideCastle ? -1 : 1);
