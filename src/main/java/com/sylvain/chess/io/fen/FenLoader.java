@@ -46,7 +46,7 @@ public class FenLoader {
       return;
     final Square enPassantSquare = board.getSquare(fenEnPassant);
     final Pawn pawn = (Pawn) board.getPieceAt(enPassantSquare.move(0, ChessBoard.getPawnDirection(color)));
-    board.setPreviousMove(new Move(Map.of(pawn.at(pawn.getSquare().move(0, - 2 * ChessBoard.getPawnDirection(color))), pawn), board));
+    board.setPreviousMove(new Move(Map.of(pawn.move(0, - 2 * ChessBoard.getPawnDirection(color)), pawn), board));
   }
 
   private static Color getNextColor(final Character fenColor) {

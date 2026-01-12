@@ -9,10 +9,20 @@ import com.sylvain.chess.pieces.PieceOnBoard;
 import com.sylvain.chess.pieces.Rook;
 import lombok.Getter;
 
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Move {
+  public static final String CAPTURE_PGN = "x";
+  public static final String CHECK_PGN = "+";
+  public static final String CHECKMATE_PGN = "#";
+  public static final String KING_SIDE_CASTLE_PGN = "O-O";
+  public static final String QUEEN_SIDE_CASTLE_PGN = "O-O-O";
+  public static final String PROMO_PGN = "=";
+
   @Getter
   private final Map<PieceOnBoard, PieceOnBoard> moveToNewSquare;
   private final ChessBoard board;
@@ -35,7 +45,7 @@ public class Move {
       return false;
     if (color != piece.getValue().getColor())
         return false;
-    if (this.moveToNewSquare.size() > 1) {
+    if (this.isCastle()) {
         // Castling rules: validate that no piece is on the way to the final destination for both the king and the rook, and that no square is controlled.
       int minCol = ChessBoard.BOARD_COLS + 1;
       int maxCol = - 1;
@@ -168,6 +178,10 @@ public class Move {
             ChessBoard.getPawnDirection(moveEntry.getKey().getColor()) * (moveEntry.getValue().getSquare().row() - moveEntry.getKey().getSquare().row()) == 2;
   }
 
+  public boolean isCastle() {
+    return this.moveToNewSquare.size() > 1;
+  }
+
   public Color getColor() {
     return this.moveToNewSquare.values().iterator().next().getColor();
   }
@@ -182,5 +196,30 @@ public class Move {
   @Override
   public int hashCode() {
     return Objects.hashCode(this.toString());
+  }
+
+  public String toPgn() {
+    if (this.isCastle()) {
+      final boolean isKingSide = this.moveToNewSquare.keySet().stream().min(Comparator.comparing(PieceOnBoard::getSquare)).orElse(null) instanceof King;
+      return isKingSide ? KING_SIDE_CASTLE_PGN : QUEEN_SIDE_CASTLE_PGN;
+    }
+    final Map.Entry<PieceOnBoard, PieceOnBoard> moveEntry = this.moveToNewSquare.entrySet().iterator().next();
+    final String takeStr = this.captured == null ? "" : CAPTURE_PGN;
+    final PieceOnBoard originalPiece = moveEntry.getKey();
+    final Square startSquare = originalPiece.getSquare();
+    final String pieceStr = !(originalPiece instanceof Pawn) ? String.valueOf(Character.toUpperCase(originalPiece.printOnBoard()))
+            : this.captured == null ? "" : String.valueOf(startSquare.getColumnLetter());
+    final Square destSquare = moveEntry.getValue().getSquare();
+    final Set<PieceOnBoard> samePiecesForDestination = board.piecesControllingSquare(destSquare, this.getColor()).stream().filter(p -> !p.equals(originalPiece)
+            && p.getClass().equals(originalPiece.getClass())).collect(Collectors.toSet());
+    final boolean shouldDisambiguateRow = samePiecesForDestination.stream().anyMatch(p -> p.getSquare().column() == startSquare.column());
+    final boolean shouldDisambiguateBoth = shouldDisambiguateRow && samePiecesForDestination.stream().anyMatch(p -> p.getSquare().row() == startSquare.row());
+    final String disambiguate = String.valueOf(samePiecesForDestination.isEmpty() ?
+            "" : shouldDisambiguateBoth ?
+            startSquare.toString() : shouldDisambiguateRow ?
+            startSquare.row() : String.valueOf(startSquare.getColumnLetter()));
+    final String promoStr = originalPiece.getClass().equals(moveEntry.getValue().getClass()) ? "" : PROMO_PGN + Character.toUpperCase(moveEntry.getValue().printOnBoard());
+    final String status = ""; // TODO: chechmate, check ... ?? or should it be the responsibility of the gameplay?
+    return pieceStr + disambiguate + takeStr + destSquare + promoStr + status;
   }
 }

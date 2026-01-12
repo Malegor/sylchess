@@ -161,7 +161,7 @@ public class TestValidMoves {
       @Override
       protected Move selectMove(final List<Move> validMoves) {
         final King king = board.getKing(Color.WHITE);
-        return new Move(Map.of(king, king.at(king.getSquare().move(2,1))), board);
+        return new Move(Map.of(king, king.move(2, 1)), board);
       }
     };
     Assert.assertThrows(IllegalArgumentException.class, player::move);

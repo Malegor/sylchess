@@ -88,7 +88,7 @@ public class TestLoadPosition {
     Assert.assertNotNull(gameplay.getBoard().getPreviousMove());
     final Square startingSquare = new Square(4, 4);
     final Pawn blackPawn = new Pawn(Color.BLACK, startingSquare);
-    Assert.assertTrue((new Move(Map.of(blackPawn, blackPawn.at(startingSquare.move(1, -1))), gameplay.getBoard())).isValidMove());
+    Assert.assertTrue((new Move(Map.of(blackPawn, blackPawn.move(1, -1)), gameplay.getBoard())).isValidMove());
     // OBS: this pawn didn't exist in the board, it has to be removed (as the rollback method will restore the key's position).
     gameplay.getBoard().removePiece(blackPawn);
     Assert.assertEquals(1, gameplay.getMoveNumber());
