@@ -35,6 +35,7 @@ public class Gameplay {
   private int lastHalfMoveWithCaptureOrPawn;
   private final Map<String, List<Integer>> occurrencesOfPosition;
   private final Color firstPlayingColor;
+  @Getter
   private EndGame endGame;
 
   public Gameplay(final ChessBoard board, final List<Player> players, final Color firstPlayingColor, final int maxNumberOfMovesWithoutCaptureOrPawnMove, final int maxNumberOfTimesSamePosition) {

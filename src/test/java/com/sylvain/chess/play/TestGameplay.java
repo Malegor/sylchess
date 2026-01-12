@@ -32,6 +32,7 @@ public class TestGameplay {
     final GameStatus status = game.playGame();
     Assert.assertNotNull(status);
     Assert.assertEquals(GameStatus.CHECKMATE, status);
+    Assert.assertEquals(EndGame.BLACK_WINS, game.getEndGame());
     Assert.assertEquals(whitePlayer, game.getLastPlayer());
   }
 
@@ -50,6 +51,7 @@ public class TestGameplay {
     final GameStatus status = game.playGame();
     Assert.assertNotNull(status);
     Assert.assertEquals(GameStatus.STALEMATE, status);
+    Assert.assertEquals(EndGame.DRAW, game.getEndGame());
     Assert.assertEquals(whitePlayer, game.getLastPlayer());
   }
 
@@ -59,6 +61,7 @@ public class TestGameplay {
     final GameStatus status = game.playGame();
     Assert.assertNotNull(status);
     Assert.assertEquals(GameStatus.SEVERAL_TIMES_SAME_POSITION, status);
+    Assert.assertEquals(EndGame.DRAW, game.getEndGame());
     Assert.assertEquals(Color.BLACK, game.getLastPlayer().getColor());
     // Repetition every 6 moves, as every 3 moves we get the same position but with inverted colors.
     Assert.assertEquals(13, game.getMoveNumber());
@@ -71,6 +74,7 @@ public class TestGameplay {
     final GameStatus status = game.playGame();
     Assert.assertNotNull(status);
     Assert.assertEquals(GameStatus.UNIMPROVING_MOVES, status);
+    Assert.assertEquals(EndGame.DRAW, game.getEndGame());
     Assert.assertEquals(Color.WHITE, game.getLastPlayer().getColor());
     Assert.assertEquals(numberOfMoves + 1, game.getMoveNumber());
   }
@@ -83,6 +87,7 @@ public class TestGameplay {
     final Gameplay game = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE, board), new DummyPlayer(Color.BLACK, board)));
     final GameStatus status = game.playGame();
     Assert.assertEquals(GameStatus.ONLY_KINGS, status);
+    Assert.assertEquals(EndGame.DRAW, game.getEndGame());
     Assert.assertEquals(1, game.getMoveNumber());
   }
 
