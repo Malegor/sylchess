@@ -214,7 +214,7 @@ public class Move {
             && p.getClass().equals(originalPiece.getClass())).collect(Collectors.toSet());
     final boolean shouldDisambiguateRow = samePiecesForDestination.stream().anyMatch(p -> p.getSquare().column() == startSquare.column());
     final boolean shouldDisambiguateBoth = shouldDisambiguateRow && samePiecesForDestination.stream().anyMatch(p -> p.getSquare().row() == startSquare.row());
-    final String disambiguate = String.valueOf(samePiecesForDestination.isEmpty() ?
+    final String disambiguate = String.valueOf(originalPiece instanceof Pawn || samePiecesForDestination.isEmpty() ?
             "" : shouldDisambiguateBoth ?
             startSquare.toString() : shouldDisambiguateRow ?
             startSquare.row() : String.valueOf(startSquare.getColumnLetter()));
