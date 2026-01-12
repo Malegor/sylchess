@@ -21,7 +21,7 @@ public abstract class Player {
     if (validMoves.isEmpty())
       return null;
     final Move selectedMove = this.selectMove(validMoves);
-    if (!validMoves.contains(selectedMove))
+    if (selectedMove != null && !validMoves.contains(selectedMove))
       throw new IllegalArgumentException("Invalid move " + selectedMove);
     return selectedMove;
   }
