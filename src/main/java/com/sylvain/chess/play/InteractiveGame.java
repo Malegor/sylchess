@@ -1,7 +1,7 @@
-package com.sylvain.chess;
+package com.sylvain.chess.play;
 
+import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
-import com.sylvain.chess.play.Gameplay;
 import com.sylvain.chess.play.players.DummyPlayer;
 import com.sylvain.chess.play.players.InteractivePlayer;
 import com.sylvain.chess.play.players.Player;
@@ -24,12 +24,13 @@ public class InteractiveGame {
     scanner.close();
   }
 
-  private static void play(final Scanner scanner, final List<String> playerNames) {
+  public static EndGame play(final Scanner scanner, final List<String> playerNames) {
     final ChessBoard board = ChessBoard.defaultBoard();
     final Player whitePlayer = playerNames.getFirst().isEmpty() ? new DummyPlayer(Color.WHITE, board) : new InteractivePlayer(Color.WHITE, playerNames.getFirst(), board, scanner);
     final Player blackPlayer = playerNames.getLast().isEmpty() ? new DummyPlayer(Color.BLACK, board) : new InteractivePlayer(Color.BLACK, playerNames.getLast(), board, scanner);
     final Gameplay game = new Gameplay(board, List.of(whitePlayer, blackPlayer));
     game.playGame();
     System.out.println(game.getEndGame().getPgn());
+    return game.getEndGame();
   }
 }
