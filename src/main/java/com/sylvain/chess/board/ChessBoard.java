@@ -96,11 +96,11 @@ public class ChessBoard {
     public void addPiece(final PieceOnBoard piece) {
         final PieceOnBoard oldPieceColor = this.piecesByColor.get(piece.getColor()).put(piece.getSquare(), piece);
         final PieceOnBoard oldPiece = this.allPieces.put(piece.getSquare(), piece);
-        if (piece instanceof King) {
+        if (piece.getName().equals(King.NAME_LC)) {
             this.kings.put(piece.getColor(), (King) piece);
         }
         if (oldPieceColor != null || oldPiece != null) {
-            log.warn("The following piece was already on the board! " + oldPieceColor + " - " + oldPiece);
+          log.warn("The following piece was already on the board! {} - {}", oldPieceColor, oldPiece);
         }
     }
 
@@ -177,7 +177,7 @@ public class ChessBoard {
         this.piecesByColor.get(piece.getColor()).remove(piece.getSquare());
         this.allPieces.remove(piece.getSquare());
         // The following should never happen, provided we keep the king instance the same along the game.
-        if (piece instanceof King) {
+        if (piece.getName().equals(King.NAME_LC)) {
           //log.severe("The king shouldn't get to be removed! " + piece);
           this.kings.remove(piece.getColor());
         }
@@ -186,45 +186,13 @@ public class ChessBoard {
     public List<Move> findAllValidMoves(final Color color) {
       final List<Move> validMoves = new ArrayList<>();
       for (PieceOnBoard piece : new ArrayList<>(this.piecesByColor.get(color).values())) {
-        if (piece instanceof Pawn pawn) {
-            for (int incrementRow = 1; incrementRow <= 2; incrementRow++) {
-                for (int incrementCol = -1 ; incrementCol <= 1 ; incrementCol++) {
-                    Square newSquare = pawn.getSquare().move(incrementCol, incrementRow * getPawnDirection(color));
-                    if (isInBoard(newSquare)) {
-                        if (newSquare.row() != getPromotionRow(color)) {
-                            Move possibleMove = new Move(Map.of(pawn, pawn.at(newSquare)), this);
-                            if (possibleMove.isValidMove()) {
-                                validMoves.add(possibleMove);
-                            }
-                        }
-                        else {
-                          // Promotion
-                          Move possibleMove = new Move(Map.of(pawn, pawn.toQueen(newSquare)), this);
-                          if (possibleMove.isValidMove()) {
-                            validMoves.add(possibleMove);
-                            validMoves.add(new Move(Map.of(pawn, pawn.toKnight(newSquare)), this));
-                            validMoves.add(new Move(Map.of(pawn, pawn.toRook(newSquare)), this));
-                            validMoves.add(new Move(Map.of(pawn, pawn.toBishop(newSquare)), this));
-                          }
-                        }
-                    }
-                }
-            }
-        }
-        else {
-            Set<Square> squares = piece.getControlledSquares(this).stream().
-                    filter(square -> !this.hasPieceAt(square) || piece.getColor() != this.getPieceAt(square).getColor()).collect(Collectors.toSet());
-            for (Square square : squares) {
-              Move move = new Move(Map.of(piece, piece.at(square)), this);
-              if (move.isValidMove()) validMoves.add(move);
-            }
-        }
+        validMoves.addAll(piece.findValidMoves(this));
       }
       // Castling
       final King king = this.kings.get(color);
       // OBS: more checks could be added in case of puzzles (when we don't know if the piece has already moved or not...)
       //  && king.getSquare().getRow() == getFirstRow(color) && king.getSquare().getColumn() > 1 && king.getSquare().getColumn() < CB.BOARD_COLUMNS // (960)
-      // or simply king.getSquare().getColumn() == 5 (classical chess)
+      // or simply king.getSquare().getColumn() == 5 (standard chess)
       if (king != null && !king.isHasAlreadyMoved()) {
         final Set<Rook> rooks = this.getUnmovedRooks(color);
         for (Rook rook : rooks) {
@@ -241,7 +209,7 @@ public class ChessBoard {
    * @return A set containing the rooks that didn't move yet.
    */
   public Set<Rook> getUnmovedRooks(final Color color) {
-    return this.piecesByColor.get(color).values().stream().filter(piece -> piece instanceof Rook && !piece.isHasAlreadyMoved()).map(piece -> (Rook) piece).collect(Collectors.toSet());
+    return this.piecesByColor.get(color).values().stream().filter(piece -> piece.getName().equals(Rook.NAME_LC) && !piece.isHasAlreadyMoved()).map(piece -> (Rook) piece).collect(Collectors.toSet());
   }
 
   public Move getCastleMove(final King king, final Rook rook) {

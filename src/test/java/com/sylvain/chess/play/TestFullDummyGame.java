@@ -22,7 +22,7 @@ public class TestFullDummyGame {
     int numberOfUnmovedPawns = 0;
     for (PieceOnBoard piece : board.getPieces(Color.WHITE).values()) {
       // OBS: one single pawn didn't move during the game
-      if (piece.getSquare().row() != 2 || !(piece instanceof Pawn))
+      if (piece.getSquare().row() != 2 || !piece.getName().equals(Pawn.NAME_LC))
         Assert.assertTrue(piece.isHasAlreadyMoved());
       else {
         numberOfUnmovedPawns++;

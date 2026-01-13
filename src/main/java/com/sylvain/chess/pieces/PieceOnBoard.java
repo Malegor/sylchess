@@ -3,6 +3,7 @@ package com.sylvain.chess.pieces;
 import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
+import com.sylvain.chess.moves.Move;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,8 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor
@@ -25,7 +28,7 @@ public abstract class PieceOnBoard {
         return this.color == null ? this.getName() : this.color.change().apply(this.getName());
     }
 
-    protected abstract Character getName();
+    public abstract Character getName();
 
     protected List<Square> getControlledSquaresInSingleDirection(final ChessBoard board, final int incrementColumn, final int incrementRow) {
         final List<Square> controlled = new ArrayList<>(Math.max(ChessBoard.BOARD_COLS, ChessBoard.BOARD_ROWS) - 1);
@@ -74,5 +77,16 @@ public abstract class PieceOnBoard {
 
     public static Color getColor(char pieceChar) {
       return Character.isUpperCase(pieceChar) ? Color.WHITE : Color.BLACK;
+    }
+
+    public List<Move> findValidMoves(final ChessBoard board) {
+        final List<Move> validMoves = new ArrayList<>();
+        Set<Square> squares = this.getControlledSquares(board).stream().
+                filter(square -> !board.hasPieceAt(square) || this.color != board.getPieceAt(square).getColor()).collect(Collectors.toSet());
+        for (Square square : squares) {
+            Move move = new Move(Map.of(this, this.at(square)), board);
+            if (move.isValidMove()) validMoves.add(move);
+        }
+        return validMoves;
     }
 }

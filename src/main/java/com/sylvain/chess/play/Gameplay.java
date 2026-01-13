@@ -131,7 +131,7 @@ public class Gameplay {
     for (final Player player : this.players) {
       Collection<PieceOnBoard> playerPieces = this.board.getPieces(player.getColor()).values();
       for (PieceOnBoard piece : playerPieces)
-        if (!(piece instanceof King)) {
+        if (!piece.getName().equals(King.NAME_LC)) {
           return false;
         }
     }

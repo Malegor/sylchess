@@ -4,6 +4,7 @@ import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 import com.sylvain.chess.pieces.King;
+import com.sylvain.chess.pieces.NoPiece;
 import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.pieces.PieceOnBoard;
 import com.sylvain.chess.pieces.Rook;
@@ -57,7 +58,7 @@ public class Move {
         int maxEntry = Math.max(entry.getKey().getSquare().column(), entry.getValue().getSquare().column());
         minCol = Math.min(minCol, minEntry);
         maxCol = Math.max(maxCol, maxEntry);
-        if (entry.getKey() instanceof King) {
+        if (entry.getKey().getName().equals(King.NAME_LC)) {
           minKing = minEntry;
           maxKing = maxEntry;
           king = (King) entry.getKey();
@@ -75,8 +76,7 @@ public class Move {
           return false;
       }
     }
-    // TODO: object orient this piece of code (remove instanceof)
-    else if (this.moveToNewSquare.entrySet().iterator().next().getKey() instanceof Pawn) {
+    else if (this.moveToNewSquare.entrySet().iterator().next().getKey().getName().equals(Pawn.NAME_LC)) {
         // 1- a pawn can move straight or capture in diagonal (special case for the starting position)
       int rowIncrement = ChessBoard.getPawnDirection(color) * (piece.getValue().getSquare().row() - piece.getKey().getSquare().row());
       if (Math.abs(piece.getValue().getSquare().column() - piece.getKey().getSquare().column()) > 1
@@ -104,9 +104,9 @@ public class Move {
           // Validate en-passant
           final PieceOnBoard potentialPieceEnPassant = this.board.getPieceAt(piece.getValue().getSquare().move(0, - ChessBoard.getPawnDirection(color)));
           this.captured = potentialPieceEnPassant;
-          if (!(potentialPieceEnPassant instanceof Pawn) ||
+          if (potentialPieceEnPassant == null || !potentialPieceEnPassant.getName().equals(Pawn.NAME_LC) ||
                   (this.board.getPreviousMove() != null ?
-                  !(this.board.getPreviousMove().getDestinationPiece() instanceof Pawn)
+                  !(this.board.getPreviousMove().getDestinationPiece().getName().equals(Pawn.NAME_LC))
                   || (ChessBoard.getPawnDirection(color) * this.board.getPreviousMove().getDestinationPiece().getSquare().row()
                           - this.board.getPreviousMove().moveToNewSquare.values().iterator().next().getSquare().row()) >= 2 :
                           potentialPieceEnPassant.getSquare().row() != ChessBoard.getRowForColor(3, color)))
@@ -169,12 +169,12 @@ public class Move {
   }
 
   public boolean involvesPawnOrCapture() {
-    return this.captured != null || this.moveToNewSquare.keySet().iterator().next() instanceof Pawn;
+    return this.captured != null || this.moveToNewSquare.keySet().iterator().next().getName().equals(Pawn.NAME_LC);
   }
 
   public boolean isPawnTwoSquareMove() {
     final Map.Entry<PieceOnBoard, PieceOnBoard> moveEntry = this.moveToNewSquare.entrySet().iterator().next();
-    return this.moveToNewSquare.size() == 1 && moveEntry.getValue() instanceof Pawn &&
+    return this.moveToNewSquare.size() == 1 && moveEntry.getValue().getName().equals(Pawn.NAME_LC) &&
             ChessBoard.getPawnDirection(moveEntry.getKey().getColor()) * (moveEntry.getValue().getSquare().row() - moveEntry.getKey().getSquare().row()) == 2;
   }
 
@@ -200,21 +200,21 @@ public class Move {
 
   public String toPgn() {
     if (this.isCastle()) {
-      final boolean isKingSide = this.moveToNewSquare.keySet().stream().min(Comparator.comparing(PieceOnBoard::getSquare)).orElse(null) instanceof King;
+      final boolean isKingSide = this.moveToNewSquare.keySet().stream().min(Comparator.comparing(PieceOnBoard::getSquare)).orElse(new NoPiece(this.getColor(), new Square(0,0))).getName().equals(King.NAME_LC);
       return isKingSide ? KING_SIDE_CASTLE_PGN : QUEEN_SIDE_CASTLE_PGN;
     }
     final Map.Entry<PieceOnBoard, PieceOnBoard> moveEntry = this.moveToNewSquare.entrySet().iterator().next();
     final String takeStr = this.captured == null ? "" : CAPTURE_PGN;
     final PieceOnBoard originalPiece = moveEntry.getKey();
     final Square startSquare = originalPiece.getSquare();
-    final String pieceStr = !(originalPiece instanceof Pawn) ? String.valueOf(Character.toUpperCase(originalPiece.printOnBoard()))
+    final String pieceStr = !originalPiece.getName().equals(Pawn.NAME_LC) ? String.valueOf(Character.toUpperCase(originalPiece.printOnBoard()))
             : this.captured == null ? "" : String.valueOf(startSquare.getColumnLetter());
     final Square destSquare = moveEntry.getValue().getSquare();
     final Set<PieceOnBoard> samePiecesForDestination = board.piecesControllingSquare(destSquare, this.getColor()).stream().filter(p -> !p.equals(originalPiece)
             && p.getClass().equals(originalPiece.getClass())).collect(Collectors.toSet());
     final boolean shouldDisambiguateRow = samePiecesForDestination.stream().anyMatch(p -> p.getSquare().column() == startSquare.column());
     final boolean shouldDisambiguateBoth = shouldDisambiguateRow && samePiecesForDestination.stream().anyMatch(p -> p.getSquare().row() == startSquare.row());
-    final String disambiguate = String.valueOf(originalPiece instanceof Pawn || samePiecesForDestination.isEmpty() ?
+    final String disambiguate = String.valueOf(originalPiece.getName().equals(Pawn.NAME_LC) || samePiecesForDestination.isEmpty() ?
             "" : shouldDisambiguateBoth ?
             startSquare.toString() : shouldDisambiguateRow ?
             startSquare.row() : String.valueOf(startSquare.getColumnLetter()));
