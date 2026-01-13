@@ -152,9 +152,7 @@ public class ChessBoard {
     }
 
     public List<PieceOnBoard> piecesCheckingKing(final Color color) {
-      if (!this.kings.containsKey(color))
-        return List.of();
-      return this.piecesControllingSquare(this.kings.get(color).getSquare(), getOppositeColor(color));
+      return !this.kings.containsKey(color) ? List.of() : this.piecesControllingSquare(this.kings.get(color).getSquare(), getOppositeColor(color));
     }
 
     public List<PieceOnBoard> piecesControllingSquare(final Square square, final Color color) {
@@ -209,7 +207,8 @@ public class ChessBoard {
    * @return A set containing the rooks that didn't move yet.
    */
   public Set<Rook> getUnmovedRooks(final Color color) {
-    return this.piecesByColor.get(color).values().stream().filter(piece -> piece.getName().equals(Rook.NAME_LC) && !piece.isHasAlreadyMoved()).map(piece -> (Rook) piece).collect(Collectors.toSet());
+    return this.piecesByColor.get(color).values().stream().filter(piece -> piece.getName().equals(Rook.NAME_LC) && !piece.isHasAlreadyMoved())
+            .map(piece -> (Rook) piece).collect(Collectors.toSet());
   }
 
   public Move getCastleMove(final King king, final Rook rook) {
@@ -224,7 +223,8 @@ public class ChessBoard {
     final Square kingSquare = king.getSquare();
     final Square rookSquare = rook.getSquare();
     final Color color = king.getColor();
-    return rook.getColor() == color && kingSquare.row() == rookSquare.row() && kingSquare.row() == getFirstRow(color) && kingSideMultiplier * (kingSquare.column() - rookSquare.column()) > 0;
+    return rook.getColor() == color && kingSquare.row() == rookSquare.row() && kingSquare.row() == getFirstRow(color)
+            && kingSideMultiplier * (kingSquare.column() - rookSquare.column()) > 0;
   }
 
   public Map<Square, PieceOnBoard> getPieces(final Color color) {
