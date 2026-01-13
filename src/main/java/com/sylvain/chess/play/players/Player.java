@@ -27,4 +27,9 @@ public abstract class Player {
   }
 
   protected abstract Move selectMove(final List<Move> validMoves);
+
+  @Override
+  public String toString() {
+    return this.name + " (" + this.color + ")";
+  }
 }

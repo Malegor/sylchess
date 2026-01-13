@@ -23,7 +23,7 @@ public class InteractivePlayer extends Player {
   protected Move selectMove(List<Move> validMoves) {
     int count = 0;
     while (count++ < 3) {
-      System.out.print("Enter your next move: ");
+      System.out.print("Enter the next move for " + this + ": ");
       // TODO: allow resigning
       final String moveStr = this.scanner.nextLine();
       final Optional<Move> move = validMoves.stream().filter(m -> m.toPgn().equals(moveStr)).findFirst();
