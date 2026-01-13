@@ -56,6 +56,8 @@ public class Move {
   private boolean isValidCastle() {
     // Castling rules: validate that no piece is on the way to the final destination for both the king and the rook, and that no square is controlled
     // along the king's trip.
+    if (this.captured != null)
+      return false;
     final Color color = this.getColor();
     int minCol = ChessBoard.BOARD_COLS + 1;
     int maxCol = - 1;
