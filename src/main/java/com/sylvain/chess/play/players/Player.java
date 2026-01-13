@@ -11,18 +11,25 @@ import java.util.List;
 @AllArgsConstructor
 public abstract class Player {
   @Getter
-  private final Color color;
-  private final ChessBoard board;
+  protected final Color color;
+  @Getter
+  protected final String name;
+  protected final ChessBoard board;
 
   public Move move() {
     final List<Move> validMoves = this.board.findAllValidMoves(this.color);
     if (validMoves.isEmpty())
       return null;
     final Move selectedMove = this.selectMove(validMoves);
-    if (!validMoves.contains(selectedMove))
+    if (selectedMove != null && !validMoves.contains(selectedMove))
       throw new IllegalArgumentException("Invalid move " + selectedMove);
     return selectedMove;
   }
 
   protected abstract Move selectMove(final List<Move> validMoves);
+
+  @Override
+  public String toString() {
+    return this.name + " (" + this.color + ")";
+  }
 }

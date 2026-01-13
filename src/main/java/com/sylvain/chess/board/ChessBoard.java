@@ -38,7 +38,7 @@ public class ChessBoard {
       this.kings = new HashMap<>(2);
   }
 
-  public static ChessBoard startingPositions() {
+  public static ChessBoard defaultBoard() {
       final ChessBoard board = new ChessBoard();
       board.putClassicalPositionsForMainPieces(Color.WHITE);
       board.putClassicalPositionsForMainPieces(Color.BLACK);

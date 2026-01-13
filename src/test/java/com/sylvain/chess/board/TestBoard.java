@@ -24,7 +24,7 @@ public class TestBoard {
 
     @Test
     public void testPrintClassicalBoard() {
-        final ChessBoard board = ChessBoard.startingPositions();
+        final ChessBoard board = ChessBoard.defaultBoard();
         board.printBoard();
     }
 

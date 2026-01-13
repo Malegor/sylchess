@@ -35,6 +35,8 @@ public class Gameplay {
   private int lastHalfMoveWithCaptureOrPawn;
   private final Map<String, List<Integer>> occurrencesOfPosition;
   private final Color firstPlayingColor;
+  @Getter
+  private EndGame endGame;
 
   public Gameplay(final ChessBoard board, final List<Player> players, final Color firstPlayingColor, final int maxNumberOfMovesWithoutCaptureOrPawnMove, final int maxNumberOfTimesSamePosition) {
     this.board = board;
@@ -47,6 +49,7 @@ public class Gameplay {
     this.occurrencesOfPosition = new HashMap<>(20);
     this.lastPlayer = players.getLast();
     this.firstPlayingColor = firstPlayingColor;
+    this.endGame = null;
   }
 
   public Gameplay(final ChessBoard board, final List<Player> players, final Color firstPlayingColor) {
@@ -80,12 +83,14 @@ public class Gameplay {
       positionRepetitions.add(this.moveNumber);
       if (positionRepetitions.size() >= this.maxNumberOfTimesSamePosition) {
         log.info("Same position has already been repeated! {}", positionRepetitions);
+        this.endGame = EndGame.DRAW;
         return GameStatus.SEVERAL_TIMES_SAME_POSITION;
       }
       if (this.moveNumber >= numberOfMoves)
         return GameStatus.PLAYING;
       if (this.halfMoveNumber - this.lastHalfMoveWithCaptureOrPawn > 2 * this.maxNumberOfMovesWithoutCaptureOrPawnMove) {
         log.info("{} moves have been played without any improvement! (since half move {})", this.maxNumberOfMovesWithoutCaptureOrPawnMove, this.lastHalfMoveWithCaptureOrPawn);
+        this.endGame = EndGame.DRAW;
         return GameStatus.UNIMPROVING_MOVES;
       }
       this.lastPlayer = player;
@@ -101,18 +106,24 @@ public class Gameplay {
           //this.occurrencesOfPosition.clear();
         }
         if (this.onlyKingsOnBoard()) {
+          this.endGame = EndGame.DRAW;
           return GameStatus.ONLY_KINGS;
         }
       }
       else {
         // OBS: in case of checkmate, remove the player and continue with the other ones? (ex: chess with 3 or 4 players)
-        return !this.board.getPieces(player.getColor()).isEmpty() && !this.isKingUnderCheck(player) ? GameStatus.STALEMATE : GameStatus.CHECKMATE;
+        final boolean noValidMoves = this.board.findAllValidMoves(player.getColor()).isEmpty();
+        final boolean isCheckmate = this.board.getPieces(player.getColor()).isEmpty() || this.isKingUnderCheck(player);
+        final GameStatus gameStatus = !noValidMoves ? GameStatus.RESIGNED : isCheckmate ? GameStatus.CHECKMATE : GameStatus.STALEMATE;
+        this.endGame = gameStatus.equals(GameStatus.STALEMATE) ? EndGame.DRAW : player.getColor().equals(Color.WHITE) ? EndGame.BLACK_WINS : EndGame.WHITE_WINS;
+        return gameStatus;
       }
       this.halfMoveNumber++;
       // OBS: the following condition only works if the game doesn't exclude players (ex: in a chess game of 3 or more players)
       if (player.equals(players.getLast()))
         this.moveNumber++;
     }
+    this.endGame = EndGame.ERROR;
     throw new IllegalStateException("Error! No more players can play.");
   }
 

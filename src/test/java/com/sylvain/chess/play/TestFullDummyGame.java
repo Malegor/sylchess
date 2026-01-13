@@ -13,7 +13,7 @@ import java.util.List;
 public class TestFullDummyGame {
   @Test
   public void testFullDummyGame() {
-    final ChessBoard board = ChessBoard.startingPositions();
+    final ChessBoard board = ChessBoard.defaultBoard();
     final Gameplay play = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE, board), new DummyPlayer(Color.BLACK, board)), null, 5, 2);
     final GameStatus gameStatus = play.playGame();
     System.out.println(gameStatus + " after " + play.getMoveNumber() + " moves.");
@@ -41,7 +41,7 @@ public class TestFullDummyGame {
     GameStatus consistentGameStatus = null;
     String consistentGamePositionString = null;
     for(int i = 0; i < 5; i++) {
-      final ChessBoard board = ChessBoard.startingPositions();
+      final ChessBoard board = ChessBoard.defaultBoard();
       final Gameplay play = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE, board), new DummyPlayer(Color.BLACK, board)), null, 5, 2);
       final GameStatus gameStatus = play.playGame();
       System.out.println(gameStatus + " after " + play.getMoveNumber() + " moves.");

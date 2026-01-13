@@ -12,7 +12,7 @@ public class TestCheck {
 
     @Test
     public void testClassicalBoard() {
-        final ChessBoard board = ChessBoard.startingPositions();
+        final ChessBoard board = ChessBoard.defaultBoard();
         board.printBoard();
         Assert.assertTrue(board.piecesCheckingKing(Color.WHITE).isEmpty());
         Assert.assertTrue(board.piecesCheckingKing(Color.BLACK).isEmpty());

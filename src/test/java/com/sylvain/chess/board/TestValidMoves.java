@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class TestValidMoves {
     @Test
     public void testStartingPositions() {
-        final ChessBoard board = ChessBoard.startingPositions();
+        final ChessBoard board = ChessBoard.defaultBoard();
         board.printBoard();
         System.out.println(board.getPositionString());
         final List<Move> allValidMovesForWhite = board.findAllValidMoves(Color.WHITE);
@@ -157,7 +157,7 @@ public class TestValidMoves {
     final ChessBoard board = new ChessBoard();
     board.addPiece(new King(Color.WHITE, new Square(1,1)));
     board.addPiece(new King(Color.BLACK, new Square(8,8)));
-    final Player player = new Player(Color.WHITE, board) {
+    final Player player = new Player(Color.WHITE, "Invalid", board) {
       @Override
       protected Move selectMove(final List<Move> validMoves) {
         final King king = board.getKing(Color.WHITE);
