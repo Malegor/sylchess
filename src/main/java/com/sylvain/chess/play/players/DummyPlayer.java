@@ -16,7 +16,7 @@ public class DummyPlayer extends Player {
   }
 
   @Override
-  protected Move selectMove(List<Move> validMoves) {
+  protected Move selectMove(final List<Move> validMoves) {
     return validMoves.getFirst();
   }
 }

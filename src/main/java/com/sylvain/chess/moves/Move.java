@@ -137,11 +137,11 @@ public class Move {
     if (entry.getValue().getSquare().row() - entry.getKey().getSquare().row() == 2 * ChessBoard.getPawnDirection(color)
                 && ChessBoard.getPawnDirection(color) * entry.getKey().getSquare().row() >= 3)
       return false;
-    // 2- The pawn is at its one-before-last row and the next position (getValue) is a entry that is not a pawn or a king.
+    // 2- The pawn is at its one-before-last row and the next position (getValue) is an entry that is not a pawn or a king.
     return entry.getValue().getSquare().row() != ChessBoard.getPromotionRow(color) || entry.getValue().isPossiblePromotion();
   }
 
-  private void simulateForCheckValidate() {
+  public void simulateForCheckValidate() {
       for (Map.Entry<PieceOnBoard, PieceOnBoard> move : this.moveToNewSquare.entrySet()) {
         if (this.captured != null) {
           this.board.removePiece(this.captured);
@@ -159,7 +159,7 @@ public class Move {
       this.board.setPreviousMove(this);
   }
 
-  private void rollback() {
+  public void rollback() {
       for (Map.Entry<PieceOnBoard, PieceOnBoard> entry : this.moveToNewSquare.entrySet()) {
           this.board.removePiece(entry.getValue());
           this.board.addPiece(entry.getKey());
