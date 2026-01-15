@@ -4,6 +4,7 @@ import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.moves.Move;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -20,14 +21,39 @@ public class MateSolver extends Player {
 
   @Override
   protected Move selectMove(final List<Move> validMoves) {
-    if (this.maxNumberOfMoves == 1) {
-      for (final Move move : validMoves) {
-        move.simulateForCheckValidate();
-        if (this.board.isKingCheckMate(ChessBoard.getOppositeColor(move.getColor()))) {
-          move.rollback();
-          return move;
+    final Color oppositeColor = ChessBoard.getOppositeColor(this.color);
+    final Comparator<Move> checkComparator = (m1, m2) -> Boolean.compare(this.board.checksOppositeKing(m2.getDestinationPiece()),
+            this.board.checksOppositeKing(m1.getDestinationPiece()));
+    // TODO: thenCompare controlled squares around the king?
+    if (this.maxNumberOfMoves <= 2) {
+      for (final Move move1 : validMoves.stream().sorted(checkComparator).toList()) {
+        move1.simulateForCheckValidate();
+        if (this.board.isKingCheckMate(oppositeColor)) {
+          move1.rollback();
+          return move1;
         }
-        move.rollback();
+        boolean existDefendingMove = false;
+        for (final Move move2 : this.board.findAllValidMoves(oppositeColor)) { // TODO: Use same comparator here with "this" king?
+          move2.simulateForCheckValidate();
+          boolean isDefendingMove = true;
+          for (final Move move3 : this.board.findAllValidMoves(this.color).stream().sorted(checkComparator).toList()) {
+            move3.simulateForCheckValidate();
+            if (this.board.isKingCheckMate(oppositeColor)) {
+              move3.rollback();
+              isDefendingMove = false;
+              break;
+            }
+            move3.rollback();
+          }
+          move2.rollback();
+          if (isDefendingMove) {
+            existDefendingMove = true;
+            break;
+          }
+        }
+        move1.rollback();
+        if (!existDefendingMove)
+          return move1;
       }
     }
     return null; // resign
