@@ -169,12 +169,6 @@ public class ChessBoard {
     return piecesControlling;
   }
 
-  public void simulatePieceMove(final PieceOnBoard origin, final PieceOnBoard destination) {
-    //if (origin.getClass() == destination.getClass()) {} // TODO: only change its square attribute? (TODO: rollback move)
-    this.removePiece(origin);
-    this.addPiece(destination);
-  }
-
   public void removePiece(final PieceOnBoard piece) {
       this.piecesByColor.get(piece.getColor()).remove(piece.getSquare());
       this.allPieces.remove(piece.getSquare());

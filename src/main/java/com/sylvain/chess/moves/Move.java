@@ -142,12 +142,15 @@ public class Move {
   }
 
   public void simulate() {
-      for (Map.Entry<PieceOnBoard, PieceOnBoard> move : this.moveToNewSquare.entrySet()) {
-        if (this.captured != null) {
-          this.board.removePiece(this.captured);
-        }
-        this.board.simulatePieceMove(move.getKey(), move.getValue());
-      }
+    if (this.captured != null) {
+      this.board.removePiece(this.captured);
+    }
+    for (Map.Entry<PieceOnBoard, PieceOnBoard> move : this.moveToNewSquare.entrySet()) {
+      this.board.removePiece(move.getKey());
+    }
+    for (Map.Entry<PieceOnBoard, PieceOnBoard> move : this.moveToNewSquare.entrySet()) {
+      this.board.addPiece(move.getValue());
+    }
   }
 
   public void apply() {
@@ -160,11 +163,13 @@ public class Move {
   }
 
   public void rollback() {
-      for (Map.Entry<PieceOnBoard, PieceOnBoard> entry : this.moveToNewSquare.entrySet()) {
-          this.board.removePiece(entry.getValue());
-          this.board.addPiece(entry.getKey());
-      }
-      if (this.captured != null) this.board.addPiece(this.captured);
+    for (Map.Entry<PieceOnBoard, PieceOnBoard> entry : this.moveToNewSquare.entrySet()) {
+      this.board.removePiece(entry.getValue());
+    }
+    for (Map.Entry<PieceOnBoard, PieceOnBoard> entry : this.moveToNewSquare.entrySet()) {
+      this.board.addPiece(entry.getKey());
+    }
+    if (this.captured != null) this.board.addPiece(this.captured);
   }
 
   @Override
