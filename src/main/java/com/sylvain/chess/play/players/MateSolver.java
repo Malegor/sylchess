@@ -2,6 +2,7 @@ package com.sylvain.chess.play.players;
 
 import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
+import com.sylvain.chess.moves.EvaluatedMove;
 import com.sylvain.chess.moves.Move;
 
 import java.util.Comparator;
@@ -23,81 +24,44 @@ public class MateSolver extends Player {
 
   @Override
   protected Move selectMove(final List<Move> validMoves) {
-    final int value = alphabeta(null, this.maxNumberOfMoves * 2 - 1, - MAX_VALUE, MAX_VALUE);
-    System.out.println(value);
-    return null;
-    /*
-    final Color oppositeColor = ChessBoard.getOppositeColor(this.color);
-    final Comparator<Move> checkComparator = (m1, m2) -> Boolean.compare(this.board.checksOppositeKing(m2.getDestinationPiece()),
-            this.board.checksOppositeKing(m1.getDestinationPiece()));
-    // TODO: thenCompare controlled squares around the king?
-    if (this.maxNumberOfMoves <= 2) {
-      for (final Move move1 : validMoves.stream().sorted(checkComparator).toList()) {
-        move1.simulateForCheckValidate();
-        if (this.board.isKingCheckMate(oppositeColor)) {
-          move1.rollback();
-          return move1;
-        }
-        boolean existDefendingMove = false;
-        for (final Move move2 : this.board.findAllValidMoves(oppositeColor)) { // TODO: Use same comparator here with "this" king?
-          move2.simulateForCheckValidate();
-          boolean isDefendingMove = true;
-          for (final Move move3 : this.board.findAllValidMoves(this.color).stream().sorted(checkComparator).toList()) {
-            move3.simulateForCheckValidate();
-            if (this.board.isKingCheckMate(oppositeColor)) {
-              move3.rollback();
-              isDefendingMove = false;
-              break;
-            }
-            move3.rollback();
-          }
-          move2.rollback();
-          if (isDefendingMove) {
-            existDefendingMove = true;
-            break;
-          }
-        }
-        move1.rollback();
-        if (!existDefendingMove)
-          return move1;
-      }
-    }
-    return null; // resign
-     */
+    final EvaluatedMove move = alphaBeta(null, this.maxNumberOfMoves * 2 - 1, - MAX_VALUE, MAX_VALUE);
+    System.out.println(move.getEvaluation());
+    return move.getMove();
   }
 
-  private int alphabeta(final Move move, final int depth, int alpha, int beta) { // TODO make alpha & beta NOT parameters(?)
+  private EvaluatedMove alphaBeta(final Move move, final int depth, double alpha, double beta) {
     if (move != null)
-      move.simulateForCheckValidate();
+      move.simulate();
     final Comparator<Move> checkComparator = (m1, m2) -> Boolean.compare(this.board.checksOppositeKing(m2.getDestinationPiece()),
             this.board.checksOppositeKing(m1.getDestinationPiece()));
     final Color currentColor = move == null ? ChessBoard.getOppositeColor(this.color) : move.getColor();
     final Color oppositeColor = ChessBoard.getOppositeColor(currentColor);
-    final List<Move> allValidMovesForOpponent = this.board.findAllValidMoves(oppositeColor).stream().sorted(checkComparator).toList(); // TODO: order moves by checking king
+    final List<Move> allValidMovesForOpponent = this.board.findAllValidMoves(oppositeColor).stream().sorted(checkComparator).toList();
     if (depth == 0 || allValidMovesForOpponent.isEmpty()) {
       final int evaluation = this.evaluateBoardFor(currentColor, allValidMovesForOpponent);
       if (move != null)
         move.rollback();
-      // TODO: return move+evaluation --> new attribute evaluation in Move?
       // TODO: avoid evaluating same position several times => map (position+color, eval)
-      return evaluation;
+      return new EvaluatedMove(move, evaluation);
     }
     boolean shouldMaximize = oppositeColor == this.color;
     int multiplier = shouldMaximize ? 1 : -1;
-    int bestValue = - multiplier * MAX_VALUE;
+    EvaluatedMove bestMoveForOpponent = new EvaluatedMove(null, - multiplier * MAX_VALUE);
     for (final Move moveOpponent : allValidMovesForOpponent) {
-      bestValue = multiplier * Math.max(multiplier * bestValue, multiplier * alphabeta(moveOpponent, depth - 1, alpha, beta));
-      if (multiplier * bestValue >= (shouldMaximize ? beta : multiplier * alpha)) // alpha or beta cutoff
+      final EvaluatedMove nextMove = this.alphaBeta(moveOpponent, depth - 1, alpha, beta);
+      if (multiplier * (nextMove.getEvaluation() - bestMoveForOpponent.getEvaluation()) > 0) {
+        bestMoveForOpponent = new EvaluatedMove(moveOpponent, nextMove.getEvaluation());
+      }
+      if (multiplier * nextMove.getEvaluation() >= (shouldMaximize ? beta : multiplier * alpha)) // alpha or beta cutoff
         break;
+      if (shouldMaximize)
+        alpha = Math.max(alpha, bestMoveForOpponent.getEvaluation());
+      else
+        beta = Math.min(beta, bestMoveForOpponent.getEvaluation());
     }
-    if (shouldMaximize) {
-      alpha = Math.max(alpha, bestValue);
-    }
-    else
-      beta = Math.min(beta, bestValue);
     if (move != null)
       move.rollback();
-    return bestValue;
+    return bestMoveForOpponent;
   }
 
   /**
@@ -113,7 +77,7 @@ public class MateSolver extends Player {
     if (this.board.isKingCheckMate(oppositeColor)) {
       return multiplier * MAX_VALUE;
     }
-    // TODO: more complete evaluation: count pieces "values" etc.
+    // TODO: more complete evaluation: count pieces "values" etc. (this eval only works for puzzles of kind checkmate in n moves)
     return 0;
   }
 }

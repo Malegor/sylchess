@@ -37,4 +37,24 @@ public class TestMateSolver {
     System.out.println(mateMove);
     Assert.assertEquals("Na6", mateMove.toPgn());
   }
+
+  @Test
+  public void testOtherMateIn2() {
+    final ChessBoard board = FenLoader.loadBoard("Q4rkr/1p3p1p/7P/R2Bp3/8/8/4KP1p/8");
+    final MateSolver mateIn2 = new MateSolver(Color.WHITE, board, 2);
+    final Move mateMove = mateIn2.selectMove(board.findAllValidMoves(Color.WHITE));
+    board.printBoard();
+    System.out.println(mateMove);
+    Assert.assertEquals("Bh1", mateMove.toPgn());
+  }
+
+  @Test
+  public void testMateIn3() {
+    final ChessBoard board = FenLoader.loadBoard("1kr4r/ppp2p2/5bpq/4N3/4PP2/1b4P1/PPP2Q1P/R5K1");
+    final MateSolver mateIn2 = new MateSolver(Color.WHITE, board, 3);
+    final Move mateMove = mateIn2.selectMove(board.findAllValidMoves(Color.WHITE));
+    board.printBoard();
+    System.out.println(mateMove);
+    //Assert.assertEquals("Na6", mateMove.toPgn());
+  }
 }

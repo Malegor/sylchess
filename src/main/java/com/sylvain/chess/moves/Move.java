@@ -44,8 +44,8 @@ public class Move {
     if ((this.captured != null && this.captured.getColor() == color) ||
             (this.isCastle() && !isValidCastle()) || (firstEntry.getKey().getName().equals(Pawn.NAME_LC) && !isValidPawnMove(firstEntry)))
       return false;
-    this.simulateForCheckValidate();
-    if (!this.board.piecesCheckingKing(color).isEmpty()) {
+    this.simulate();
+    if (!this.board.findPiecesCheckingKing(color).isEmpty()) {
         this.rollback();
         return false;
     }
@@ -55,8 +55,8 @@ public class Move {
 
   private boolean isValidCastle() {
     // Castling rules: validate that no piece is on the way to the final destination for both the king and the rook, and that no square is controlled
-    // along the king's trip.
-    if (this.captured != null)
+    // along the king's trip. Also check if both pieces are still on the first row.
+    if (this.captured != null || this.moveToNewSquare.keySet().stream().anyMatch(p -> p.getSquare().row() != ChessBoard.getFirstRow(p.getColor())))
       return false;
     final Color color = this.getColor();
     int minCol = ChessBoard.BOARD_COLS + 1;
@@ -141,7 +141,7 @@ public class Move {
     return entry.getValue().getSquare().row() != ChessBoard.getPromotionRow(color) || entry.getValue().isPossiblePromotion();
   }
 
-  public void simulateForCheckValidate() {
+  public void simulate() {
       for (Map.Entry<PieceOnBoard, PieceOnBoard> move : this.moveToNewSquare.entrySet()) {
         if (this.captured != null) {
           this.board.removePiece(this.captured);
@@ -152,7 +152,7 @@ public class Move {
 
   public void apply() {
   // TODO: this method should be orchestrated by CB?
-      this.simulateForCheckValidate();
+      this.simulate();
       for (PieceOnBoard piece : this.moveToNewSquare.values()) {
           piece.setHasAlreadyMoved(true);
       }
@@ -172,8 +172,12 @@ public class Move {
       return "Move" + moveToNewSquare;
   }
 
+  /**
+   * @return The piece at its destination after the move. In case of castling, returns the destination of the rook.
+   */
   public PieceOnBoard getDestinationPiece() {
-    return this.moveToNewSquare.size() == 1 ? this.moveToNewSquare.values().iterator().next() : null;
+    return this.isCastle() ? this.moveToNewSquare.values().stream().filter(p -> p.getName().equals(Rook.NAME_LC)).findFirst().orElse(null)
+            : this.moveToNewSquare.values().iterator().next();
   }
 
   public boolean involvesPawnOrCapture() {
@@ -227,7 +231,7 @@ public class Move {
             startSquare.toString() : shouldDisambiguateRow ?
             startSquare.row() : String.valueOf(startSquare.getColumnLetter()));
     final String promoStr = originalPiece.getClass().equals(moveEntry.getValue().getClass()) ? "" : PROMO_PGN + Character.toUpperCase(moveEntry.getValue().printOnBoard());
-    final String status = ""; // TODO: chechmate, check ... ?? or should it be the responsibility of the gameplay?
+    final String status = ""; // TODO: checkmate, check ... ?? or should it be the responsibility of the gameplay?
     return pieceStr + disambiguate + takeStr + destSquare + promoStr + status;
   }
 }

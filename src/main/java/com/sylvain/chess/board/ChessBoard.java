@@ -155,7 +155,7 @@ public class ChessBoard {
     return piece.getControlledSquares(this).contains(this.getKing(ChessBoard.getOppositeColor(piece.getColor())).getSquare());
   }
 
-  public List<PieceOnBoard> piecesCheckingKing(final Color color) {
+  public List<PieceOnBoard> findPiecesCheckingKing(final Color color) {
     return !this.kings.containsKey(color) ? List.of() : this.piecesControllingSquare(this.kings.get(color).getSquare(), getOppositeColor(color));
   }
 
@@ -278,7 +278,7 @@ public class ChessBoard {
   }
 
   public boolean isKingUnderCheck(final Color color) {
-    return !piecesCheckingKing(color).isEmpty();
+    return !this.findPiecesCheckingKing(color).isEmpty();
   }
 
   public boolean isKingCheckMate(final Color color) {
