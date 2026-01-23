@@ -49,12 +49,32 @@ public class TestMateSolver {
   }
 
   @Test
+  public void testOther2MateIn2() {
+    final ChessBoard board = FenLoader.loadBoard("krN5/1n3p2/2Q1pP2/qN2B1Pp/PpK2p1P/1P3B2/Rp6/bR6");
+    final MateSolver mateIn2 = new MateSolver(Color.WHITE, board, 2);
+    final Move mateMove = mateIn2.selectMove(board.findAllValidMoves(Color.WHITE));
+    board.printBoard();
+    System.out.println(mateMove);
+    Assert.assertEquals("gxh6", mateMove.toPgn());
+  }
+
+  @Test
   public void testMateIn3() {
     final ChessBoard board = FenLoader.loadBoard("1kr4r/ppp2p2/5bpq/4N3/4PP2/1b4P1/PPP2Q1P/R5K1");
     final MateSolver mateIn2 = new MateSolver(Color.WHITE, board, 3);
     final Move mateMove = mateIn2.selectMove(board.findAllValidMoves(Color.WHITE));
     board.printBoard();
     System.out.println(mateMove);
-    //Assert.assertEquals("Na6", mateMove.toPgn());
+    Assert.assertEquals("Nd7", mateMove.toPgn());
+  }
+
+  @Test
+  public void testMateIn5() {
+    final ChessBoard board = FenLoader.loadBoard("Q7/p4ppk/4p3/1q4Pp/2n5/2B5/Pr4PP/K3R2R");
+    final MateSolver mateIn2 = new MateSolver(Color.BLACK, board, 5);
+    final Move mateMove = mateIn2.selectMove(board.findAllValidMoves(Color.BLACK));
+    board.printBoard();
+    System.out.println(mateMove);
+    Assert.assertEquals("Rxa2", mateMove.toPgn());
   }
 }
