@@ -9,10 +9,8 @@ import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.pieces.PieceOnBoard;
 import com.sylvain.chess.pieces.Rook;
 import com.sylvain.chess.play.Gameplay;
-import com.sylvain.chess.play.players.DummyPlayer;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -35,7 +33,7 @@ public class FenLoader {
     configureLastMove(fenArray[3], board, ChessBoard.getOppositeColor(color));
     final int numberOfHalfMovesWithoutImprovement = Integer.parseInt(fenArray[4]);
     final int moveNumber = Integer.parseInt(fenArray[5]);
-    final Gameplay gameplay = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE, board), new DummyPlayer(Color.BLACK, board)), color); // TODO: players?
+    final Gameplay gameplay = new Gameplay(board, color);
     gameplay.setMoveNumber(moveNumber);
     gameplay.setLastHalfMoveWithCaptureOrPawn(2 * (moveNumber-1) - numberOfHalfMovesWithoutImprovement + 1);
     return gameplay;

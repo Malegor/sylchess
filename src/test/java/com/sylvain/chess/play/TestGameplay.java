@@ -28,8 +28,8 @@ public class TestGameplay {
     final DummyPlayer whitePlayer = new DummyPlayer(Color.WHITE, board);
     final DummyPlayer blackPlayer = new DummyPlayer(Color.BLACK, board);
     final List<Player> players = List.of(whitePlayer, blackPlayer);
-    final Gameplay game = new Gameplay(board, players);
-    final GameStatus status = game.playGame();
+    final Gameplay game = new Gameplay(board);
+    final GameStatus status = game.playGame(players);
     Assert.assertNotNull(status);
     Assert.assertEquals(GameStatus.CHECKMATE, status);
     Assert.assertEquals(EndGame.BLACK_WINS, game.getEndGame());
@@ -47,8 +47,8 @@ public class TestGameplay {
     final DummyPlayer whitePlayer = new DummyPlayer(Color.WHITE, board);
     final DummyPlayer blackPlayer = new DummyPlayer(Color.BLACK, board);
     final List<Player> players = List.of(whitePlayer, blackPlayer);
-    final Gameplay game = new Gameplay(board, players);
-    final GameStatus status = game.playGame();
+    final Gameplay game = new Gameplay(board);
+    final GameStatus status = game.playGame(players);
     Assert.assertNotNull(status);
     Assert.assertEquals(GameStatus.STALEMATE, status);
     Assert.assertEquals(EndGame.DRAW, game.getEndGame());
@@ -58,7 +58,7 @@ public class TestGameplay {
   @Test
   public void testSamePosition() {
     final Gameplay game = this.getGameWithRepeatedMoves(50);
-    final GameStatus status = game.playGame();
+    final GameStatus status = game.playGame(this.getPlayersRepeatingMoves(game.getBoard()));
     Assert.assertNotNull(status);
     Assert.assertEquals(GameStatus.SEVERAL_TIMES_SAME_POSITION, status);
     Assert.assertEquals(EndGame.DRAW, game.getEndGame());
@@ -71,7 +71,7 @@ public class TestGameplay {
   public void testMovesWithoutImprovement() {
     final int numberOfMoves = 10;
     final Gameplay game = this.getGameWithRepeatedMoves(numberOfMoves);
-    final GameStatus status = game.playGame();
+    final GameStatus status = game.playGame(this.getPlayersRepeatingMoves(game.getBoard()));
     Assert.assertNotNull(status);
     Assert.assertEquals(GameStatus.UNIMPROVING_MOVES, status);
     Assert.assertEquals(EndGame.DRAW, game.getEndGame());
@@ -84,8 +84,8 @@ public class TestGameplay {
     final ChessBoard board = new ChessBoard();
     board.addPiece(new King(Color.WHITE, new Square(1,1)));
     board.addPiece(new King(Color.BLACK, new Square(8,8)));
-    final Gameplay game = new Gameplay(board, List.of(new DummyPlayer(Color.WHITE, board), new DummyPlayer(Color.BLACK, board)));
-    final GameStatus status = game.playGame();
+    final Gameplay game = new Gameplay(board);
+    final GameStatus status = game.playGame(TestFullDummyGame.getDummyPlayers(game.getBoard()));
     Assert.assertEquals(GameStatus.ONLY_KINGS, status);
     Assert.assertEquals(EndGame.DRAW, game.getEndGame());
     Assert.assertEquals(1, game.getMoveNumber());
@@ -98,6 +98,12 @@ public class TestGameplay {
     final Rook blackRook = new Rook(Color.BLACK, new Square(1, 8));
     board.addPiece(blackRook);
     board.printBoard();
+    return new Gameplay(board, null, maxNumberOfMovesWithoutCaptureOrPawnMove, 3);
+  }
+
+  private List<Player> getPlayersRepeatingMoves(final ChessBoard board) {
+    final King whiteKing = board.getKing(Color.WHITE);
+    final Rook blackRook = board.getUnmovedRooks(Color.BLACK).stream().findFirst().orElse(null);
     final Player whitePlayer = new Player(Color.WHITE, "White", board) {
       private final King square2 = new King(Color.WHITE, new Square(6,1));
       private final List<Move> moves = List.of(
@@ -122,6 +128,6 @@ public class TestGameplay {
         return it.next();
       }
     };
-    return new Gameplay(board, List.of(whitePlayer, blackPlayer), null, maxNumberOfMovesWithoutCaptureOrPawnMove, 3);
+    return List.of(whitePlayer, blackPlayer);
   }
 }

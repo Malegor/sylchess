@@ -8,6 +8,7 @@ import com.sylvain.chess.io.fen.FenSaver;
 import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.play.Gameplay;
+import com.sylvain.chess.play.TestFullDummyGame;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -63,7 +64,7 @@ public class TestLoadPosition {
   public void testLoadStartingPositions() throws IOException {
     final String fileName = "fen/starting.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName);
-    gameplay.playGame(0);
+    gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
     Assert.assertEquals(Color.BLACK, gameplay.getLastPlayer().getColor());
     for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
@@ -79,7 +80,7 @@ public class TestLoadPosition {
   public void testAfterMovingPawn() throws IOException {
     final String fileName = "fen/after-pawn.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName);
-    gameplay.playGame(0);
+    gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
     Assert.assertEquals(Color.WHITE, gameplay.getLastPlayer().getColor());
     for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
@@ -100,7 +101,7 @@ public class TestLoadPosition {
   public void testMateIn3() throws IOException {
     final String fileName = "fen/mate3.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName);
-    gameplay.playGame(0);
+    gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
     Assert.assertEquals(Color.BLACK, gameplay.getLastPlayer().getColor());
     for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
@@ -116,7 +117,7 @@ public class TestLoadPosition {
   public void testMateIn4() throws IOException {
     final String fileName = "fen/mate4.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName);
-    gameplay.playGame(0);
+    gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
     Assert.assertEquals(Color.BLACK, gameplay.getLastPlayer().getColor());
     for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());

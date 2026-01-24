@@ -22,7 +22,6 @@ import lombok.extern.log4j.Log4j2;
 public class Gameplay {
   @Getter
   private final ChessBoard board;
-  private final List<Player> players;
   private final int maxNumberOfMovesWithoutCaptureOrPawnMove;
   private final int maxNumberOfTimesSamePosition;
   @Getter
@@ -38,34 +37,33 @@ public class Gameplay {
   @Getter
   private EndGame endGame;
 
-  public Gameplay(final ChessBoard board, final List<Player> players, final Color firstPlayingColor, final int maxNumberOfMovesWithoutCaptureOrPawnMove, final int maxNumberOfTimesSamePosition) {
+  public Gameplay(final ChessBoard board, final Color firstPlayingColor, final int maxNumberOfMovesWithoutCaptureOrPawnMove, final int maxNumberOfTimesSamePosition) {
     this.board = board;
-    this.players = players;
     this.maxNumberOfMovesWithoutCaptureOrPawnMove = maxNumberOfMovesWithoutCaptureOrPawnMove;
     this.maxNumberOfTimesSamePosition = maxNumberOfTimesSamePosition;
     this.moveNumber = 1;
     this.halfMoveNumber = 1;
     this.lastHalfMoveWithCaptureOrPawn = 1;
     this.occurrencesOfPosition = new HashMap<>(20);
-    this.lastPlayer = players.getLast();
     this.firstPlayingColor = firstPlayingColor;
     this.endGame = null;
   }
 
-  public Gameplay(final ChessBoard board, final List<Player> players, final Color firstPlayingColor) {
-    this(board, players, firstPlayingColor, 50, 3);
+  public Gameplay(final ChessBoard board, final Color firstPlayingColor) {
+    this(board, firstPlayingColor, 50, 3);
   }
 
-  public Gameplay(final ChessBoard board, final List<Player> players) {
-    this(board, players, null);
+  public Gameplay(final ChessBoard board) {
+    this(board, null);
   }
 
-  public GameStatus playGame() {
-    return playGame(1000);
+  public GameStatus playGame(final List<Player> players) {
+    return playGame(players, 1000);
   }
 
-  public GameStatus playGame(final int numberOfMoves) {
-    final CircularIterator<Player> it = new CircularIterator<>(this.players);
+  public GameStatus playGame(final List<Player> players, final int numberOfMoves) {
+    this.lastPlayer = players.getLast();
+    final CircularIterator<Player> it = new CircularIterator<>(players);
     if (this.firstPlayingColor != null) {
       while (it.hasNext()) {
         if (it.peek().getColor() == this.firstPlayingColor) {
@@ -128,8 +126,8 @@ public class Gameplay {
   }
 
   private boolean onlyKingsOnBoard() {
-    for (final Player player : this.players) {
-      Collection<PieceOnBoard> playerPieces = this.board.getPieces(player.getColor()).values();
+    for (final Color color : this.board.getColors()) {
+      Collection<PieceOnBoard> playerPieces = this.board.getPieces(color).values();
       for (PieceOnBoard piece : playerPieces)
         if (!piece.getName().equals(King.NAME_LC)) {
           return false;

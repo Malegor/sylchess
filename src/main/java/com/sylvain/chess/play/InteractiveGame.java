@@ -28,8 +28,8 @@ public class InteractiveGame {
     final ChessBoard board = ChessBoard.defaultBoard();
     final Player whitePlayer = playerNames.getFirst().isEmpty() ? new DummyPlayer(Color.WHITE, board) : new InteractivePlayer(Color.WHITE, playerNames.getFirst(), board, scanner);
     final Player blackPlayer = playerNames.getLast().isEmpty() ? new DummyPlayer(Color.BLACK, board) : new InteractivePlayer(Color.BLACK, playerNames.getLast(), board, scanner);
-    final Gameplay game = new Gameplay(board, List.of(whitePlayer, blackPlayer));
-    game.playGame();
+    final Gameplay game = new Gameplay(board);
+    game.playGame(List.of(whitePlayer, blackPlayer));
     System.out.println(game.getEndGame().getPgn());
     return game.getEndGame();
   }
