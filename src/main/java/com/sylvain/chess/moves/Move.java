@@ -44,8 +44,8 @@ public class Move {
     if ((this.captured != null && this.captured.getColor() == color) ||
             (this.isCastle() && !isValidCastle()) || (firstEntry.getKey().getName().equals(Pawn.NAME_LC) && !isValidPawnMove(firstEntry)))
       return false;
-    this.simulateForCheckValidate();
-    if (!this.board.piecesCheckingKing(color).isEmpty()) {
+    this.simulate();
+    if (!this.board.findPiecesCheckingKing(color).isEmpty()) {
         this.rollback();
         return false;
     }
@@ -55,8 +55,8 @@ public class Move {
 
   private boolean isValidCastle() {
     // Castling rules: validate that no piece is on the way to the final destination for both the king and the rook, and that no square is controlled
-    // along the king's trip.
-    if (this.captured != null)
+    // along the king's trip. Also check if both pieces are still on the first row.
+    if (this.captured != null || this.moveToNewSquare.keySet().stream().anyMatch(p -> p.getSquare().row() != ChessBoard.getFirstRow(p.getColor())))
       return false;
     final Color color = this.getColor();
     int minCol = ChessBoard.BOARD_COLS + 1;
@@ -96,7 +96,8 @@ public class Move {
   private boolean isValidPawnMove(final Map.Entry<PieceOnBoard, PieceOnBoard> entry) {
     final Color color = this.getColor();
     // 1- a pawn can move straight or capture in diagonal (special case for the starting position)
-    final int rowIncrement = ChessBoard.getPawnDirection(color) * (entry.getValue().getSquare().row() - entry.getKey().getSquare().row());
+    final int dir = ChessBoard.getPawnDirection(color);
+    final int rowIncrement = dir * (entry.getValue().getSquare().row() - entry.getKey().getSquare().row());
     if (Math.abs(entry.getValue().getSquare().column() - entry.getKey().getSquare().column()) > 1
                   || rowIncrement > 2
                   || rowIncrement < 1)
@@ -104,67 +105,74 @@ public class Move {
     if (entry.getValue().getSquare().column() == entry.getKey().getSquare().column()) {
       // This is not a capture, no entry can be on the way.
       Square square = entry.getKey().getSquare();
-      if (ChessBoard.getPawnDirection(color) * (entry.getValue().getSquare().row() - square.row()) == 2
+      if (dir * (entry.getValue().getSquare().row() - square.row()) == 2
               && ChessBoard.getRowForColor(square.row(), color) > 2) {
         return false;
       }
-      while (ChessBoard.getPawnDirection(color) * (entry.getValue().getSquare().row() - square.row()) > 0) {
-          square = square.move(0, ChessBoard.getPawnDirection(color));
+      while (dir * (entry.getValue().getSquare().row() - square.row()) > 0) {
+          square = square.move(0, dir);
           if (this.board.hasPieceAt(square))
             return false;
       }
     }
     else {
       // Capture or en-passant
-      if (ChessBoard.getPawnDirection(color) * (entry.getValue().getSquare().row() - entry.getKey().getSquare().row()) == 2)
+      if (dir * (entry.getValue().getSquare().row() - entry.getKey().getSquare().row()) == 2)
         return false;
       if (this.captured == null) {
         // Validate en-passant
-        final PieceOnBoard potentialPieceEnPassant = this.board.getPieceAt(entry.getValue().getSquare().move(0, - ChessBoard.getPawnDirection(color)));
+        final PieceOnBoard potentialPieceEnPassant = this.board.getPieceAt(entry.getValue().getSquare().move(0, -dir));
         this.captured = potentialPieceEnPassant;
         if (potentialPieceEnPassant == null || !potentialPieceEnPassant.getName().equals(Pawn.NAME_LC) ||
                 (this.board.getPreviousMove() != null ?
-                !(this.board.getPreviousMove().getDestinationPiece().getName().equals(Pawn.NAME_LC))
-                || (ChessBoard.getPawnDirection(color) * this.board.getPreviousMove().getDestinationPiece().getSquare().row()
-                        - this.board.getPreviousMove().moveToNewSquare.values().iterator().next().getSquare().row()) >= 2 :
-                        potentialPieceEnPassant.getSquare().row() != ChessBoard.getRowForColor(3, color)))
+                !this.board.getPreviousMove().getDestinationPiece().getName().equals(Pawn.NAME_LC)
+                        || !this.board.getPreviousMove().getDestinationPiece().equals(potentialPieceEnPassant)
+                        || !this.board.getPreviousMove().isPawnTwoSquareMove()
+                        // The following condition means: the previous move COULD have been a 2 square pawn move
+                        : potentialPieceEnPassant.getSquare().row() != ChessBoard.getRowForColor(5, color)
+                        || this.board.getPieceAt(potentialPieceEnPassant.getSquare().move(0, 2 * dir)) != null))
           return false;
       }
       if (this.captured == null || this.captured.getColor() == color) {
         return false;
       }
     }
-    if (entry.getValue().getSquare().row() - entry.getKey().getSquare().row() == 2 * ChessBoard.getPawnDirection(color)
-                && ChessBoard.getPawnDirection(color) * entry.getKey().getSquare().row() >= 3)
+    if (entry.getValue().getSquare().row() - entry.getKey().getSquare().row() == 2 * dir
+                && dir * entry.getKey().getSquare().row() >= 3)
       return false;
-    // 2- The pawn is at its one-before-last row and the next position (getValue) is a entry that is not a pawn or a king.
+    // 2- The pawn is at its one-before-last row and the next position (getValue) is an entry that is not a pawn or a king.
     return entry.getValue().getSquare().row() != ChessBoard.getPromotionRow(color) || entry.getValue().isPossiblePromotion();
   }
 
-  private void simulateForCheckValidate() {
-      for (Map.Entry<PieceOnBoard, PieceOnBoard> move : this.moveToNewSquare.entrySet()) {
-        if (this.captured != null) {
-          this.board.removePiece(this.captured);
-        }
-        this.board.simulatePieceMove(move.getKey(), move.getValue());
-      }
+  public void simulate() {
+    if (this.captured != null) {
+      this.board.removePiece(this.captured);
+    }
+    for (Map.Entry<PieceOnBoard, PieceOnBoard> move : this.moveToNewSquare.entrySet()) {
+      this.board.removePiece(move.getKey());
+    }
+    for (Map.Entry<PieceOnBoard, PieceOnBoard> move : this.moveToNewSquare.entrySet()) {
+      this.board.addPiece(move.getValue());
+    }
   }
 
   public void apply() {
   // TODO: this method should be orchestrated by CB?
-      this.simulateForCheckValidate();
+      this.simulate();
       for (PieceOnBoard piece : this.moveToNewSquare.values()) {
           piece.setHasAlreadyMoved(true);
       }
       this.board.setPreviousMove(this);
   }
 
-  private void rollback() {
-      for (Map.Entry<PieceOnBoard, PieceOnBoard> entry : this.moveToNewSquare.entrySet()) {
-          this.board.removePiece(entry.getValue());
-          this.board.addPiece(entry.getKey());
-      }
-      if (this.captured != null) this.board.addPiece(this.captured);
+  public void rollback() {
+    for (Map.Entry<PieceOnBoard, PieceOnBoard> entry : this.moveToNewSquare.entrySet()) {
+      this.board.removePiece(entry.getValue());
+    }
+    for (Map.Entry<PieceOnBoard, PieceOnBoard> entry : this.moveToNewSquare.entrySet()) {
+      this.board.addPiece(entry.getKey());
+    }
+    if (this.captured != null) this.board.addPiece(this.captured);
   }
 
   @Override
@@ -172,8 +180,12 @@ public class Move {
       return "Move" + moveToNewSquare;
   }
 
+  /**
+   * @return The piece at its destination after the move. In case of castling, returns the destination of the rook.
+   */
   public PieceOnBoard getDestinationPiece() {
-    return this.moveToNewSquare.size() == 1 ? this.moveToNewSquare.values().iterator().next() : null;
+    return this.isCastle() ? this.moveToNewSquare.values().stream().filter(p -> p.getName().equals(Rook.NAME_LC)).findFirst().orElse(null)
+            : this.moveToNewSquare.values().iterator().next();
   }
 
   public boolean involvesPawnOrCapture() {
@@ -227,7 +239,7 @@ public class Move {
             startSquare.toString() : shouldDisambiguateRow ?
             startSquare.row() : String.valueOf(startSquare.getColumnLetter()));
     final String promoStr = originalPiece.getClass().equals(moveEntry.getValue().getClass()) ? "" : PROMO_PGN + Character.toUpperCase(moveEntry.getValue().printOnBoard());
-    final String status = ""; // TODO: chechmate, check ... ?? or should it be the responsibility of the gameplay?
+    final String status = ""; // TODO: checkmate, check ... ?? or should it be the responsibility of the gameplay?
     return pieceStr + disambiguate + takeStr + destSquare + promoStr + status;
   }
 }
