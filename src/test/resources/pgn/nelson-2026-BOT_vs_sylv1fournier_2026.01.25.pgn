@@ -1,0 +1,36 @@
+[Event "Play vs Bot - Chess960"]
+[Site "Chess.com"]
+[Date "2026.01.25"]
+[Round "-"]
+[White "nelson-2026-BOT"]
+[Black "sylv1fournier"]
+[Result "0-1"]
+[Variant "Chess960"]
+[SetUp "1"]
+[FEN "qnnrbbkr/pppppppp/8/8/8/8/PPPPPPPP/QNNRBBKR w HDhd - 0 1"]
+[CurrentPosition "7r/p2b1pk1/1p4p1/2P5/2Pb4/3NpPq1/P3P3/2QR3K w - - 1 29"]
+[Timezone "UTC"]
+[ECO "A21"]
+[ECOUrl "https://www.chess.com/openings/English-Opening-Reversed-Sicilian-Variation"]
+[UTCDate "2026.01.25"]
+[UTCTime "02:00:51"]
+[WhiteElo "1375"]
+[BlackElo "400"]
+[TimeControl "?"]
+[Termination "Sylvain Fournier won by checkmate"]
+[StartTime "02:00:51"]
+[EndDate "2026.01.25"]
+[EndTime "03:12:57"]
+[Link "https://www.chess.com/analysis/game/computer/589894037/analysis?move=50"]
+[WhiteUrl "https://images.chesscomfiles.com/uploads/v1/user/510578233.80e48d04.50x50o.a0210531076b.png"]
+[WhiteCountry "129"]
+[WhiteTitle ""]
+[BlackUrl "https://images.chesscomfiles.com/uploads/v1/user/388430687.af5c3c24.50x50o.08e5959249ba.jpg"]
+[BlackCountry "27"]
+[BlackTitle ""]
+
+1. c4 e5 2. Nc3 b6 $6 3. d4 exd4 4. Rxd4 c5 5. Rd1 Nc6 $6 6. Nd3 N8e7 7. b3 $6 g6 $2
+8. Nd5 Bg7 9. Nf6+ $6 Kf8 $2 10. Qb2 $2 d5 11. Bc3 $4 d4 $1 12. Nxh7+ Rxh7 13. Bd2 Nf5
+14. g4 Nh4 15. Bg2 Nxg2 16. Kxg2 Ne5+ 17. f3 Nxg4 18. h3 Ne3+ 19. Bxe3 dxe3 20.
+Qc1 Bd4 21. Kf1 Bd7 22. h4 Qc6 23. b4 Qf6 24. Kg2 Rxh4 25. Rxh4 Qxh4 26. Kg1 $6
+Qg3+ 27. Kh1 Kg7 28. bxc5 Rh8# 0-1
