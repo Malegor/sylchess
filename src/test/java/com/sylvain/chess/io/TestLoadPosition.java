@@ -129,7 +129,7 @@ public class TestLoadPosition {
     Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
   }
 
-  private static Gameplay loadPositionFromFile(final String fileName) throws IOException {
+  public static Gameplay loadPositionFromFile(final String fileName) throws IOException {
     return FenLoader.loadPosition(loadStringFromFile(fileName));
   }
 

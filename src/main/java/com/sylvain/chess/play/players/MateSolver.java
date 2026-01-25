@@ -4,6 +4,7 @@ import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.moves.EvaluatedMove;
 import com.sylvain.chess.moves.Move;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.Comparator;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
  * A player dedicated to solve mates in n moves, exploring all possible moves for both sides, in breadth-first search(?)
  * May be easier for a first version DFS up to a maximum number of moves.
  */
+@Log4j2
 public class MateSolver extends Player {
   private final static int MAX_VALUE = 500;
 
@@ -25,7 +27,7 @@ public class MateSolver extends Player {
   @Override
   protected Move selectMove(final List<Move> validMoves) {
     final EvaluatedMove move = alphaBeta(null, this.maxNumberOfMoves * 2 - 1, - MAX_VALUE, MAX_VALUE);
-    System.out.println(move.getEvaluation());
+    log.info("Move eval: {}", move.getEvaluation());
     return move.getMove();
   }
 
