@@ -22,7 +22,7 @@ public class TestMove {
     board.addPiece(knight);
     board.addPiece(new Knight(Color.BLACK, new Square(3, 2))); // Doesn't control b3
     board.addPiece(new Queen(Color.BLACK, new Square(2, 8))); // Isn't a knight
-    final Move blackMove = new Move(Map.of(knight, knight.move(1, 2)), board);
+    Move blackMove = new Move(Map.of(knight, knight.move(1, 2)), board);
     System.out.println(blackMove.toPgn());
     Assert.assertEquals("Nb3", blackMove.toPgn());
     board.addPiece(new Knight(Color.BLACK, new Square(4, 2)));
@@ -34,7 +34,7 @@ public class TestMove {
     board.addPiece(new Knight(Color.BLACK, new Square(3, 1)));
     Assert.assertEquals("Na1b3", blackMove.toPgn());
     board.addPiece(new Bishop(Color.WHITE, new Square(2, 3)));
-    blackMove.isValidMove();// In order to set the captured piece
+    blackMove = new Move(Map.of(knight, knight.move(1, 2)), board);// In order to set the captured piece
     Assert.assertEquals("Na1xb3", blackMove.toPgn());
     final Pawn whitePawn = new Pawn(Color.WHITE, new Square(3, 7));
     board.addPiece(whitePawn);

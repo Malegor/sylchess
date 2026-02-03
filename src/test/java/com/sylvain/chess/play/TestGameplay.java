@@ -104,6 +104,9 @@ public class TestGameplay {
   private List<Player> getPlayersRepeatingMoves(final ChessBoard board) {
     final King whiteKing = board.getKing(Color.WHITE);
     final Rook blackRook = board.getUnmovedRooks(Color.BLACK).stream().findFirst().orElse(null);
+    // OBS: necessary to remove the pieces before defining the moves as the state of the board should be updated at the moves' instantiation.
+    board.removePiece(whiteKing);
+    board.removePiece(blackRook);
     final Player whitePlayer = new Player(Color.WHITE, "White", board) {
       private final King square2 = new King(Color.WHITE, new Square(6,1));
       private final List<Move> moves = List.of(
@@ -128,6 +131,8 @@ public class TestGameplay {
         return it.next();
       }
     };
+    board.addPiece(whiteKing);
+    board.addPiece(blackRook);
     return List.of(whitePlayer, blackPlayer);
   }
 }

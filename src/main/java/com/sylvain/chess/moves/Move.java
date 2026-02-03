@@ -27,17 +27,18 @@ public class Move {
   private final ChessBoard board;
   private PieceOnBoard captured;
 
-  public Move(Map<PieceOnBoard, PieceOnBoard> moveToNewSquare, ChessBoard board) {
+  public Move(final Map<PieceOnBoard, PieceOnBoard> moveToNewSquare, final ChessBoard board) {
     this.moveToNewSquare = moveToNewSquare;
     this.board = board;
-    this.captured = null;
+    // OBS: the captured attribute can change (only) in the case of an en passant capture, which explains why it is not final.
+    // OBS2: it could be a problem to instantiate a move with the board not at the state at the moment of the move.
+    this.captured = board.getPieceAt(moveToNewSquare.values().iterator().next().getSquare());
   }
 
   public boolean isValidMove() {
     if (this.moveToNewSquare.isEmpty())
-        return false;
+      return false;
     final Map.Entry<PieceOnBoard, PieceOnBoard> firstEntry = this.moveToNewSquare.entrySet().iterator().next();
-    this.captured = this.board.getPieceAt(firstEntry.getValue().getSquare());
     final Color color = firstEntry.getKey().getColor();
     if (color != firstEntry.getValue().getColor())
       throw new IllegalStateException("Illegal move: " + this);
@@ -46,8 +47,8 @@ public class Move {
       return false;
     this.simulate();
     if (!this.board.findPiecesCheckingKing(color).isEmpty()) {
-        this.rollback();
-        return false;
+      this.rollback();
+      return false;
     }
     this.rollback();
     return true;

@@ -34,11 +34,11 @@ public class MateSolver extends Player {
   private EvaluatedMove alphaBeta(final Move move, final int depth, double alpha, double beta) {
     if (move != null)
       move.simulate();
-    final Comparator<Move> checkComparator = (m1, m2) -> Boolean.compare(this.board.checksOppositeKing(m2.getDestinationPiece()),
+    final Comparator<Move> byCheckingOpponent = (m1, m2) -> Boolean.compare(this.board.checksOppositeKing(m2.getDestinationPiece()),
             this.board.checksOppositeKing(m1.getDestinationPiece()));
     final Color currentColor = move == null ? ChessBoard.getOppositeColor(this.color) : move.getColor();
     final Color oppositeColor = ChessBoard.getOppositeColor(currentColor);
-    final List<Move> allValidMovesForOpponent = this.board.findAllValidMoves(oppositeColor).stream().sorted(checkComparator).toList();
+    final List<Move> allValidMovesForOpponent = this.board.findAllValidMoves(oppositeColor).stream().sorted(byCheckingOpponent).toList();
     if (depth == 0 || allValidMovesForOpponent.isEmpty()) {
       final int evaluation = this.evaluateBoardFor(currentColor, allValidMovesForOpponent);
       if (move != null)
