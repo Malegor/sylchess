@@ -27,11 +27,12 @@ public class Move {
   private final ChessBoard board;
   private PieceOnBoard captured;
 
-  public Move(Map<PieceOnBoard, PieceOnBoard> moveToNewSquare, ChessBoard board) {
+  public Move(final Map<PieceOnBoard, PieceOnBoard> moveToNewSquare, final ChessBoard board) {
     this.moveToNewSquare = moveToNewSquare;
     this.board = board;
     // OBS: the captured attribute can change (only) in the case of an en passant capture, which explains why it is not final.
-    this.captured = board.getPieceAt(this.moveToNewSquare.values().iterator().next().getSquare());
+    // OBS2: it could be a problem to instantiate a move with the board not at the state at the moment of the move.
+    this.captured = board.getPieceAt(moveToNewSquare.values().iterator().next().getSquare());
   }
 
   public boolean isValidMove() {
