@@ -30,14 +30,14 @@ public class Move {
   public Move(Map<PieceOnBoard, PieceOnBoard> moveToNewSquare, ChessBoard board) {
     this.moveToNewSquare = moveToNewSquare;
     this.board = board;
-    this.captured = null;
+    // OBS: the captured attribute can change (only) in the case of an en passant capture, which explains why it is not final.
+    this.captured = board.getPieceAt(this.moveToNewSquare.values().iterator().next().getSquare());
   }
 
   public boolean isValidMove() {
     if (this.moveToNewSquare.isEmpty())
-        return false;
+      return false;
     final Map.Entry<PieceOnBoard, PieceOnBoard> firstEntry = this.moveToNewSquare.entrySet().iterator().next();
-    this.captured = this.board.getPieceAt(firstEntry.getValue().getSquare());
     final Color color = firstEntry.getKey().getColor();
     if (color != firstEntry.getValue().getColor())
       throw new IllegalStateException("Illegal move: " + this);
@@ -46,8 +46,8 @@ public class Move {
       return false;
     this.simulate();
     if (!this.board.findPiecesCheckingKing(color).isEmpty()) {
-        this.rollback();
-        return false;
+      this.rollback();
+      return false;
     }
     this.rollback();
     return true;

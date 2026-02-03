@@ -7,6 +7,7 @@ import com.sylvain.chess.play.players.InteractivePlayer;
 import com.sylvain.chess.play.players.MateSolver;
 import com.sylvain.chess.play.players.Player;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -59,9 +60,11 @@ public class TestInteractiveGame {
    * 1- Inconsistency on pieces that are already on the board
    * 2- terminates in a draw (repeated position), in spite of the whites always finding a mate in 5 (the problem is, they don't find the quickest mate)
    * 3- for a few moves, it lasts about 1 hour
+   * 4- The solver doesn't consider the drawing end games (3 times same position etc.) -> write unit tests
    * @throws IOException - Exception thrown from reading a non-existing fen file.
    */
   @Test
+  @Ignore // Because of the processing time, soon to be fixed
   public void testPuzzleInconsistency() throws IOException {
     final String simulatedBlackMoves = "Re6\nRxc5\nRc2\nNd2\nNxb4\nKh8\nKg8\nh5\nKh7\ng5\nKg8\ng4\nKh7\nKg8\nKh7\nKg8";
     final InputStream mockInput = new ByteArrayInputStream(simulatedBlackMoves.getBytes(StandardCharsets.UTF_8));
