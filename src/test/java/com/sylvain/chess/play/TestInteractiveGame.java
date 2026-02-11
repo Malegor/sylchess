@@ -44,7 +44,7 @@ public class TestInteractiveGame {
   }
 
   @Test
-  public void testPuzzle() throws IOException {
+  public void testMateIn3() throws IOException {
     final String simulatedWhiteMoves = "Kg2\nKg3"; // OBS: only for white player
     final InputStream mockInput = new ByteArrayInputStream(simulatedWhiteMoves.getBytes(StandardCharsets.UTF_8));
     final Scanner scanner = new Scanner(mockInput);
@@ -53,6 +53,15 @@ public class TestInteractiveGame {
     final List<Player> players = List.of(new InteractivePlayer(Color.WHITE, "white", game.getBoard(), scanner), new MateSolver(Color.BLACK, game.getBoard(), 3));
     final EndGame endGame = InteractiveGame.play(game, players);
     scanner.close();
+    Assert.assertEquals(EndGame.BLACK_WINS, endGame);
+  }
+
+  @Test
+  public void testMateIn3BothSolvers() throws IOException {
+    final Gameplay game = TestLoadPosition.loadPositionFromFile("fen/mate3-3.fen");
+    game.getBoard().printBoard();
+    final List<Player> players = List.of(new MateSolver(Color.WHITE, game.getBoard(), 3), new MateSolver(Color.BLACK, game.getBoard(), 3));
+    final EndGame endGame = InteractiveGame.play(game, players);
     Assert.assertEquals(EndGame.BLACK_WINS, endGame);
   }
 

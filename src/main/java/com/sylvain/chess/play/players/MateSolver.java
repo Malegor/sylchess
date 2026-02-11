@@ -15,22 +15,22 @@ import java.util.List;
  */
 @Log4j2
 public class MateSolver extends Player {
-  private final static int MAX_VALUE = 500;
+  private final static int EVALUATION_FOR_MATE = 500;
 
   private final int maxDepth;
 
-  private int minDepth;
-
   public MateSolver(final Color color, final ChessBoard board, final int maxNumberOfMoves) {
     super(color, "MateSolver", board);
-    this.minDepth = 0;
     this.maxDepth = maxNumberOfMoves * 2 - 1;
   }
 
   @Override
   protected Move selectMove(final List<Move> validMoves) {
-    final EvaluatedMove move = alphaBeta(null, this.maxDepth, - MAX_VALUE, MAX_VALUE);
-    log.info("Move eval: {}", move.getEvaluation());
+    final EvaluatedMove move = alphaBeta(null, this.maxDepth, -EVALUATION_FOR_MATE, EVALUATION_FOR_MATE);
+    final double evaluation = move.getEvaluation();
+    log.info("Move eval: {}", this.isMateEvaluation(evaluation) ?
+            "MATE IN " + this.getNumberOfMovesForMate(evaluation) + (evaluation < 0 ? " (opponent)" : "") :
+            evaluation);
     return move.getMove();
   }
 
@@ -42,22 +42,22 @@ public class MateSolver extends Player {
     final Color currentColor = move == null ? ChessBoard.getOppositeColor(this.color) : move.getColor();
     final Color oppositeColor = ChessBoard.getOppositeColor(currentColor);
     final List<Move> allValidMovesForOpponent = this.board.findAllValidMoves(oppositeColor).stream().sorted(byCheckingOpponent).toList();
-    if (depth <= this.minDepth || allValidMovesForOpponent.isEmpty()) {
+    if (depth <= 0 || allValidMovesForOpponent.isEmpty()) {
       final int evaluation = this.evaluateBoardFor(currentColor, allValidMovesForOpponent, this.maxDepth - depth);
       if (move != null)
         move.rollback();
       // TODO: avoid evaluating same position several times => map (position+color, eval)
       return new EvaluatedMove(move, evaluation);
     }
-    boolean shouldMaximize = oppositeColor == this.color;
-    int multiplier = shouldMaximize ? 1 : -1;
-    EvaluatedMove bestMoveForOpponent = new EvaluatedMove(null, - multiplier * MAX_VALUE);
+    final boolean shouldMaximize = oppositeColor == this.color;
+    final int multiplier = shouldMaximize ? 1 : -1;
+    EvaluatedMove bestMoveForOpponent = new EvaluatedMove(null, - multiplier * EVALUATION_FOR_MATE);
     for (final Move moveOpponent : allValidMovesForOpponent) {
       final EvaluatedMove nextMove = this.alphaBeta(moveOpponent, depth - 1, alpha, beta);
       if (multiplier * (nextMove.getEvaluation() - bestMoveForOpponent.getEvaluation()) > 0) {
         bestMoveForOpponent = new EvaluatedMove(moveOpponent, nextMove.getEvaluation());
       }
-      if (multiplier * nextMove.getEvaluation() >= (shouldMaximize ? beta : multiplier * alpha)) // alpha or beta cutoff
+      if (multiplier * nextMove.getEvaluation() >= multiplier * (shouldMaximize ? beta : alpha)) // alpha or beta cutoff
         break;
       if (shouldMaximize)
         alpha = Math.max(alpha, bestMoveForOpponent.getEvaluation());
@@ -67,6 +67,14 @@ public class MateSolver extends Player {
     if (move != null)
       move.rollback();
     return bestMoveForOpponent;
+  }
+
+  private boolean isMateEvaluation(final double evaluation) {
+    return Math.abs(evaluation) > EVALUATION_FOR_MATE - 50;
+  }
+
+  private int getNumberOfMovesForMate(final double evaluation) {
+    return (EVALUATION_FOR_MATE - (int) Math.abs(evaluation) + 1) / 2;
   }
 
   /**
@@ -81,7 +89,7 @@ public class MateSolver extends Player {
     int multiplier = shouldMaximize ? 1 : -1;
     final Color oppositeColor = ChessBoard.getOppositeColor(color);
     if (this.board.isKingCheckMate(oppositeColor)) {
-      return multiplier * MAX_VALUE -  numberOfHalfMoves;
+      return multiplier * (EVALUATION_FOR_MATE - numberOfHalfMoves);
     }
     // TODO: more complete evaluation: count pieces "values" etc. (this eval only works for puzzles of kind checkmate in n moves)
     return 0;
