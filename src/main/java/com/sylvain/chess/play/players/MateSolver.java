@@ -26,7 +26,7 @@ public class MateSolver extends Player {
 
   @Override
   protected Move selectMove(final List<Move> validMoves) {
-    final EvaluatedMove move = alphaBeta(null, this.maxDepth, -EVALUATION_FOR_MATE, EVALUATION_FOR_MATE);
+    final EvaluatedMove move = alphaBeta(null, this.maxDepth, -EVALUATION_FOR_MATE - 1, EVALUATION_FOR_MATE + 1);
     final double evaluation = move.getEvaluation();
     log.info("Move eval: {}", this.isMateEvaluation(evaluation) ?
             "MATE IN " + this.getNumberOfMovesForMate(evaluation) + (evaluation < 0 ? " (opponent)" : "") :
@@ -51,7 +51,7 @@ public class MateSolver extends Player {
     }
     final boolean shouldMaximize = oppositeColor == this.color;
     final int multiplier = shouldMaximize ? 1 : -1;
-    EvaluatedMove bestMoveForOpponent = new EvaluatedMove(null, - multiplier * EVALUATION_FOR_MATE);
+    EvaluatedMove bestMoveForOpponent = new EvaluatedMove(null, - multiplier * (EVALUATION_FOR_MATE + 1));
     for (final Move moveOpponent : allValidMovesForOpponent) {
       final EvaluatedMove nextMove = this.alphaBeta(moveOpponent, depth - 1, alpha, beta);
       if (multiplier * (nextMove.getEvaluation() - bestMoveForOpponent.getEvaluation()) > 0) {
@@ -63,14 +63,20 @@ public class MateSolver extends Player {
         alpha = Math.max(alpha, bestMoveForOpponent.getEvaluation());
       else
         beta = Math.min(beta, bestMoveForOpponent.getEvaluation());
+      // If the best move for one player represents a mate in n moves, break in case the depth is too low
+      if ((alpha > 0 && this.isMateEvaluation(alpha) && (this.getNumberOfMovesForMate(alpha) - 1) * 2 + 1 <= this.maxDepth - depth + 1) ||
+              (beta < 0 && this.isMateEvaluation(beta) && (this.getNumberOfMovesForMate(beta) - 1) * 2 + 1 <= this.maxDepth - depth + 1))
+        break;
     }
     if (move != null)
       move.rollback();
+    if (move == null)
+      log.debug("alpha={} ; beta={}", alpha, beta);
     return bestMoveForOpponent;
   }
 
   private boolean isMateEvaluation(final double evaluation) {
-    return Math.abs(evaluation) > EVALUATION_FOR_MATE - 50;
+    return Math.abs(evaluation) > EVALUATION_FOR_MATE - 50 && Math.abs(evaluation) < EVALUATION_FOR_MATE;
   }
 
   private int getNumberOfMovesForMate(final double evaluation) {

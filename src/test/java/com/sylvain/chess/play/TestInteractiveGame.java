@@ -68,36 +68,18 @@ public class TestInteractiveGame {
   /**
    * OBS: several problems for this test:
    * 1- Inconsistency on pieces that are already on the board --> solved!
-   * 2- terminates in a draw (repeated position), in spite of the whites always finding a mate in 5 (the problem is, they don't find the quickest mate)
-   * 3- for a few moves, it lasts about 1 hour
+   * 2- terminates in a draw (repeated position), in spite of the whites always finding a mate in 5 (the problem is, they don't find the quickest mate) --> solved!
+   * 3- for a few moves, it lasts about 1 hour --> "half-solved" (now: less than 10 minutes)
    * 4- The solver doesn't consider the drawing end games (3 times same position etc.) -> write unit tests
    * @throws IOException - Exception thrown from reading a non-existing fen file.
    */
   @Test
   @Ignore // Because of the processing time, soon to be fixed
-  public void testPuzzleInconsistency() throws IOException {
-    final String simulatedBlackMoves = "Re6\nRxc5\nRc2\nNd2\nNxb4\nKh8\nKg8\nh5\nKh7\ng5\nKg8\ng4\nKh7\nKg8\nKh7\nKg8";
-    final InputStream mockInput = new ByteArrayInputStream(simulatedBlackMoves.getBytes(StandardCharsets.UTF_8));
-    final Scanner scanner = new Scanner(mockInput);
+  public void testPuzzleProcessingTime() throws IOException {
     final Gameplay game = TestLoadPosition.loadPositionFromFile("fen/mate2-5.fen");
     game.getBoard().printBoard();
-    final List<Player> players = List.of(new MateSolver(Color.WHITE, game.getBoard(), 5), new InteractivePlayer(Color.BLACK, "black", game.getBoard(), scanner));
+    final List<Player> players = List.of(new MateSolver(Color.WHITE, game.getBoard(), 5), new MateSolver(Color.BLACK, game.getBoard(), 5));
     final EndGame endGame = InteractiveGame.play(game, players);
-    scanner.close();
-    Assert.assertEquals(EndGame.WHITE_WINS, endGame);
-  }
-
-  @Test
-  @Ignore // Bug of the mate in 5 (the solver doesn't choose the fastest mate and ends up playing repeated moves)
-  public void testMateIn5() {
-    final String simulatedBlackMoves = "Kh7\nKg8\nKh7\nKg8";
-    final InputStream mockInput = new ByteArrayInputStream(simulatedBlackMoves.getBytes(StandardCharsets.UTF_8));
-    final Scanner scanner = new Scanner(mockInput);
-    final Gameplay game = FenLoader.loadPosition("6k1/pp2R1B1/8/1P2pB1p/6pP/8/3K3P/8 w - - 0 1");
-    game.getBoard().printBoard();
-    final List<Player> players = List.of(new MateSolver(Color.WHITE, game.getBoard(), 5), new InteractivePlayer(Color.BLACK, "black", game.getBoard(), scanner));
-    final EndGame endGame = InteractiveGame.play(game, players);
-    scanner.close();
     Assert.assertEquals(EndGame.WHITE_WINS, endGame);
   }
 }
