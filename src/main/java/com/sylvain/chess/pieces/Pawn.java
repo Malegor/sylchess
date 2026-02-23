@@ -82,4 +82,10 @@ public class Pawn extends PieceOnBoard {
         }
         return validMoves;
     }
+
+    @Override
+    public String getIconPath(Color color) {
+        final String colorStr = color.equals(Color.BLACK) ? "d" : "l";
+        return "/pieces_png/Chess_p" + colorStr + "t60.png";
+    }
 }

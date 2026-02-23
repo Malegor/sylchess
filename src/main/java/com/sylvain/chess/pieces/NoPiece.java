@@ -19,6 +19,11 @@ public class NoPiece extends PieceOnBoard {
     }
 
     @Override
+    public String getIconPath(Color color) {
+        return "";
+    }
+
+    @Override
     public List<Square> getControlledSquares(final ChessBoard board) {
         return List.of();
     }

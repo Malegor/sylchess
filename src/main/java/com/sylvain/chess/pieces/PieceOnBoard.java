@@ -8,9 +8,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.swing.Icon;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -89,4 +91,10 @@ public abstract class PieceOnBoard {
         }
         return validMoves;
     }
+
+    public Icon getIcon(final Color color) {
+        return new javax.swing.ImageIcon(Objects.requireNonNull(getClass().getResource(this.getIconPath(color))));
+    }
+
+    public abstract String getIconPath(final Color color);
 }

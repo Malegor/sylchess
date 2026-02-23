@@ -24,6 +24,12 @@ public class King extends PieceOnBoard {
     }
 
     @Override
+    public String getIconPath(Color color) {
+        final String colorStr = color.equals(Color.BLACK) ? "d" : "l";
+        return "/pieces_png/Chess_k" + colorStr + "t60.png";
+    }
+
+    @Override
     public List<Square> getControlledSquares(final ChessBoard board) {
         final List<Square> controlled = new ArrayList<>(8);
         final List<Integer> neighborhood = List.of(-1,0,1);

@@ -4,7 +4,7 @@ import com.sylvain.chess.Color;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.io.fen.FenLoader;
 import com.sylvain.chess.play.players.DummyPlayer;
-import com.sylvain.chess.play.players.InteractivePlayer;
+import com.sylvain.chess.play.players.ConsolePlayer;
 import com.sylvain.chess.play.players.MateSolver;
 import com.sylvain.chess.play.players.Player;
 import lombok.extern.log4j.Log4j2;
@@ -41,7 +41,7 @@ public class InteractiveGame {
     final String solverName = "solver";
     return playerName.equals(solverName) ? new MateSolver(color, board, 5)
             : playerName.isEmpty() ? new DummyPlayer(color, board)
-            : new InteractivePlayer(color, playerName, board, scanner);
+            : new ConsolePlayer(color, playerName, board, scanner);
   }
 
   public static EndGame play(final Gameplay game, final List<Player> players) {

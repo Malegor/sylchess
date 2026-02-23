@@ -11,10 +11,10 @@ import java.util.Scanner;
 /**
  * A player that informs its next move on the console.
  */
-public class InteractivePlayer extends Player {
+public class ConsolePlayer extends Player {
   private final Scanner scanner;
 
-  public InteractivePlayer(final Color color, final String name, final ChessBoard board, final Scanner scanner) {
+  public ConsolePlayer(final Color color, final String name, final ChessBoard board, final Scanner scanner) {
     super(color, name, board);
     this.scanner = scanner;
   }

@@ -24,6 +24,12 @@ public class Bishop extends PieceOnBoard {
     }
 
     @Override
+    public String getIconPath(Color color) {
+        final String colorStr = color.equals(Color.BLACK) ? "d" : "l";
+        return "/pieces_png/Chess_b" + colorStr + "t60.png";
+    }
+
+    @Override
     public List<Square> getControlledSquares(final ChessBoard board) {
         final List<Square> controlled = new ArrayList<>(14);
         controlled.addAll(this.getControlledSquaresInSingleDirection(board, -1, -1));

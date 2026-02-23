@@ -24,6 +24,12 @@ public class Knight extends PieceOnBoard {
     }
 
     @Override
+    public String getIconPath(Color color) {
+        final String colorStr = color.equals(Color.BLACK) ? "d" : "l";
+        return "/pieces_png/Chess_n" + colorStr + "t60.png";
+    }
+
+    @Override
     public List<Square> getControlledSquares(final ChessBoard board) {
         final List<Integer> knightJump = List.of(-2, -1, 1, 2);
         return knightJump.stream()
