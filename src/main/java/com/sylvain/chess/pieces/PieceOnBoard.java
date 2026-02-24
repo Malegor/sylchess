@@ -1,6 +1,6 @@
 package com.sylvain.chess.pieces;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 import com.sylvain.chess.moves.Move;
@@ -8,16 +8,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.swing.Icon;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor
 public abstract class PieceOnBoard {
-    protected final Color color;
+    protected final PlayerColor color;
     protected Square square;
     @Setter
     protected boolean hasAlreadyMoved;
@@ -56,11 +58,11 @@ public abstract class PieceOnBoard {
     }
 
     private interface PieceFactory {
-        PieceOnBoard create(final Color color, final Square square);
+        PieceOnBoard create(final PlayerColor color, final Square square);
     }
 
     public static PieceOnBoard createPiece(final char pieceChar, final Square square) {
-        final Color color = getColor(pieceChar);
+        final PlayerColor color = getColor(pieceChar);
         final Map<Character, PieceFactory> factories = Map.of(
                 Pawn.NAME_LC, Pawn::new,
                 Knight.NAME_LC, Knight::new,
@@ -75,8 +77,8 @@ public abstract class PieceOnBoard {
         return factory.create(color, square);
     }
 
-    public static Color getColor(char pieceChar) {
-      return Character.isUpperCase(pieceChar) ? Color.WHITE : Color.BLACK;
+    public static PlayerColor getColor(char pieceChar) {
+      return Character.isUpperCase(pieceChar) ? PlayerColor.WHITE : PlayerColor.BLACK;
     }
 
     public List<Move> findValidMoves(final ChessBoard board) {
@@ -89,4 +91,10 @@ public abstract class PieceOnBoard {
         }
         return validMoves;
     }
+
+    public Icon getIcon(final PlayerColor color) {
+        return new javax.swing.ImageIcon(Objects.requireNonNull(getClass().getResource(this.getIconPath(color))));
+    }
+
+    public abstract String getIconPath(final PlayerColor color);
 }

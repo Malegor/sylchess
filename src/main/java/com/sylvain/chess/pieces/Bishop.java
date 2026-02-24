@@ -1,6 +1,6 @@
 package com.sylvain.chess.pieces;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 
@@ -10,17 +10,23 @@ import java.util.List;
 public class Bishop extends PieceOnBoard {
     public static char NAME_LC = 'b';
 
-    public Bishop(final Color color, final Square square) {
+    public Bishop(final PlayerColor color, final Square square) {
         this(color, square, false);
     }
 
-    public Bishop(final Color color, final Square square, final boolean hasAlreadyMoved) {
+    public Bishop(final PlayerColor color, final Square square, final boolean hasAlreadyMoved) {
         super(color, square, hasAlreadyMoved);
     }
 
     @Override
     public Bishop at(final Square square) {
         return new Bishop(this.color, square, this.hasAlreadyMoved);
+    }
+
+    @Override
+    public String getIconPath(PlayerColor color) {
+        final String colorStr = color.equals(PlayerColor.BLACK) ? "d" : "l";
+        return "/pieces_png/Chess_b" + colorStr + "t60.png";
     }
 
     @Override

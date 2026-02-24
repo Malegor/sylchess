@@ -1,6 +1,6 @@
 package com.sylvain.chess.board;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.pieces.Bishop;
 import com.sylvain.chess.pieces.King;
@@ -26,42 +26,42 @@ import java.util.stream.Collectors;
 public class ChessBoard {
   public static final int BOARD_COLS = 8;
   public static final int BOARD_ROWS = 8;
-  private final Map<Color, Map<Square, PieceOnBoard>> piecesByColor;
+  private final Map<PlayerColor, Map<Square, PieceOnBoard>> piecesByColor;
   private final Map<Square, PieceOnBoard> allPieces;
-  private final Map<Color, King> kings;
+  private final Map<PlayerColor, King> kings;
   @Getter @Setter
   private Move previousMove = null;
 
   public ChessBoard() {
-    this.piecesByColor = Map.of(Color.WHITE, new LinkedHashMap<>(16), Color.BLACK, new LinkedHashMap<>(16));
+    this.piecesByColor = Map.of(PlayerColor.WHITE, new LinkedHashMap<>(16), PlayerColor.BLACK, new LinkedHashMap<>(16));
     this.allPieces = new HashMap<>(32);
     this.kings = new HashMap<>(2);
   }
 
   public static ChessBoard defaultBoard() {
     final ChessBoard board = new ChessBoard();
-    board.putClassicalPositionsForMainPieces(Color.WHITE);
-    board.putClassicalPositionsForMainPieces(Color.BLACK);
+    board.putClassicalPositionsForMainPieces(PlayerColor.WHITE);
+    board.putClassicalPositionsForMainPieces(PlayerColor.BLACK);
     return board;
   }
 
-  public static int getFirstRow(final Color color) {
+  public static int getFirstRow(final PlayerColor color) {
     return getRowForColor(1, color);
   }
 
-  public static int getPromotionRow(final Color color) {
+  public static int getPromotionRow(final PlayerColor color) {
     return getRowForColor(ChessBoard.BOARD_ROWS, color);
   }
 
-  public static int getPawnDirection(final Color color) {
-      return color == Color.WHITE ? 1 : -1;
+  public static int getPawnDirection(final PlayerColor color) {
+      return color == PlayerColor.WHITE ? 1 : -1;
   }
 
-  public static int getRowForColor(int row, Color color) {
-    return color == Color.WHITE ? row : ChessBoard.BOARD_ROWS - row + 1;
+  public static int getRowForColor(int row, PlayerColor color) {
+    return color == PlayerColor.WHITE ? row : ChessBoard.BOARD_ROWS - row + 1;
   }
 
-  private void putClassicalPositionsForMainPieces(final Color color) {
+  private void putClassicalPositionsForMainPieces(final PlayerColor color) {
     final int firstRow = getFirstRow(color);
     this.addPiece(new Rook(color, new Square(1, firstRow)));
     this.addPiece(new Knight(color, new Square(2, firstRow)));
@@ -89,8 +89,8 @@ public class ChessBoard {
     return j >= 1 && j <= BOARD_ROWS;
   }
 
-  public static Color getOppositeColor(final Color color) {
-    return color == Color.WHITE ? Color.BLACK : Color.WHITE;
+  public static PlayerColor getOppositeColor(final PlayerColor color) {
+    return color == PlayerColor.WHITE ? PlayerColor.BLACK : PlayerColor.WHITE;
   }
 
   public void addPiece(final PieceOnBoard piece) {
@@ -128,9 +128,9 @@ public class ChessBoard {
     for (int i = 1; i <= BOARD_ROWS; i++) {
       final List<PieceOnBoard> piecesAtRow = new ArrayList<>(BOARD_COLS);
       for (int j = 1; j <= BOARD_COLS; j++) {
-        PieceOnBoard piece = this.piecesByColor.get(Color.WHITE).get(new Square(j, i));
+        PieceOnBoard piece = this.piecesByColor.get(PlayerColor.WHITE).get(new Square(j, i));
         if (piece == null) {
-          piece = this.piecesByColor.get(Color.BLACK).get(new Square(j, i));
+          piece = this.piecesByColor.get(PlayerColor.BLACK).get(new Square(j, i));
         }
         if (piece == null) {
           // No piece at the given square
@@ -155,11 +155,11 @@ public class ChessBoard {
     return piece.getControlledSquares(this).contains(this.getKing(ChessBoard.getOppositeColor(piece.getColor())).getSquare());
   }
 
-  public List<PieceOnBoard> findPiecesCheckingKing(final Color color) {
+  public List<PieceOnBoard> findPiecesCheckingKing(final PlayerColor color) {
     return !this.kings.containsKey(color) ? List.of() : this.piecesControllingSquare(this.kings.get(color).getSquare(), getOppositeColor(color));
   }
 
-  public List<PieceOnBoard> piecesControllingSquare(final Square square, final Color color) {
+  public List<PieceOnBoard> piecesControllingSquare(final Square square, final PlayerColor color) {
     final List<PieceOnBoard> piecesControlling = new ArrayList<>(2);
     for (Map.Entry<Square, PieceOnBoard> squarePiece : this.piecesByColor.get(color).entrySet()) {
       if (squarePiece.getValue().getControlledSquares(this).contains(square)) {
@@ -179,7 +179,7 @@ public class ChessBoard {
     }
   }
 
-  public List<Move> findAllValidMoves(final Color color) {
+  public List<Move> findAllValidMoves(final PlayerColor color) {
     final List<Move> validMoves = new ArrayList<>();
     for (PieceOnBoard piece : new ArrayList<>(this.piecesByColor.get(color).values())) {
       validMoves.addAll(piece.findValidMoves(this));
@@ -204,7 +204,7 @@ public class ChessBoard {
    * @param color - The color of the rooks to find.
    * @return A set containing the rooks that didn't move yet.
    */
-  public Set<Rook> getUnmovedRooks(final Color color) {
+  public Set<Rook> getUnmovedRooks(final PlayerColor color) {
     return this.piecesByColor.get(color).values().stream().filter(piece -> piece.getName().equals(Rook.NAME_LC) && !piece.isHasAlreadyMoved())
             .map(piece -> (Rook) piece).collect(Collectors.toSet());
   }
@@ -220,12 +220,12 @@ public class ChessBoard {
     final int kingSideMultiplier = isKingSideCastle? -1 : 1;
     final Square kingSquare = king.getSquare();
     final Square rookSquare = rook.getSquare();
-    final Color color = king.getColor();
+    final PlayerColor color = king.getColor();
     return rook.getColor() == color && kingSquare.row() == rookSquare.row() && kingSquare.row() == getFirstRow(color)
             && kingSideMultiplier * (kingSquare.column() - rookSquare.column()) > 0;
   }
 
-  public Map<Square, PieceOnBoard> getPieces(final Color color) {
+  public Map<Square, PieceOnBoard> getPieces(final PlayerColor color) {
       return this.piecesByColor.get(color);
   }
 
@@ -239,7 +239,7 @@ public class ChessBoard {
 
   public void validateInternalDataStructures() {
     int piecesByColor = 0;
-    for (Map.Entry<Color, Map<Square, PieceOnBoard>> square : this.piecesByColor.entrySet()) {
+    for (Map.Entry<PlayerColor, Map<Square, PieceOnBoard>> square : this.piecesByColor.entrySet()) {
       piecesByColor += square.getValue().size();
     }
     if (piecesByColor != allPieces.size())
@@ -247,14 +247,14 @@ public class ChessBoard {
     for (Map.Entry<Square, PieceOnBoard> square : allPieces.entrySet()) {
       if (!square.getKey().equals(square.getValue().getSquare()))
         throw new IllegalStateException("Inconsistent square for all pieces!");
-      final Color color = square.getValue().getColor();
+      final PlayerColor color = square.getValue().getColor();
       final PieceOnBoard piece = this.piecesByColor.get(color).get(square.getKey());
       if (piece == null || !piece.equals(square.getValue()))
         throw new IllegalStateException("Inconsistent piece between both data structures!");
     }
   }
 
-  public King getKing(final Color color) {
+  public King getKing(final PlayerColor color) {
     return this.kings.get(color);
   }
 
@@ -267,15 +267,15 @@ public class ChessBoard {
     return new Square(squareName.charAt(0) - firstColumn + 1, squareName.charAt(1) - '0');
   }
 
-  public List<Color> getColors() {
+  public List<PlayerColor> getColors() {
     return this.piecesByColor.keySet().stream().sorted().collect(Collectors.toList());
   }
 
-  public boolean isKingUnderCheck(final Color color) {
+  public boolean isKingUnderCheck(final PlayerColor color) {
     return !this.findPiecesCheckingKing(color).isEmpty();
   }
 
-  public boolean isKingCheckMate(final Color color) {
+  public boolean isKingCheckMate(final PlayerColor color) {
     return this.isKingUnderCheck(color) && this.findAllValidMoves(color).isEmpty();
   }
 }

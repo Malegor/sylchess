@@ -1,6 +1,6 @@
 package com.sylvain.chess.play;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.pieces.PieceOnBoard;
@@ -21,7 +21,7 @@ public class TestFullDummyGame {
     Assert.assertEquals(GameStatus.UNIMPROVING_MOVES, gameStatus);
     Assert.assertEquals(57, play.getMoveNumber());
     int numberOfUnmovedPawns = 0;
-    for (PieceOnBoard piece : board.getPieces(Color.WHITE).values()) {
+    for (PieceOnBoard piece : board.getPieces(PlayerColor.WHITE).values()) {
       // OBS: one single pawn didn't move during the game
       if (piece.getSquare().row() != 2 || !piece.getName().equals(Pawn.NAME_LC))
         Assert.assertTrue(piece.isHasAlreadyMoved());
@@ -30,7 +30,7 @@ public class TestFullDummyGame {
         Assert.assertFalse(piece.isHasAlreadyMoved());
       }
     }
-    for (PieceOnBoard piece : board.getPieces(Color.BLACK).values()) {
+    for (PieceOnBoard piece : board.getPieces(PlayerColor.BLACK).values()) {
       Assert.assertTrue(piece.isHasAlreadyMoved());
     }
     Assert.assertEquals(1, numberOfUnmovedPawns);
@@ -60,6 +60,6 @@ public class TestFullDummyGame {
   }
 
   public static List<Player> getDummyPlayers(final ChessBoard board) {
-    return List.of(new DummyPlayer(Color.WHITE, board), new DummyPlayer(Color.BLACK, board));
+    return List.of(new DummyPlayer(PlayerColor.WHITE, board), new DummyPlayer(PlayerColor.BLACK, board));
   }
 }

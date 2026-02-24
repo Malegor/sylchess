@@ -1,6 +1,6 @@
 package com.sylvain.chess.play.players;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.moves.Move;
 import lombok.AllArgsConstructor;
@@ -11,12 +11,12 @@ import java.util.List;
 @AllArgsConstructor
 public abstract class Player {
   @Getter
-  protected final Color color;
+  protected final PlayerColor color;
   @Getter
   protected final String name;
   protected final ChessBoard board;
 
-  public Move move() {
+  public Move getSelectedMove() {
     final List<Move> validMoves = this.board.findAllValidMoves(this.color);
     if (validMoves.isEmpty())
       return null;

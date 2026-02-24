@@ -1,6 +1,6 @@
 package com.sylvain.chess.io.fen;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 import com.sylvain.chess.moves.Move;
@@ -28,7 +28,7 @@ public class FenLoader {
     if (fenArray.length < 6)
       throw new IllegalArgumentException("Invalid fen (missing arguments): " + fen);
     final ChessBoard board = loadBoard(fenArray[0]);
-    final Color color = getNextColor(fenArray[1].toCharArray()[0]);
+    final PlayerColor color = getNextColor(fenArray[1].toCharArray()[0]);
     configureImpossibleCastles(fenArray[2], board);
     configureLastMove(fenArray[3], board, ChessBoard.getOppositeColor(color));
     final int numberOfHalfMovesWithoutImprovement = Integer.parseInt(fenArray[4]);
@@ -39,7 +39,7 @@ public class FenLoader {
     return gameplay;
   }
 
-  private static void configureLastMove(final String fenEnPassant, final ChessBoard board, final Color color) {
+  private static void configureLastMove(final String fenEnPassant, final ChessBoard board, final PlayerColor color) {
     if (fenEnPassant.equals(NONE))
       return;
     final Square enPassantSquare = board.getSquare(fenEnPassant);
@@ -47,14 +47,14 @@ public class FenLoader {
     board.setPreviousMove(new Move(Map.of(pawn.move(0, - 2 * ChessBoard.getPawnDirection(color)), pawn), board));
   }
 
-  private static Color getNextColor(final Character fenColor) {
+  private static PlayerColor getNextColor(final Character fenColor) {
     // OBS: here we permit the configuration of any other string for blacks
-    final Character whiteFen = Color.WHITE.getFenName();
-    final Character blackFen = Color.BLACK.getFenName();
+    final Character whiteFen = PlayerColor.WHITE.getFenName();
+    final Character blackFen = PlayerColor.BLACK.getFenName();
     if (!Set.of(whiteFen, blackFen).contains(fenColor)) {
       log.warn("Color '{}' is not '{}' or '{}'; it will be considered as WHITE.", fenColor, whiteFen, blackFen);
     }
-    return Objects.equals(fenColor, 'b') ? Color.BLACK : Color.WHITE;
+    return Objects.equals(fenColor, 'b') ? PlayerColor.BLACK : PlayerColor.WHITE;
   }
 
   private static void configureImpossibleCastles(final String fenCastles, final ChessBoard board) {
@@ -71,7 +71,7 @@ public class FenLoader {
   }
 
   private static Set<Rook> findRookForCastle(final char castleChar, final ChessBoard board) {
-    final Color color = PieceOnBoard.getColor(castleChar);
+    final PlayerColor color = PieceOnBoard.getColor(castleChar);
     final Set<Rook> rooks = board.getUnmovedRooks(color);
     final King king = board.getKing(color);
     final boolean isKingSide = Character.toLowerCase(castleChar) == King.NAME_LC;

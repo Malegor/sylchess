@@ -1,6 +1,6 @@
 package com.sylvain.chess.moves;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 import com.sylvain.chess.pieces.King;
@@ -39,7 +39,7 @@ public class Move {
     if (this.moveToNewSquare.isEmpty())
       return false;
     final Map.Entry<PieceOnBoard, PieceOnBoard> firstEntry = this.moveToNewSquare.entrySet().iterator().next();
-    final Color color = firstEntry.getKey().getColor();
+    final PlayerColor color = firstEntry.getKey().getColor();
     if (color != firstEntry.getValue().getColor())
       throw new IllegalStateException("Illegal move: " + this);
     if ((this.captured != null && this.captured.getColor() == color) ||
@@ -59,7 +59,7 @@ public class Move {
     // along the king's trip. Also check if both pieces are still on the first row.
     if (this.captured != null || this.moveToNewSquare.keySet().stream().anyMatch(p -> p.getSquare().row() != ChessBoard.getFirstRow(p.getColor())))
       return false;
-    final Color color = this.getColor();
+    final PlayerColor color = this.getColor();
     int minCol = ChessBoard.BOARD_COLS + 1;
     int maxCol = - 1;
     int minKing=0, maxKing=0;
@@ -95,7 +95,7 @@ public class Move {
   }
 
   private boolean isValidPawnMove(final Map.Entry<PieceOnBoard, PieceOnBoard> entry) {
-    final Color color = this.getColor();
+    final PlayerColor color = this.getColor();
     // 1- a pawn can move straight or capture in diagonal (special case for the starting position)
     final int dir = ChessBoard.getPawnDirection(color);
     final int rowIncrement = dir * (entry.getValue().getSquare().row() - entry.getKey().getSquare().row());
@@ -203,7 +203,7 @@ public class Move {
     return this.moveToNewSquare.size() > 1;
   }
 
-  public Color getColor() {
+  public PlayerColor getColor() {
     return this.moveToNewSquare.keySet().iterator().next().getColor();
   }
 

@@ -1,6 +1,6 @@
 package com.sylvain.chess.pieces;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 
@@ -10,17 +10,23 @@ import java.util.stream.Collectors;
 public class Knight extends PieceOnBoard {
     public static char NAME_LC = 'n';
 
-    public Knight(final Color color, final Square square) {
+    public Knight(final PlayerColor color, final Square square) {
         this(color, square, false);
     }
 
-    public Knight(final Color color, final Square square, final boolean hasAlreadyMoved) {
+    public Knight(final PlayerColor color, final Square square, final boolean hasAlreadyMoved) {
         super(color, square, hasAlreadyMoved);
     }
 
     @Override
     public Knight at(final Square square) {
         return new Knight(this.color, square, this.hasAlreadyMoved);
+    }
+
+    @Override
+    public String getIconPath(PlayerColor color) {
+        final String colorStr = color.equals(PlayerColor.BLACK) ? "d" : "l";
+        return "/pieces_png/Chess_n" + colorStr + "t60.png";
     }
 
     @Override
