@@ -1,6 +1,6 @@
 package com.sylvain.chess.io.fen;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 import com.sylvain.chess.pieces.King;
@@ -31,7 +31,7 @@ public class FenSaver {
 
   private static String getPossibleCastles(final ChessBoard board) {
     final StringBuilder builder = new StringBuilder();
-    for (Color color : board.getColors()) { // OBS: better to get colors from the game players?
+    for (PlayerColor color : board.getColors()) { // OBS: better to get colors from the game players?
       final King king = board.getKing(color);
       if (!king.isHasAlreadyMoved()) {
         final Set<Rook> rooks = board.getUnmovedRooks(color);

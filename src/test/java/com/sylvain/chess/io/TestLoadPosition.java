@@ -1,6 +1,6 @@
 package com.sylvain.chess.io;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 import com.sylvain.chess.io.fen.FenLoader;
@@ -65,8 +65,8 @@ public class TestLoadPosition {
     final String fileName = "fen/starting.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
-    Assert.assertEquals(Color.BLACK, gameplay.getLastPlayer().getColor());
-    for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
+    Assert.assertEquals(PlayerColor.BLACK, gameplay.getLastPlayer().getColor());
+    for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
       Assert.assertEquals(2, gameplay.getBoard().getUnmovedRooks(color).size());
     }
@@ -81,14 +81,14 @@ public class TestLoadPosition {
     final String fileName = "fen/after-pawn.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
-    Assert.assertEquals(Color.WHITE, gameplay.getLastPlayer().getColor());
-    for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
+    Assert.assertEquals(PlayerColor.WHITE, gameplay.getLastPlayer().getColor());
+    for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
       Assert.assertEquals(2, gameplay.getBoard().getUnmovedRooks(color).size());
     }
     Assert.assertNotNull(gameplay.getBoard().getPreviousMove());
     final Square startingSquare = new Square(4, 4);
-    final Pawn blackPawn = new Pawn(Color.BLACK, startingSquare);
+    final Pawn blackPawn = new Pawn(PlayerColor.BLACK, startingSquare);
     Assert.assertTrue((new Move(Map.of(blackPawn, blackPawn.move(1, -1)), gameplay.getBoard())).isValidMove());
     // OBS: this pawn didn't exist in the board, it has to be removed (as the rollback method will restore the key's position).
     gameplay.getBoard().removePiece(blackPawn);
@@ -102,8 +102,8 @@ public class TestLoadPosition {
     final String fileName = "fen/mate3.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
-    Assert.assertEquals(Color.BLACK, gameplay.getLastPlayer().getColor());
-    for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
+    Assert.assertEquals(PlayerColor.BLACK, gameplay.getLastPlayer().getColor());
+    for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
       Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(color).isEmpty());
     }
@@ -118,8 +118,8 @@ public class TestLoadPosition {
     final String fileName = "fen/mate4.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
-    Assert.assertEquals(Color.BLACK, gameplay.getLastPlayer().getColor());
-    for (Color color : Set.of(Color.WHITE, Color.BLACK)) {
+    Assert.assertEquals(PlayerColor.BLACK, gameplay.getLastPlayer().getColor());
+    for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
       Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(color).isEmpty());
     }

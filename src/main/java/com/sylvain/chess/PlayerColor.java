@@ -4,7 +4,7 @@ import lombok.Getter;
 
 import java.util.function.Function;
 
-public enum Color {
+public enum PlayerColor {
     WHITE('w') {
         @Override
         public Function<Character, Character> change() {
@@ -19,7 +19,7 @@ public enum Color {
 
     @Getter
     private final Character fenName;
-    Color(final Character fenName) {
+    PlayerColor(final Character fenName) {
         this.fenName = fenName;
     }
 

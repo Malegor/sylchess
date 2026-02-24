@@ -1,6 +1,6 @@
 package com.sylvain.chess.pieces;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 
@@ -9,7 +9,7 @@ import java.util.List;
 public class NoPiece extends PieceOnBoard {
     public static char NAME = ' ';
 
-    public NoPiece(final Color color, final Square square) {
+    public NoPiece(final PlayerColor color, final Square square) {
         super(color, square, false);
     }
 
@@ -19,7 +19,7 @@ public class NoPiece extends PieceOnBoard {
     }
 
     @Override
-    public String getIconPath(Color color) {
+    public String getIconPath(PlayerColor color) {
         return "";
     }
 

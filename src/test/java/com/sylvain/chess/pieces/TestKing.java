@@ -1,6 +1,6 @@
 package com.sylvain.chess.pieces;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 import lombok.extern.log4j.Log4j2;
@@ -17,7 +17,7 @@ public class TestKing {
         for (int i = 1; i <= ChessBoard.BOARD_COLS; i++) {
             for (int j = 1; j <= ChessBoard.BOARD_ROWS; j++) {
                 final Square startingSquare = new Square(i, j);
-                final List<Square> squares = new King(Color.WHITE, startingSquare).getControlledSquares(new ChessBoard());
+                final List<Square> squares = new King(PlayerColor.WHITE, startingSquare).getControlledSquares(new ChessBoard());
                 System.out.println(startingSquare + " : " + squares);
                 for (Square square : squares) {
                     Assert.assertTrue(ChessBoard.isInBoard(square));

@@ -1,6 +1,6 @@
 package com.sylvain.chess.pieces;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 import com.sylvain.chess.moves.Move;
@@ -15,7 +15,7 @@ public class TestPawn {
         final int j = 2;
         for (int i = 1; i <= ChessBoard.BOARD_COLS; i++) {
             final Square startingSquare = new Square(i, j);
-            final List<Square> squares = new Pawn(Color.WHITE, startingSquare).getControlledSquares(null);
+            final List<Square> squares = new Pawn(PlayerColor.WHITE, startingSquare).getControlledSquares(null);
             System.out.println(startingSquare + " : " + squares);
             Assert.assertEquals((i == 1 || i == ChessBoard.BOARD_COLS) ? 1 : 2, squares.size());
             for (Square square : squares) {
@@ -29,14 +29,14 @@ public class TestPawn {
     @Test
     public void testPossibleCaptures() {
         final ChessBoard board = new ChessBoard();
-        board.addPiece(new Pawn(Color.WHITE, new Square(4, 4)));
-        board.addPiece(new Pawn(Color.BLACK, new Square(3, 6)));
-        board.addPiece(new Pawn(Color.BLACK, new Square(4, 6)));
-        board.addPiece(new Pawn(Color.BLACK, new Square(5, 6)));
-        board.addPiece(new Pawn(Color.BLACK, new Square(3, 5)));
-        board.addPiece(new Pawn(Color.BLACK, new Square(4, 5)));
-        board.addPiece(new Pawn(Color.BLACK, new Square(5, 5)));
-        final List<Move> allValidMoves = board.findAllValidMoves(Color.WHITE);
+        board.addPiece(new Pawn(PlayerColor.WHITE, new Square(4, 4)));
+        board.addPiece(new Pawn(PlayerColor.BLACK, new Square(3, 6)));
+        board.addPiece(new Pawn(PlayerColor.BLACK, new Square(4, 6)));
+        board.addPiece(new Pawn(PlayerColor.BLACK, new Square(5, 6)));
+        board.addPiece(new Pawn(PlayerColor.BLACK, new Square(3, 5)));
+        board.addPiece(new Pawn(PlayerColor.BLACK, new Square(4, 5)));
+        board.addPiece(new Pawn(PlayerColor.BLACK, new Square(5, 5)));
+        final List<Move> allValidMoves = board.findAllValidMoves(PlayerColor.WHITE);
         System.out.println(allValidMoves);
         Assert.assertEquals(2, allValidMoves.size());
     }
@@ -44,14 +44,14 @@ public class TestPawn {
     @Test
     public void testPossibleCapturesBlack() {
         final ChessBoard board = new ChessBoard();
-        board.addPiece(new Pawn(Color.BLACK, new Square(4, 4)));
-        board.addPiece(new Pawn(Color.WHITE, new Square(3, 2)));
-        board.addPiece(new Pawn(Color.WHITE, new Square(4, 2)));
-        board.addPiece(new Pawn(Color.WHITE, new Square(5, 2)));
-        board.addPiece(new Pawn(Color.WHITE, new Square(3, 3)));
-        board.addPiece(new Pawn(Color.WHITE, new Square(4, 3)));
-        board.addPiece(new Pawn(Color.WHITE, new Square(5, 3)));
-        final List<Move> allValidMoves = board.findAllValidMoves(Color.BLACK);
+        board.addPiece(new Pawn(PlayerColor.BLACK, new Square(4, 4)));
+        board.addPiece(new Pawn(PlayerColor.WHITE, new Square(3, 2)));
+        board.addPiece(new Pawn(PlayerColor.WHITE, new Square(4, 2)));
+        board.addPiece(new Pawn(PlayerColor.WHITE, new Square(5, 2)));
+        board.addPiece(new Pawn(PlayerColor.WHITE, new Square(3, 3)));
+        board.addPiece(new Pawn(PlayerColor.WHITE, new Square(4, 3)));
+        board.addPiece(new Pawn(PlayerColor.WHITE, new Square(5, 3)));
+        final List<Move> allValidMoves = board.findAllValidMoves(PlayerColor.BLACK);
         System.out.println(allValidMoves);
         Assert.assertEquals(2, allValidMoves.size());
     }

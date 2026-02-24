@@ -1,6 +1,6 @@
 package com.sylvain.chess.play.players;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.moves.Move;
 
@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class DummyPlayer extends Player {
 
-  public DummyPlayer(final Color color, final ChessBoard board) {
+  public DummyPlayer(final PlayerColor color, final ChessBoard board) {
     super(color, "Dummy", board);
   }
 

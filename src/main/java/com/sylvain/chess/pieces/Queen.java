@@ -1,6 +1,6 @@
 package com.sylvain.chess.pieces;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 
@@ -10,11 +10,11 @@ import java.util.List;
 public class Queen extends PieceOnBoard {
     public static char NAME_LC = 'q';
 
-    public Queen(final Color color, final Square square) {
+    public Queen(final PlayerColor color, final Square square) {
         this(color, square, false);
     }
 
-    public Queen(final Color color, final Square square, final boolean hasAlreadyMoved) {
+    public Queen(final PlayerColor color, final Square square, final boolean hasAlreadyMoved) {
         super(color, square, hasAlreadyMoved);
     }
 
@@ -24,8 +24,8 @@ public class Queen extends PieceOnBoard {
     }
 
     @Override
-    public String getIconPath(Color color) {
-        final String colorStr = color.equals(Color.BLACK) ? "d" : "l";
+    public String getIconPath(PlayerColor color) {
+        final String colorStr = color.equals(PlayerColor.BLACK) ? "d" : "l";
         return "/pieces_png/Chess_q" + colorStr + "t60.png";
     }
 

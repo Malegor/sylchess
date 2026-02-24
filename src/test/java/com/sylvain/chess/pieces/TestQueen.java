@@ -1,6 +1,6 @@
 package com.sylvain.chess.pieces;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 import lombok.extern.log4j.Log4j2;
@@ -17,10 +17,10 @@ public class TestQueen {
         for (int i = 1; i <= ChessBoard.BOARD_COLS; i++) {
             for (int j = 1; j <= ChessBoard.BOARD_ROWS; j++) {
                 final Square startingSquare = new Square(i, j);
-                final List<Square> squares = new Queen(Color.WHITE, startingSquare).getControlledSquares(null);
+                final List<Square> squares = new Queen(PlayerColor.WHITE, startingSquare).getControlledSquares(null);
                 System.out.println(startingSquare + " : " + squares);
-                final List<Square> rookControl = new Rook(Color.WHITE, startingSquare).getControlledSquares(null);
-                final List<Square> bishopControl = new Bishop(Color.WHITE, startingSquare).getControlledSquares(null);
+                final List<Square> rookControl = new Rook(PlayerColor.WHITE, startingSquare).getControlledSquares(null);
+                final List<Square> bishopControl = new Bishop(PlayerColor.WHITE, startingSquare).getControlledSquares(null);
                 Assert.assertEquals(rookControl.size() + bishopControl.size(), squares.size());
                 Assert.assertTrue(squares.containsAll(rookControl));
                 Assert.assertTrue(squares.containsAll(bishopControl));

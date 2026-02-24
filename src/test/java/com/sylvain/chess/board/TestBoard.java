@@ -1,6 +1,6 @@
 package com.sylvain.chess.board;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.pieces.King;
 import com.sylvain.chess.pieces.Rook;
 import org.junit.Assert;
@@ -17,8 +17,8 @@ public class TestBoard {
     @Test
     public void testPrintBoard() {
         final ChessBoard board = new ChessBoard();
-        board.addPiece(new Rook(Color.WHITE, new Square(1, 1)));
-        board.addPiece(new King(Color.BLACK, new Square(5, 8)));
+        board.addPiece(new Rook(PlayerColor.WHITE, new Square(1, 1)));
+        board.addPiece(new King(PlayerColor.BLACK, new Square(5, 8)));
         board.printBoard();
     }
 

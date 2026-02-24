@@ -1,6 +1,6 @@
 package com.sylvain.chess.pieces;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 import com.sylvain.chess.moves.Move;
@@ -12,11 +12,11 @@ import java.util.Map;
 public class Pawn extends PieceOnBoard {
     public static char NAME_LC = 'p';
 
-    public Pawn(final Color color, final Square startingSquare) {
+    public Pawn(final PlayerColor color, final Square startingSquare) {
         this(color, startingSquare, false);
     }
 
-    public Pawn(final Color color, final Square square, final boolean hasAlreadyMoved) {
+    public Pawn(final PlayerColor color, final Square square, final boolean hasAlreadyMoved) {
         super(color, square, hasAlreadyMoved);
     }
 
@@ -84,8 +84,8 @@ public class Pawn extends PieceOnBoard {
     }
 
     @Override
-    public String getIconPath(Color color) {
-        final String colorStr = color.equals(Color.BLACK) ? "d" : "l";
+    public String getIconPath(PlayerColor color) {
+        final String colorStr = color.equals(PlayerColor.BLACK) ? "d" : "l";
         return "/pieces_png/Chess_p" + colorStr + "t60.png";
     }
 }

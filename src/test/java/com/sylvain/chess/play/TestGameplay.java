@@ -1,6 +1,6 @@
 package com.sylvain.chess.play;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 import com.sylvain.chess.moves.Move;
@@ -20,13 +20,13 @@ public class TestGameplay {
   @Test
   public void testCheckmate() {
     final ChessBoard board = new ChessBoard();
-    board.addPiece(new King(Color.WHITE, new Square(1,1)));
-    board.addPiece(new Pawn(Color.WHITE, new Square(1,2)));
-    board.addPiece(new Pawn(Color.WHITE, new Square(2,2)));
-    board.addPiece(new Rook(Color.BLACK, new Square(8,1)));
+    board.addPiece(new King(PlayerColor.WHITE, new Square(1,1)));
+    board.addPiece(new Pawn(PlayerColor.WHITE, new Square(1,2)));
+    board.addPiece(new Pawn(PlayerColor.WHITE, new Square(2,2)));
+    board.addPiece(new Rook(PlayerColor.BLACK, new Square(8,1)));
     board.printBoard();
-    final DummyPlayer whitePlayer = new DummyPlayer(Color.WHITE, board);
-    final DummyPlayer blackPlayer = new DummyPlayer(Color.BLACK, board);
+    final DummyPlayer whitePlayer = new DummyPlayer(PlayerColor.WHITE, board);
+    final DummyPlayer blackPlayer = new DummyPlayer(PlayerColor.BLACK, board);
     final List<Player> players = List.of(whitePlayer, blackPlayer);
     final Gameplay game = new Gameplay(board);
     final GameStatus status = game.playGame(players);
@@ -39,13 +39,13 @@ public class TestGameplay {
   @Test
   public void testStalemate() {
     final ChessBoard board = new ChessBoard();
-    board.addPiece(new King(Color.WHITE, new Square(1,1)));
-    board.addPiece(new Pawn(Color.WHITE, new Square(2,2)));
-    board.addPiece(new Pawn(Color.BLACK, new Square(3,2)));
-    board.addPiece(new Pawn(Color.BLACK, new Square(2,3)));
+    board.addPiece(new King(PlayerColor.WHITE, new Square(1,1)));
+    board.addPiece(new Pawn(PlayerColor.WHITE, new Square(2,2)));
+    board.addPiece(new Pawn(PlayerColor.BLACK, new Square(3,2)));
+    board.addPiece(new Pawn(PlayerColor.BLACK, new Square(2,3)));
     board.printBoard();
-    final DummyPlayer whitePlayer = new DummyPlayer(Color.WHITE, board);
-    final DummyPlayer blackPlayer = new DummyPlayer(Color.BLACK, board);
+    final DummyPlayer whitePlayer = new DummyPlayer(PlayerColor.WHITE, board);
+    final DummyPlayer blackPlayer = new DummyPlayer(PlayerColor.BLACK, board);
     final List<Player> players = List.of(whitePlayer, blackPlayer);
     final Gameplay game = new Gameplay(board);
     final GameStatus status = game.playGame(players);
@@ -62,7 +62,7 @@ public class TestGameplay {
     Assert.assertNotNull(status);
     Assert.assertEquals(GameStatus.SEVERAL_TIMES_SAME_POSITION, status);
     Assert.assertEquals(EndGame.DRAW, game.getEndGame());
-    Assert.assertEquals(Color.BLACK, game.getLastPlayer().getColor());
+    Assert.assertEquals(PlayerColor.BLACK, game.getLastPlayer().getColor());
     // Repetition every 6 moves, as every 3 moves we get the same position but with inverted colors.
     Assert.assertEquals(13, game.getMoveNumber());
   }
@@ -75,15 +75,15 @@ public class TestGameplay {
     Assert.assertNotNull(status);
     Assert.assertEquals(GameStatus.UNIMPROVING_MOVES, status);
     Assert.assertEquals(EndGame.DRAW, game.getEndGame());
-    Assert.assertEquals(Color.WHITE, game.getLastPlayer().getColor());
+    Assert.assertEquals(PlayerColor.WHITE, game.getLastPlayer().getColor());
     Assert.assertEquals(numberOfMoves + 1, game.getMoveNumber());
   }
 
   @Test
   public void testOnlyKings() {
     final ChessBoard board = new ChessBoard();
-    board.addPiece(new King(Color.WHITE, new Square(1,1)));
-    board.addPiece(new King(Color.BLACK, new Square(8,8)));
+    board.addPiece(new King(PlayerColor.WHITE, new Square(1,1)));
+    board.addPiece(new King(PlayerColor.BLACK, new Square(8,8)));
     final Gameplay game = new Gameplay(board);
     final GameStatus status = game.playGame(TestFullDummyGame.getDummyPlayers(game.getBoard()));
     Assert.assertEquals(GameStatus.ONLY_KINGS, status);
@@ -93,22 +93,22 @@ public class TestGameplay {
 
   private Gameplay getGameWithRepeatedMoves(final int maxNumberOfMovesWithoutCaptureOrPawnMove) {
     final ChessBoard board = new ChessBoard();
-    final King whiteKing = new King(Color.WHITE, new Square(5, 1));
+    final King whiteKing = new King(PlayerColor.WHITE, new Square(5, 1));
     board.addPiece(whiteKing);
-    final Rook blackRook = new Rook(Color.BLACK, new Square(1, 8));
+    final Rook blackRook = new Rook(PlayerColor.BLACK, new Square(1, 8));
     board.addPiece(blackRook);
     board.printBoard();
     return new Gameplay(board, null, maxNumberOfMovesWithoutCaptureOrPawnMove, 3);
   }
 
   private List<Player> getPlayersRepeatingMoves(final ChessBoard board) {
-    final King whiteKing = board.getKing(Color.WHITE);
-    final Rook blackRook = board.getUnmovedRooks(Color.BLACK).stream().findFirst().orElse(null);
+    final King whiteKing = board.getKing(PlayerColor.WHITE);
+    final Rook blackRook = board.getUnmovedRooks(PlayerColor.BLACK).stream().findFirst().orElse(null);
     // OBS: necessary to remove the pieces before defining the moves as the state of the board should be updated at the moves' instantiation.
     board.removePiece(whiteKing);
     board.removePiece(blackRook);
-    final Player whitePlayer = new Player(Color.WHITE, "White", board) {
-      private final King square2 = new King(Color.WHITE, new Square(6,1));
+    final Player whitePlayer = new Player(PlayerColor.WHITE, "White", board) {
+      private final King square2 = new King(PlayerColor.WHITE, new Square(6,1));
       private final List<Move> moves = List.of(
               new Move(Map.of(whiteKing, square2), board),
               new Move(Map.of(square2, whiteKing), board));
@@ -118,9 +118,9 @@ public class TestGameplay {
         return it.next();
       }
     };
-    final Player blackPlayer = new Player(Color.BLACK, "Black", board) {
-      private final Rook square2 = new Rook(Color.BLACK, new Square(1,7));
-      private final Rook square3 = new Rook(Color.BLACK, new Square(1,6));
+    final Player blackPlayer = new Player(PlayerColor.BLACK, "Black", board) {
+      private final Rook square2 = new Rook(PlayerColor.BLACK, new Square(1,7));
+      private final Rook square3 = new Rook(PlayerColor.BLACK, new Square(1,6));
       private final List<Move> moves = List.of(
               new Move(Map.of(blackRook, square2), board),
               new Move(Map.of(square2, square3), board),

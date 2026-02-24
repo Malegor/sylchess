@@ -1,6 +1,6 @@
 package com.sylvain.chess.play;
 
-import com.sylvain.chess.Color;
+import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.pieces.King;
@@ -33,11 +33,11 @@ public class Gameplay {
   @Getter @Setter
   private int lastHalfMoveWithCaptureOrPawn;
   private final Map<String, List<Integer>> occurrencesOfPosition;
-  private final Color firstPlayingColor;
+  private final PlayerColor firstPlayingColor;
   @Getter
   private EndGame endGame;
 
-  public Gameplay(final ChessBoard board, final Color firstPlayingColor, final int maxNumberOfMovesWithoutCaptureOrPawnMove, final int maxNumberOfTimesSamePosition) {
+  public Gameplay(final ChessBoard board, final PlayerColor firstPlayingColor, final int maxNumberOfMovesWithoutCaptureOrPawnMove, final int maxNumberOfTimesSamePosition) {
     this.board = board;
     this.maxNumberOfMovesWithoutCaptureOrPawnMove = maxNumberOfMovesWithoutCaptureOrPawnMove;
     this.maxNumberOfTimesSamePosition = maxNumberOfTimesSamePosition;
@@ -49,7 +49,7 @@ public class Gameplay {
     this.endGame = null;
   }
 
-  public Gameplay(final ChessBoard board, final Color firstPlayingColor) {
+  public Gameplay(final ChessBoard board, final PlayerColor firstPlayingColor) {
     this(board, firstPlayingColor, 50, 3);
   }
 
@@ -92,7 +92,7 @@ public class Gameplay {
         return GameStatus.UNIMPROVING_MOVES;
       }
       this.lastPlayer = player;
-      final Move move = player.move();
+      final Move move = player.getSelectedMove();
       if (move != null) {
         move.apply();
         log.info("{} - {}", this.moveNumber, move);
@@ -113,7 +113,7 @@ public class Gameplay {
         final boolean noValidMoves = this.board.findAllValidMoves(player.getColor()).isEmpty();
         final boolean isCheckmate = this.board.getPieces(player.getColor()).isEmpty() || this.board.isKingUnderCheck(player.getColor());
         final GameStatus gameStatus = !noValidMoves ? GameStatus.RESIGNED : isCheckmate ? GameStatus.CHECKMATE : GameStatus.STALEMATE;
-        this.endGame = gameStatus.equals(GameStatus.STALEMATE) ? EndGame.DRAW : player.getColor().equals(Color.WHITE) ? EndGame.BLACK_WINS : EndGame.WHITE_WINS;
+        this.endGame = gameStatus.equals(GameStatus.STALEMATE) ? EndGame.DRAW : player.getColor().equals(PlayerColor.WHITE) ? EndGame.BLACK_WINS : EndGame.WHITE_WINS;
         return gameStatus;
       }
       this.halfMoveNumber++;
@@ -126,7 +126,7 @@ public class Gameplay {
   }
 
   private boolean onlyKingsOnBoard() {
-    for (final Color color : this.board.getColors()) {
+    for (final PlayerColor color : this.board.getColors()) {
       Collection<PieceOnBoard> playerPieces = this.board.getPieces(color).values();
       for (PieceOnBoard piece : playerPieces)
         if (!piece.getName().equals(King.NAME_LC)) {
