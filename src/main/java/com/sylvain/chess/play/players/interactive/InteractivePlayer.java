@@ -23,12 +23,16 @@ public abstract class InteractivePlayer extends Player {
       if (move.isPresent())
         return move.get();
       else {
-        System.out.println("Invalid move " + moveStr + ". Try again.");// TODO: abstract handleInvalidMove
-        System.out.println("Valid moves: " + validMoves.stream().map(Move::toPgn).toList());
+        this.handleInvalidMove(validMoves, moveStr);
       }
     }
     System.out.println("No valid move selected after 3 attempts, game considered resigned.");
     return null;
+  }
+
+  protected void handleInvalidMove(List<Move> validMoves, String moveStr) {
+    System.out.println("Invalid move " + moveStr + ". Try again.");
+    System.out.println("Valid moves: " + validMoves.stream().map(Move::toPgn).toList());
   }
 
   protected abstract String getNextMove();
