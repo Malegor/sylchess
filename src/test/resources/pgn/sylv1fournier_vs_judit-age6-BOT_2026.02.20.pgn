@@ -1,0 +1,22 @@
+[Event "Play vs Bot - Chess960"]
+[Site "Chess.com"]
+[Date "2026.02.20"]
+[Round "?"]
+[White "sylv1fournier"]
+[Black "judit-age6-BOT"]
+[Result "1-0"]
+[Variant "Chess960"]
+[SetUp "1"]
+[FEN "nnrqbbkr/pppppppp/8/8/8/8/PPPPPPPP/NNRQBBKR w HChc - 0 1"]
+[TimeControl "?"]
+[WhiteElo "400"]
+[BlackElo "1350"]
+[Termination "sylv1fournier won by checkmate"]
+[EndDate "2026.02.20"]
+[initialSetup "nnrqbbkr/pppppppp/8/8/8/8/PPPPPPPP/NNRQBBKR w HChc - 0 1"]
+[Link "https://www.chess.com/game/computer/772891979?move=30"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qf5 4. d4 Nc6 5. Bd3 Qf4 6. d5 Nd8 7. Bd2 Qb4 8.
+Nb3 e5 9. Ne4 Qe7 10. Qg4 Bd7 11. Qg3 c6 12. d6 Qe6 13. Nbc5 Qg4 14. Nxd7 Qxg3
+15. hxg3 c5 16. Bh6 gxh6 17. Ndf6+ Kg7 18. Nh5+ Kg6 19. Nef6+ Kg5 20. f4+ exf4
+21. gxf4# 1-0
