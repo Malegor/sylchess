@@ -22,14 +22,20 @@ public abstract class InteractivePlayer extends Player {
       // TODO: allow resigning
       final String moveStr = this.getNextMove();
       final Optional<Move> move = validMoves.stream().filter(m -> m.toPgn().equals(moveStr)).findFirst();
-      if (move.isPresent())
+      if (move.isPresent()) {
+        this.handleValidMove(moveStr);
         return move.get();
+      }
       else {
         this.handleInvalidMove(validMoves, moveStr);
       }
     }
     System.out.println("No valid move selected after " + MAX_ATTEMPTS + " attempts, game considered resigned.");
     return null;
+  }
+
+  protected void handleValidMove(final String moveStr) {
+    // Do nothing
   }
 
   protected void handleInvalidMove(final List<Move> validMoves, final String moveStr) {
