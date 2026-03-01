@@ -33,6 +33,7 @@ public class Gameplay {
   @Getter @Setter
   private int lastHalfMoveWithCaptureOrPawn;
   private final Map<String, List<Integer>> occurrencesOfPosition;
+  @Getter
   private final PlayerColor firstPlayingColor;
   @Getter
   private EndGame endGame;
