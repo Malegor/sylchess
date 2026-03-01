@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 public abstract class InteractivePlayer extends Player {
+  public static final int MAX_ATTEMPTS = 3; // TODO abstract
+
   public InteractivePlayer(final PlayerColor color, final String name, final ChessBoard board) {
     super(color, name, board);
   }
@@ -16,21 +18,27 @@ public abstract class InteractivePlayer extends Player {
   @Override
   protected Move selectMove(List<Move> validMoves) {
     int count = 0;
-    while (count++ < 3) { // TODO abstract
+    while (count++ < MAX_ATTEMPTS) {
       // TODO: allow resigning
       final String moveStr = this.getNextMove();
       final Optional<Move> move = validMoves.stream().filter(m -> m.toPgn().equals(moveStr)).findFirst();
-      if (move.isPresent())
+      if (move.isPresent()) {
+        this.handleValidMove(moveStr);
         return move.get();
+      }
       else {
         this.handleInvalidMove(validMoves, moveStr);
       }
     }
-    System.out.println("No valid move selected after 3 attempts, game considered resigned.");
+    System.out.println("No valid move selected after " + MAX_ATTEMPTS + " attempts, game considered resigned.");
     return null;
   }
 
-  protected void handleInvalidMove(List<Move> validMoves, String moveStr) {
+  protected void handleValidMove(final String moveStr) {
+    // Do nothing
+  }
+
+  protected void handleInvalidMove(final List<Move> validMoves, final String moveStr) {
     System.out.println("Invalid move " + moveStr + ". Try again.");
     System.out.println("Valid moves: " + validMoves.stream().map(Move::toPgn).toList());
   }
