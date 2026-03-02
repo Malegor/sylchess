@@ -55,7 +55,7 @@ public class Gameplay {
   }
 
   public Gameplay(final ChessBoard board) {
-    this(board, null);
+    this(board, PlayerColor.WHITE);
   }
 
   public GameStatus playGame(final List<Player> players) {
