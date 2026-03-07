@@ -23,7 +23,12 @@ public abstract class Player {
     final Move selectedMove = this.selectMove(validMoves);
     if (selectedMove != null && !validMoves.contains(selectedMove))
       throw new IllegalArgumentException("Invalid move " + selectedMove);
+    this.handleValidMove(selectedMove);
     return selectedMove;
+  }
+
+  protected void handleValidMove(final Move move) {
+    // Do nothing
   }
 
   protected abstract Move selectMove(final List<Move> validMoves);
