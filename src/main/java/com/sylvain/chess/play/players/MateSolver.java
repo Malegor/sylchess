@@ -26,6 +26,10 @@ public class MateSolver extends Player {
 
   @Override
   protected Move selectMove(final List<Move> validMoves) {
+    if (validMoves.size() == 1) {
+      log.info("Forced move: {}", validMoves.getFirst());
+      //return validMoves.getFirst(); // OBS: for now, continue the search to get the move evaluation
+    }
     final EvaluatedMove move = alphaBeta(null, this.maxDepth, -EVALUATION_FOR_MATE - 1, EVALUATION_FOR_MATE + 1);
     final double evaluation = move.getEvaluation();
     log.info("Move eval: {}", this.isMateEvaluation(evaluation) ?
