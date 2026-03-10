@@ -278,4 +278,12 @@ public class ChessBoard {
   public boolean isKingCheckMate(final PlayerColor color) {
     return this.isKingUnderCheck(color) && this.findAllValidMoves(color).isEmpty();
   }
+
+  public ChessBoard copy() {
+    final ChessBoard copy = new ChessBoard();
+    for (PieceOnBoard piece : this.allPieces.values()) {
+      copy.addPiece(piece);
+    }
+    return copy;
+  }
 }
