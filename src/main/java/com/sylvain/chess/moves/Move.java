@@ -10,6 +10,7 @@ import com.sylvain.chess.pieces.PieceOnBoard;
 import com.sylvain.chess.pieces.Rook;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -187,6 +188,11 @@ public class Move {
   public PieceOnBoard getDestinationPiece() {
     return this.isCastle() ? this.moveToNewSquare.values().stream().filter(p -> p.getName().equals(Rook.NAME_LC)).findFirst().orElse(null)
             : this.moveToNewSquare.values().iterator().next();
+  }
+
+  public List<PieceOnBoard> getDescriptivePieces() {
+    final Map.Entry<PieceOnBoard, PieceOnBoard> firstEntry = this.moveToNewSquare.entrySet().stream().findFirst().orElse(null);
+    return this.isCastle() ? this.moveToNewSquare.values().stream().toList() : List.of(firstEntry.getKey(), firstEntry.getValue());
   }
 
   public boolean involvesPawnOrCapture() {
