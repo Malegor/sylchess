@@ -281,7 +281,7 @@ public class ChessBoard {
 
   public ChessBoard copy() {
     final ChessBoard copy = new ChessBoard();
-    for (PieceOnBoard piece : this.allPieces.values()) {
+    for (PieceOnBoard piece : new ArrayList<>(this.allPieces.values())) {
       copy.addPiece(piece);
     }
     return copy;
