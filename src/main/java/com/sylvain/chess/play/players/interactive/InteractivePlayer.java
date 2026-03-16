@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Log4j2
 public abstract class InteractivePlayer extends Player {
-  public static final int MAX_ATTEMPTS = 3; // TODO abstract
+  public static final int MAX_ATTEMPTS = 5; // TODO abstract
 
   public InteractivePlayer(final PlayerColor color, final String name, final ChessBoard board) {
     super(color, name, board);
