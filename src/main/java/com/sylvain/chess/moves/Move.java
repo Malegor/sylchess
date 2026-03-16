@@ -47,7 +47,7 @@ public class Move {
             (this.isCastle() && !isValidCastle()) || (firstEntry.getKey().getName().equals(Pawn.NAME_LC) && !isValidPawnMove(firstEntry)))
       return false;
     this.simulate();
-    if (!this.board.findPiecesCheckingKing(color).isEmpty()) {
+    if (this.board.isKingUnderCheck(color)) {
       this.rollback();
       return false;
     }
@@ -248,5 +248,18 @@ public class Move {
     final String promoStr = originalPiece.getClass().equals(moveEntry.getValue().getClass()) ? "" : PROMO_PGN + Character.toUpperCase(moveEntry.getValue().printOnBoard());
     final String status = ""; // TODO: checkmate, check ... ?? or should it be the responsibility of the gameplay?
     return pieceStr + disambiguate + takeStr + destSquare + promoStr + status;
+  }
+
+  private String getCheckPgn() {
+    final PlayerColor oppositeColor = ChessBoard.getOppositeColor(this.getColor());
+    this.simulate();
+    final boolean kingUnderCheck = this.board.isKingUnderCheck(oppositeColor);
+    final boolean kingCheckMate = kingUnderCheck && this.board.isKingCheckMate(oppositeColor);
+    this.rollback();
+    return kingCheckMate ? CHECKMATE_PGN : kingUnderCheck ? CHECK_PGN : "";
+  }
+
+  public String toCompletePgn() {
+    return this.toPgn() + getCheckPgn();
   }
 }
