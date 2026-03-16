@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Rook extends PieceOnBoard {
-    public static char NAME_LC = 'r';
+    public final static char NAME_LC = 'r';
 
     public Rook(final PlayerColor color, final Square square) {
         this(color, square, false);

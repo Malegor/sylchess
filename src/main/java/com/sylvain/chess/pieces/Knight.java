@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Knight extends PieceOnBoard {
-    public static char NAME_LC = 'n';
+    public final static char NAME_LC = 'n';
 
     public Knight(final PlayerColor color, final Square square) {
         this(color, square, false);

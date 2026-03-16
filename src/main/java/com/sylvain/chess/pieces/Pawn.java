@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Pawn extends PieceOnBoard {
-    public static char NAME_LC = 'p';
+    public final static char NAME_LC = 'p';
 
     public Pawn(final PlayerColor color, final Square startingSquare) {
         this(color, startingSquare, false);
