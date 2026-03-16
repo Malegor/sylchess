@@ -10,6 +10,7 @@ import com.sylvain.chess.pieces.PieceOnBoard;
 import com.sylvain.chess.pieces.Rook;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -46,7 +47,7 @@ public class Move {
             (this.isCastle() && !isValidCastle()) || (firstEntry.getKey().getName().equals(Pawn.NAME_LC) && !isValidPawnMove(firstEntry)))
       return false;
     this.simulate();
-    if (!this.board.findPiecesCheckingKing(color).isEmpty()) {
+    if (this.board.isKingUnderCheck(color)) {
       this.rollback();
       return false;
     }
@@ -189,6 +190,11 @@ public class Move {
             : this.moveToNewSquare.values().iterator().next();
   }
 
+  public List<PieceOnBoard> getDescriptivePieces() {
+    final Map.Entry<PieceOnBoard, PieceOnBoard> firstEntry = this.moveToNewSquare.entrySet().stream().findFirst().orElse(null);
+    return this.isCastle() ? this.moveToNewSquare.values().stream().toList() : List.of(firstEntry.getKey(), firstEntry.getValue());
+  }
+
   public boolean involvesPawnOrCapture() {
     return this.captured != null || this.moveToNewSquare.keySet().iterator().next().getName().equals(Pawn.NAME_LC);
   }
@@ -242,5 +248,18 @@ public class Move {
     final String promoStr = originalPiece.getClass().equals(moveEntry.getValue().getClass()) ? "" : PROMO_PGN + Character.toUpperCase(moveEntry.getValue().printOnBoard());
     final String status = ""; // TODO: checkmate, check ... ?? or should it be the responsibility of the gameplay?
     return pieceStr + disambiguate + takeStr + destSquare + promoStr + status;
+  }
+
+  private String getCheckPgn() {
+    final PlayerColor oppositeColor = ChessBoard.getOppositeColor(this.getColor());
+    this.simulate();
+    final boolean kingUnderCheck = this.board.isKingUnderCheck(oppositeColor);
+    final boolean kingCheckMate = kingUnderCheck && this.board.isKingCheckMate(oppositeColor);
+    this.rollback();
+    return kingCheckMate ? CHECKMATE_PGN : kingUnderCheck ? CHECK_PGN : "";
+  }
+
+  public String toCompletePgn() {
+    return this.toPgn() + getCheckPgn();
   }
 }

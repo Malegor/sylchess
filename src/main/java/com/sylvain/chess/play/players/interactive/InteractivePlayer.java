@@ -4,12 +4,14 @@ import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.play.players.Player;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
 import java.util.Optional;
 
+@Log4j2
 public abstract class InteractivePlayer extends Player {
-  public static final int MAX_ATTEMPTS = 3; // TODO abstract
+  public static final int MAX_ATTEMPTS = 5; // TODO abstract
 
   public InteractivePlayer(final PlayerColor color, final String name, final ChessBoard board) {
     super(color, name, board);
@@ -27,13 +29,13 @@ public abstract class InteractivePlayer extends Player {
       else
         this.handleInvalidMove(validMoves, moveStr);
     }
-    System.out.println("No valid move selected after " + MAX_ATTEMPTS + " attempts, game considered resigned.");
+    log.info("No valid move selected after " + MAX_ATTEMPTS + " attempts, game considered resigned.");
     return null;
   }
 
   protected void handleInvalidMove(final List<Move> validMoves, final String moveStr) {
-    System.out.println("Invalid move " + moveStr + ". Try again.");
-    System.out.println("Valid moves: " + validMoves.stream().map(Move::toPgn).toList());
+    log.info("Invalid move {}. Try again.", moveStr);
+    log.info("Valid moves: {}", validMoves.stream().map(Move::toPgn).toList());
   }
 
   protected abstract String getNextMove();

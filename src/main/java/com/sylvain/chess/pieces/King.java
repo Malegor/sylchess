@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class King extends PieceOnBoard {
-    public static char NAME_LC = 'k';
+    public final static char NAME_LC = 'k';
 
     public King(final PlayerColor color, final Square square) {
         this(color, square, false);

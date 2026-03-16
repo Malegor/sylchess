@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Bishop extends PieceOnBoard {
-    public static char NAME_LC = 'b';
+    public final static char NAME_LC = 'b';
 
     public Bishop(final PlayerColor color, final Square square) {
         this(color, square, false);
