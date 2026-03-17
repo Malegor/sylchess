@@ -1,7 +1,7 @@
 
 # sylchess
 
-This project is a java-based chess program that allows users to play starting from a given position, or from the classical starting positions. The program can also solve puzzles up to 5 or 6 moves.
+This project is a Java-based chess program that allows users to play starting from a given position, or from the classical starting positions. The program can also solve puzzles up to 5 or 6 moves.
 
 
 ## Authors
@@ -68,6 +68,15 @@ The board panel shows the game position after each move was played. As soon as a
 Right-clicking on a square will color the square, and double-clicking reset all the squares' default color.
 
 You can also use the board to indicate your next move, by left-clicking on the piece you want to move and then on the destination square. In the case of castling however, you should click on the king and the rook to indicate that move. Note that even if the other player is still "thinking" (such as in the case of a puzzle solver), you can still pre-move by clicking on the squares, especially if the other player's next move is predictable.
+
+## Future work
+
+- consider clock for each player
+- accept other pieces names (ex: distinct languages)
+- generalize rules: ex. two or more kings
+- generalize rules: several players for same color (test it)
+- first phase before game: player chooses the positions of each piece
+
 ## Acknowledgements
 
  - [readme.so](https://readme.so/editor)
