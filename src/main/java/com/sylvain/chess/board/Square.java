@@ -17,6 +17,10 @@ public record Square(int column, int row) implements Comparable<Square> {
     }
 
     public char getColumnLetter() {
+        return getColumnLetter(this.column);
+    }
+
+    public static char getColumnLetter(final int column) {
         // Check if the number is within the valid range (1-26).--> TODO: throw exception?
         // 'a' has an ASCII value of 97.
         // Subtracting 1 from the number gives a 0-based index.

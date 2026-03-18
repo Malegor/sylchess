@@ -7,6 +7,7 @@ import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.pieces.King;
 import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.pieces.PieceOnBoard;
+import com.sylvain.chess.pieces.Queen;
 import com.sylvain.chess.pieces.Rook;
 import com.sylvain.chess.play.Gameplay;
 import lombok.extern.log4j.Log4j2;
@@ -26,7 +27,7 @@ public class FenLoader {
   public static Gameplay loadPosition(final String fen) {
     final String[] fenArray = fen.split(SEP);
     if (fenArray.length < 6)
-      throw new IllegalArgumentException("Invalid fen (missing arguments): " + fen);
+      throw new IllegalArgumentException("Invalid fen (missing " + (6 - fenArray.length) + " argument(s)): " + fen);
     final ChessBoard board = loadBoard(fenArray[0]);
     final PlayerColor color = getNextColor(fenArray[1].toCharArray()[0]);
     configureImpossibleCastles(fenArray[2], board);
@@ -58,25 +59,20 @@ public class FenLoader {
   }
 
   private static void configureImpossibleCastles(final String fenCastles, final ChessBoard board) {
-    final Set<Character> allPossibleCastles = fenCastles.chars().mapToObj(c -> (char) c).collect(Collectors.toSet());
-    final Set<Character> castleChars = Set.of('K', 'Q', 'k', 'q');
-    // TODO: FEN in 960 is not the same
-    for (final char castle : castleChars) {
-      if (!allPossibleCastles.contains(castle)) {
-        for (final Rook rook : findRookForCastle(castle, board)) {
+    final Map<Character, Character> changeCharsToColumns = Map.of(
+            King.NAME_LC, Square.getColumnLetter(ChessBoard.BOARD_COLS),
+            Queen.NAME_LC, Square.getColumnLetter(1),
+            Character.toUpperCase(King.NAME_LC), Character.toUpperCase(Square.getColumnLetter(ChessBoard.BOARD_COLS)),
+            Character.toUpperCase(Queen.NAME_LC), Character.toUpperCase(Square.getColumnLetter(1)));
+    final Set<Character> allPossibleCastles = fenCastles.chars().mapToObj(c -> (char) c)
+            .map(c -> changeCharsToColumns.getOrDefault(c, c)).collect(Collectors.toSet());
+    for (final PlayerColor color : board.getColors())
+      for (final Rook rook : board.getUnmovedRooks(color)) {
+        final char columnLetter = color.equals(PlayerColor.WHITE) ? Character.toUpperCase(rook.getSquare().getColumnLetter()) : rook.getSquare().getColumnLetter();
+        if (!allPossibleCastles.contains(columnLetter)) {
           rook.setHasAlreadyMoved(true);
         }
       }
-    }
-  }
-
-  private static Set<Rook> findRookForCastle(final char castleChar, final ChessBoard board) {
-    final PlayerColor color = PieceOnBoard.getColor(castleChar);
-    final Set<Rook> rooks = board.getUnmovedRooks(color);
-    final King king = board.getKing(color);
-    final boolean isKingSide = Character.toLowerCase(castleChar) == King.NAME_LC;
-    return king.getSquare().row() != ChessBoard.getFirstRow(king.getColor()) ? rooks :
-            rooks.stream().filter(rook -> rook.getSquare().row() != ChessBoard.getFirstRow(rook.getColor()) || ChessBoard.areValidSquaresForCastle(king, rook, isKingSide)).collect(Collectors.toSet());
   }
 
   public static ChessBoard loadBoard(final String fenBoard) {
