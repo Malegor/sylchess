@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Scanner;
 
 @Log4j2
-public class InteractiveGame {
+public class ConsoleInteractiveGame {
   public static void main(String[] args) {
     final InputStream inputStream = System.in; // TODO: param for tests(?)
     final Scanner scanner = new Scanner(inputStream);

@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Scanner;
 
-public class TestInteractiveGame {
+public class TestConsoleInteractiveGame {
   @Test
   public void testMatDeLimbecile() {
     final String simulatedMoves = "f3\ne5\ng4\nQh4";
@@ -25,7 +25,7 @@ public class TestInteractiveGame {
     final Scanner scanner = new Scanner(mockInput);
     final ChessBoard board = ChessBoard.defaultBoard();
     final List<Player> players = List.of(new ConsolePlayer(PlayerColor.WHITE, "white", board, scanner), new ConsolePlayer(PlayerColor.BLACK, "black", board, scanner));
-    final EndGame endGame = InteractiveGame.play(new Gameplay(board), players);
+    final EndGame endGame = ConsoleInteractiveGame.play(new Gameplay(board), players);
     scanner.close();
     Assert.assertEquals(EndGame.BLACK_WINS, endGame);
   }
@@ -37,7 +37,7 @@ public class TestInteractiveGame {
     final Scanner scanner = new Scanner(mockInput);
     final ChessBoard board = ChessBoard.defaultBoard();
     final List<Player> players = List.of(new ConsolePlayer(PlayerColor.WHITE, "white", board, scanner), new ConsolePlayer(PlayerColor.BLACK, "black", board, scanner));
-    final EndGame endGame = InteractiveGame.play(new Gameplay(board), players);
+    final EndGame endGame = ConsoleInteractiveGame.play(new Gameplay(board), players);
     scanner.close();
     Assert.assertEquals(EndGame.DRAW, endGame);
   }
@@ -50,7 +50,7 @@ public class TestInteractiveGame {
     final Gameplay game = TestLoadPosition.loadPositionFromFile("fen/mate3-3.fen");
     game.getBoard().printBoard();
     final List<Player> players = List.of(new ConsolePlayer(PlayerColor.WHITE, "white", game.getBoard(), scanner), new MateSolver(PlayerColor.BLACK, game.getBoard(), 3));
-    final EndGame endGame = InteractiveGame.play(game, players);
+    final EndGame endGame = ConsoleInteractiveGame.play(game, players);
     scanner.close();
     Assert.assertEquals(EndGame.BLACK_WINS, endGame);
   }
@@ -60,7 +60,7 @@ public class TestInteractiveGame {
     final Gameplay game = TestLoadPosition.loadPositionFromFile("fen/mate3-3.fen");
     game.getBoard().printBoard();
     final List<Player> players = List.of(new MateSolver(PlayerColor.WHITE, game.getBoard(), 3), new MateSolver(PlayerColor.BLACK, game.getBoard(), 3));
-    final EndGame endGame = InteractiveGame.play(game, players);
+    final EndGame endGame = ConsoleInteractiveGame.play(game, players);
     Assert.assertEquals(EndGame.BLACK_WINS, endGame);
   }
 
@@ -78,7 +78,7 @@ public class TestInteractiveGame {
     final Gameplay game = TestLoadPosition.loadPositionFromFile("fen/mate4-8.fen");
     game.getBoard().printBoard();
     final List<Player> players = List.of(new MateSolver(PlayerColor.WHITE, game.getBoard(), 5), new MateSolver(PlayerColor.BLACK, game.getBoard(), 5));
-    final EndGame endGame = InteractiveGame.play(game, players);
+    final EndGame endGame = ConsoleInteractiveGame.play(game, players);
     Assert.assertEquals(EndGame.WHITE_WINS, endGame);
   }
 }
