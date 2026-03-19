@@ -12,6 +12,7 @@ import com.sylvain.chess.pieces.Rook;
 import com.sylvain.chess.play.Gameplay;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -59,16 +60,16 @@ public class FenLoader {
   }
 
   private static void configureImpossibleCastles(final String fenCastles, final ChessBoard board) {
-    final Map<Character, Character> changeCharsToColumns = Map.of(
-            King.NAME_LC, Square.getColumnLetter(ChessBoard.BOARD_COLS),
-            Queen.NAME_LC, Square.getColumnLetter(1),
-            Character.toUpperCase(King.NAME_LC), Character.toUpperCase(Square.getColumnLetter(ChessBoard.BOARD_COLS)),
-            Character.toUpperCase(Queen.NAME_LC), Character.toUpperCase(Square.getColumnLetter(1)));
+    final Map<Character, Character> changeCharsToColumns = new HashMap<>(2);
+    for (final PlayerColor color : board.getColors()) {
+      changeCharsToColumns.put(color.changeChar().apply(King.NAME_LC), color.changeChar().apply(Square.getColumnLetter(ChessBoard.BOARD_COLS)));
+      changeCharsToColumns.put(color.changeChar().apply(Queen.NAME_LC), color.changeChar().apply(Square.getColumnLetter(1)));
+    }
     final Set<Character> allPossibleCastles = fenCastles.chars().mapToObj(c -> (char) c)
             .map(c -> changeCharsToColumns.getOrDefault(c, c)).collect(Collectors.toSet());
     for (final PlayerColor color : board.getColors())
       for (final Rook rook : board.getUnmovedRooks(color)) {
-        final char columnLetter = color.equals(PlayerColor.WHITE) ? Character.toUpperCase(rook.getSquare().getColumnLetter()) : rook.getSquare().getColumnLetter();
+        final char columnLetter = color.changeChar().apply(rook.getSquare().getColumnLetter());
         if (!allPossibleCastles.contains(columnLetter)) {
           rook.setHasAlreadyMoved(true);
         }

@@ -133,7 +133,7 @@ public class TestLoadPosition {
   @Test
   public void testCastling() {
     // OBS: The black king is at its "classical chess" square, so the 'a' and 'h' columns are written 'q' and 'k' in the fen description.
-    final String fen = "r1rrkrrr/8/8/8/8/8/8/RRRKRRRR w ACGHdkq - 0 1";
+    final String fen = "r1rrkrrr/8/8/8/8/8/8/RRRKRRRR w HGCAkdq - 0 1";
     final Gameplay gameplay = FenLoader.loadPosition(fen);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
     Assert.assertEquals(Set.of('a', 'd', 'h'), gameplay.getBoard().getUnmovedRooks(PlayerColor.BLACK).stream().map(r -> r.getSquare().getColumnLetter()).collect(Collectors.toSet()));

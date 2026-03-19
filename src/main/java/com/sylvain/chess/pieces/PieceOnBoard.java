@@ -27,7 +27,7 @@ public abstract class PieceOnBoard {
     public abstract List<Square> getControlledSquares(final ChessBoard board);
 
     public Character printOnBoard() {
-        return this.color == null ? this.getName() : this.color.change().apply(this.getName());
+        return this.color == null ? this.getName() : this.color.changeChar().apply(this.getName());
     }
 
     public abstract Character getName();

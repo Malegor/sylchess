@@ -7,12 +7,12 @@ import java.util.function.Function;
 public enum PlayerColor {
     WHITE('w') {
         @Override
-        public Function<Character, Character> change() {
+        public Function<Character, Character> changeChar() {
             return Character::toUpperCase;
         }
     }, BLACK('b') {
         @Override
-        public Function<Character, Character> change() {
+        public Function<Character, Character> changeChar() {
             return Character::toLowerCase;
         }
     };
@@ -23,5 +23,5 @@ public enum PlayerColor {
         this.fenName = fenName;
     }
 
-    public abstract Function<Character, Character> change();
+    public abstract Function<Character, Character> changeChar();
 }

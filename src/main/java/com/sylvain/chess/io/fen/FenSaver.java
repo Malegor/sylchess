@@ -9,6 +9,8 @@ import com.sylvain.chess.pieces.Queen;
 import com.sylvain.chess.pieces.Rook;
 import com.sylvain.chess.play.Gameplay;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -33,17 +35,29 @@ public class FenSaver {
     final StringBuilder builder = new StringBuilder();
     for (PlayerColor color : board.getColors()) { // OBS: better to get colors from the game players?
       final King king = board.getKing(color);
+      final boolean isKingOnClassicalColumn = king.getSquare().column() == ChessBoard.CLASSICAL_KING_COLUMN;
       if (!king.isHasAlreadyMoved()) {
+        final List<Character> colorChars = new ArrayList<>(2);
+        final StringBuilder builderColor = new StringBuilder();
         final Set<Rook> rooks = board.getUnmovedRooks(color);
         for (boolean kingSide : List.of(Boolean.TRUE, Boolean.FALSE)) {
           for (Rook rook: rooks) {
             if (!rook.isHasAlreadyMoved() && ChessBoard.areValidSquaresForCastle(king, rook, kingSide)) {
-              builder.append(color.change().apply(kingSide ? King.NAME_LC : Queen.NAME_LC));
-              // OBS: in special games starting with over 2 rooks, this could lead to the same castle several times...
-              // TODO: FEN in 960 is not the same
+              colorChars.add(rook.getSquare().getColumnLetter());
             }
           }
         }
+        // OBS: the order should be "kq" (which is the natural order) but the reverse order for a...h
+        // This is why the sorting is done before replacing the letters k and q, as 'k' is 'h' and 'q' is 'a'.
+        colorChars
+                .stream()
+                .sorted(Comparator.reverseOrder())
+                .map(c -> isKingOnClassicalColumn &&
+                        (c == Square.getColumnLetter(1) || c == Square.getColumnLetter(ChessBoard.BOARD_COLS)) ?
+                        c == Square.getColumnLetter(1) ? Queen.NAME_LC : King.NAME_LC :
+                        c)
+                .forEach(c -> builderColor.append(color.changeChar().apply(c)));
+        builder.append(builderColor);
       }
     }
     return builder.isEmpty() ? FenLoader.NONE : builder.toString();
