@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 public class ChessBoard {
   public static final int BOARD_COLS = 8;
   public static final int BOARD_ROWS = 8;
+  public static final int CLASSICAL_KING_COLUMN = 5;
   private final Map<PlayerColor, Map<Square, PieceOnBoard>> piecesByColor;
   private final Map<Square, PieceOnBoard> allPieces;
   private final Map<PlayerColor, King> kings;
@@ -67,7 +68,7 @@ public class ChessBoard {
     this.addPiece(new Knight(color, new Square(2, firstRow)));
     this.addPiece(new Bishop(color, new Square(3, firstRow)));
     this.addPiece(new Queen(color, new Square(4, firstRow)));
-    this.addPiece(new King(color, new Square(5, firstRow)));
+    this.addPiece(new King(color, new Square(CLASSICAL_KING_COLUMN, firstRow)));
     this.addPiece(new Bishop(color, new Square(6, firstRow)));
     this.addPiece(new Knight(color, new Square(7, firstRow)));
     this.addPiece(new Rook(color, new Square(8, firstRow)));
@@ -211,7 +212,7 @@ public class ChessBoard {
 
   public Move getCastleMove(final King king, final Rook rook) {
     final boolean isKingSideCastle = areValidSquaresForCastle(king, rook, true);
-    final int newKingsColumn = isKingSideCastle ? 7 : 3; // Logic under these columns? introduce constants?
+    final int newKingsColumn = isKingSideCastle ? CLASSICAL_KING_COLUMN + 2 : CLASSICAL_KING_COLUMN - 2;
     final int newRooksColumn = newKingsColumn + (isKingSideCastle ? -1 : 1);
     return new Move(Map.of(king, king.at(new Square(newKingsColumn, king.getSquare().row())), rook, rook.at(new Square(newRooksColumn, rook.getSquare().row()))), this);
   }

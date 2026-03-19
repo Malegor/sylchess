@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TestLoadPosition {
 
@@ -127,6 +128,17 @@ public class TestLoadPosition {
     Assert.assertEquals(1, gameplay.getMoveNumber());
     Assert.assertEquals(1, gameplay.getLastHalfMoveWithCaptureOrPawn());
     Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
+  }
+
+  @Test
+  public void testCastling() {
+    // OBS: The black king is at its "classical chess" square, so the 'a' and 'h' columns are written 'q' and 'k' in the fen description.
+    final String fen = "r1rrkrrr/8/8/8/8/8/8/RRRKRRRR w HGCAkdq - 0 1";
+    final Gameplay gameplay = FenLoader.loadPosition(fen);
+    gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
+    Assert.assertEquals(Set.of('a', 'd', 'h'), gameplay.getBoard().getUnmovedRooks(PlayerColor.BLACK).stream().map(r -> r.getSquare().getColumnLetter()).collect(Collectors.toSet()));
+    Assert.assertEquals(Set.of('a', 'c', 'g', 'h'), gameplay.getBoard().getUnmovedRooks(PlayerColor.WHITE).stream().map(r -> r.getSquare().getColumnLetter()).collect(Collectors.toSet()));
+    Assert.assertEquals(fen, FenSaver.getPositionString(gameplay));
   }
 
   public static Gameplay loadPositionFromFile(final String fileName) throws IOException {
