@@ -86,18 +86,58 @@ public class ChessBoard {
     final List<Character> positions = new ArrayList<>(getClassicalPiecesPositions());
     final Random random = getRandom(seed);
     Collections.shuffle(positions, random);
+    // The king must be between both rooks.
+    final List<Integer> toSwap = findPositionsToSwap(positions);
+    if (toSwap.isEmpty())
+      return positions;
+    final Character pieceFirst = positions.get(toSwap.getFirst());
+    final Character pieceLast = positions.get(toSwap.getLast());
+    positions.set(toSwap.getFirst(), pieceLast);
+    positions.set(toSwap.getLast(), pieceFirst);
     return positions;
   }
 
+  private static List<Integer> findPositionsToSwap(final List<Character> positions) {
+    final List<Integer> positionsToSwap = new ArrayList<>(2);
+    boolean foundRook = false, foundKing = false;
+    for (int i = 0; i < positions.size(); i++) {
+      final char currentPiece = positions.get(i);
+      if (currentPiece == 'k') {
+        if (!foundRook) {
+          positionsToSwap.add(i);
+        }
+        else if (!positionsToSwap.isEmpty()) {
+          positionsToSwap.add(i);
+          return positionsToSwap;
+        }
+        foundKing = true;
+      }
+      else if (currentPiece == 'r') {
+        if (foundRook) {
+          if (foundKing)
+            return List.of();
+          positionsToSwap.add(i);
+        }
+        else if (!positionsToSwap.isEmpty()) {
+          positionsToSwap.add(i);
+          return positionsToSwap;
+        }
+        foundRook = true;
+      }
+    }
+    throw new IllegalStateException("Inconsistency at finding positions to swap!");
+  }
+
   private static Random getRandom(final Long seed) {
+    final String logMessage = "960 Seed: {}";
     if (seed != null) {
-      log.info("960 Seed: {}", seed);
+      log.info(logMessage, seed);
       return new Random(seed);
     }
     final Random random = new Random();
     final long specificSeed = random.nextLong();
     random.setSeed(specificSeed);
-    log.info("960 Seed: {}", specificSeed);
+    log.info(logMessage, specificSeed);
     return random;
   }
 
