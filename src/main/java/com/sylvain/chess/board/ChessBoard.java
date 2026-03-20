@@ -2,23 +2,22 @@ package com.sylvain.chess.board;
 
 import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.moves.Move;
-import com.sylvain.chess.pieces.Bishop;
 import com.sylvain.chess.pieces.King;
-import com.sylvain.chess.pieces.Knight;
 import com.sylvain.chess.pieces.NoPiece;
 import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.pieces.PieceOnBoard;
-import com.sylvain.chess.pieces.Queen;
 import com.sylvain.chess.pieces.Rook;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,10 +39,18 @@ public class ChessBoard {
   }
 
   public static ChessBoard defaultBoard() {
+    return getBoard(getClassicalPiecesPositions());
+  }
+
+  public static ChessBoard getBoard(final List<Character> positions) {
     final ChessBoard board = new ChessBoard();
-    board.putClassicalPositionsForMainPieces(PlayerColor.WHITE);
-    board.putClassicalPositionsForMainPieces(PlayerColor.BLACK);
+    board.putPositionsForColor(PlayerColor.WHITE, positions);
+    board.putPositionsForColor(PlayerColor.BLACK, positions);
     return board;
+  }
+
+  public static ChessBoard get960Board(final Long seed) {
+    return getBoard(get960PiecesPositions(seed));
   }
 
   public static int getFirstRow(final PlayerColor color) {
@@ -62,17 +69,80 @@ public class ChessBoard {
     return color == PlayerColor.WHITE ? row : ChessBoard.BOARD_ROWS - row + 1;
   }
 
-  private void putClassicalPositionsForMainPieces(final PlayerColor color) {
+  private void putPositionsForColor(final PlayerColor color, final List<Character> positions) {
     final int firstRow = getFirstRow(color);
-    this.addPiece(new Rook(color, new Square(1, firstRow)));
-    this.addPiece(new Knight(color, new Square(2, firstRow)));
-    this.addPiece(new Bishop(color, new Square(3, firstRow)));
-    this.addPiece(new Queen(color, new Square(4, firstRow)));
-    this.addPiece(new King(color, new Square(CLASSICAL_KING_COLUMN, firstRow)));
-    this.addPiece(new Bishop(color, new Square(6, firstRow)));
-    this.addPiece(new Knight(color, new Square(7, firstRow)));
-    this.addPiece(new Rook(color, new Square(8, firstRow)));
-    final int secondRow = firstRow + getPawnDirection(color);
+    int column = 1;
+    for (final char pieceChar : positions) {
+      this.addPiece(PieceOnBoard.createPiece(color.changeChar().apply(pieceChar), new Square(column++, firstRow)));
+    }
+    this.addPawnsToSecondRow(color);
+  }
+
+  private static List<Character> getClassicalPiecesPositions() {
+    return List.of('r', 'n', 'b', 'q', 'k', 'b', 'n', 'r');
+  }
+
+  private static List<Character> get960PiecesPositions(final Long seed) {
+    final List<Character> positions = new ArrayList<>(getClassicalPiecesPositions());
+    final Random random = getRandom(seed);
+    Collections.shuffle(positions, random);
+    // The king must be between both rooks.
+    final List<Integer> toSwap = findPositionsToSwap(positions);
+    if (toSwap.isEmpty())
+      return positions;
+    final Character pieceFirst = positions.get(toSwap.getFirst());
+    final Character pieceLast = positions.get(toSwap.getLast());
+    positions.set(toSwap.getFirst(), pieceLast);
+    positions.set(toSwap.getLast(), pieceFirst);
+    return positions;
+  }
+
+  private static List<Integer> findPositionsToSwap(final List<Character> positions) {
+    final List<Integer> positionsToSwap = new ArrayList<>(2);
+    boolean foundRook = false, foundKing = false;
+    for (int i = 0; i < positions.size(); i++) {
+      final char currentPiece = positions.get(i);
+      if (currentPiece == 'k') {
+        if (!foundRook) {
+          positionsToSwap.add(i);
+        }
+        else if (!positionsToSwap.isEmpty()) {
+          positionsToSwap.add(i);
+          return positionsToSwap;
+        }
+        foundKing = true;
+      }
+      else if (currentPiece == 'r') {
+        if (foundRook) {
+          if (foundKing)
+            return List.of();
+          positionsToSwap.add(i);
+        }
+        else if (!positionsToSwap.isEmpty()) {
+          positionsToSwap.add(i);
+          return positionsToSwap;
+        }
+        foundRook = true;
+      }
+    }
+    throw new IllegalStateException("Inconsistency at finding positions to swap!");
+  }
+
+  private static Random getRandom(final Long seed) {
+    final String logMessage = "960 Seed: {}";
+    if (seed != null) {
+      log.info(logMessage, seed);
+      return new Random(seed);
+    }
+    final Random random = new Random();
+    final long specificSeed = random.nextLong();
+    random.setSeed(specificSeed);
+    log.info(logMessage, specificSeed);
+    return random;
+  }
+
+  private void addPawnsToSecondRow(final PlayerColor color) {
+    final int secondRow = getFirstRow(color) + getPawnDirection(color);
     for (int col = 1 ; col <= ChessBoard.BOARD_COLS ; col++) {
         this.addPiece(new Pawn(color, new Square(col, secondRow)));
     }
