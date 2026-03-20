@@ -2,25 +2,23 @@ package com.sylvain.chess.board;
 
 import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.moves.Move;
-import com.sylvain.chess.pieces.Bishop;
 import com.sylvain.chess.pieces.King;
-import com.sylvain.chess.pieces.Knight;
 import com.sylvain.chess.pieces.NoPiece;
 import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.pieces.PieceOnBoard;
-import com.sylvain.chess.pieces.Queen;
 import com.sylvain.chess.pieces.Rook;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -41,10 +39,18 @@ public class ChessBoard {
   }
 
   public static ChessBoard defaultBoard() {
+    return getBoard(getClassicalPiecesPositions());
+  }
+
+  public static ChessBoard getBoard(final List<Character> positions) {
     final ChessBoard board = new ChessBoard();
-    board.putClassicalPositionsForMainPieces(PlayerColor.WHITE);
-    board.putClassicalPositionsForMainPieces(PlayerColor.BLACK);
+    board.putPositionsForColor(PlayerColor.WHITE, positions);
+    board.putPositionsForColor(PlayerColor.BLACK, positions);
     return board;
+  }
+
+  public static ChessBoard get960Board(final Long seed) {
+    return getBoard(get960PiecesPositions(seed));
   }
 
   public static int getFirstRow(final PlayerColor color) {
@@ -63,17 +69,36 @@ public class ChessBoard {
     return color == PlayerColor.WHITE ? row : ChessBoard.BOARD_ROWS - row + 1;
   }
 
-  private void putClassicalPositionsForMainPieces(final PlayerColor color) {
+  private void putPositionsForColor(final PlayerColor color, final List<Character> positions) {
     final int firstRow = getFirstRow(color);
     int column = 1;
-    for (final BiFunction<PlayerColor, Square, PieceOnBoard> constructor : getClassicalPiecesPositions()) {
-      this.addPiece(constructor.apply(color, new Square(column++, firstRow)));
+    for (final char pieceChar : positions) {
+      this.addPiece(PieceOnBoard.createPiece(color.changeChar().apply(pieceChar), new Square(column++, firstRow)));
     }
     this.addPawnsToSecondRow(color);
   }
 
-  private static List<BiFunction<PlayerColor, Square, PieceOnBoard>> getClassicalPiecesPositions() {
-    return List.of(Rook::new, Knight::new, Bishop::new, Queen::new, King::new, Bishop::new, Knight::new, Rook::new);
+  private static List<Character> getClassicalPiecesPositions() {
+    return List.of('r', 'n', 'b', 'q', 'k', 'b', 'n', 'r');
+  }
+
+  private static List<Character> get960PiecesPositions(final Long seed) {
+    final List<Character> positions = new ArrayList<>(getClassicalPiecesPositions());
+    final Random random = getRandom(seed);
+    Collections.shuffle(positions, random);
+    return positions;
+  }
+
+  private static Random getRandom(final Long seed) {
+    if (seed != null) {
+      log.info("960 Seed: {}", seed);
+      return new Random(seed);
+    }
+    final Random random = new Random();
+    final long specificSeed = random.nextLong();
+    random.setSeed(specificSeed);
+    log.info("960 Seed: {}", specificSeed);
+    return random;
   }
 
   private void addPawnsToSecondRow(final PlayerColor color) {
