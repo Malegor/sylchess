@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -64,15 +65,19 @@ public class ChessBoard {
 
   private void putClassicalPositionsForMainPieces(final PlayerColor color) {
     final int firstRow = getFirstRow(color);
-    this.addPiece(new Rook(color, new Square(1, firstRow)));
-    this.addPiece(new Knight(color, new Square(2, firstRow)));
-    this.addPiece(new Bishop(color, new Square(3, firstRow)));
-    this.addPiece(new Queen(color, new Square(4, firstRow)));
-    this.addPiece(new King(color, new Square(CLASSICAL_KING_COLUMN, firstRow)));
-    this.addPiece(new Bishop(color, new Square(6, firstRow)));
-    this.addPiece(new Knight(color, new Square(7, firstRow)));
-    this.addPiece(new Rook(color, new Square(8, firstRow)));
-    final int secondRow = firstRow + getPawnDirection(color);
+    int column = 1;
+    for (final BiFunction<PlayerColor, Square, PieceOnBoard> constructor : getClassicalPiecesPositions()) {
+      this.addPiece(constructor.apply(color, new Square(column++, firstRow)));
+    }
+    this.addPawnsToSecondRow(color);
+  }
+
+  private static List<BiFunction<PlayerColor, Square, PieceOnBoard>> getClassicalPiecesPositions() {
+    return List.of(Rook::new, Knight::new, Bishop::new, Queen::new, King::new, Bishop::new, Knight::new, Rook::new);
+  }
+
+  private void addPawnsToSecondRow(final PlayerColor color) {
+    final int secondRow = getFirstRow(color) + getPawnDirection(color);
     for (int col = 1 ; col <= ChessBoard.BOARD_COLS ; col++) {
         this.addPiece(new Pawn(color, new Square(col, secondRow)));
     }
