@@ -2,17 +2,19 @@ package com.sylvain.chess.board;
 
 import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.moves.Move;
+import com.sylvain.chess.pieces.Bishop;
 import com.sylvain.chess.pieces.King;
+import com.sylvain.chess.pieces.Knight;
 import com.sylvain.chess.pieces.NoPiece;
 import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.pieces.PieceOnBoard;
+import com.sylvain.chess.pieces.Queen;
 import com.sylvain.chess.pieces.Rook;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,6 +22,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Log4j2
 public class ChessBoard {
@@ -79,57 +82,53 @@ public class ChessBoard {
   }
 
   private static List<Character> getClassicalPiecesPositions() {
-    return List.of('r', 'n', 'b', 'q', 'k', 'b', 'n', 'r');
+    return List.of(Rook.NAME_LC, Knight.NAME_LC, Bishop.NAME_LC, Queen.NAME_LC, King.NAME_LC, Bishop.NAME_LC, Knight.NAME_LC, Rook.NAME_LC);
   }
 
   private static List<Character> get960PiecesPositions(final Long seed) {
-    final List<Character> positions = new ArrayList<>(getClassicalPiecesPositions());
+    // First determine the bishop positions (one on white squares, the other on black squares).
+    // Then determine the knights and queen positions.
+    // The remaining positions are occupied, in this order, by rook, king and rook.
     final Random random = getRandom(seed);
-    Collections.shuffle(positions, random);
-    // The king must be between both rooks.
-    final List<Integer> toSwap = findPositionsToSwap(positions);
-    if (toSwap.isEmpty())
-      return positions;
-    final Character pieceFirst = positions.get(toSwap.getFirst());
-    final Character pieceLast = positions.get(toSwap.getLast());
-    positions.set(toSwap.getFirst(), pieceLast);
-    positions.set(toSwap.getLast(), pieceFirst);
-    return positions;
+    final int bishop1Position = random.nextInt(4) * 2;
+    final int bishop2Position = random.nextInt(4) * 2 + 1;
+    final List<Integer> alreadyGivenPositions = new ArrayList<>(List.of(bishop1Position, bishop2Position));
+    alreadyGivenPositions.sort(Integer::compareTo);
+    final int queenPosition = getPosition(random.nextInt(6), alreadyGivenPositions);
+    final int knight1Position = getPosition(random.nextInt(5), alreadyGivenPositions);
+    final int knight2Position = getPosition(random.nextInt(4), alreadyGivenPositions);
+    final List<Integer> freePositions = new ArrayList<>(IntStream.rangeClosed(0, 7).boxed().toList());
+    freePositions.removeAll(alreadyGivenPositions);
+    final char[] positions = new char[8];
+    positions[bishop1Position] = Bishop.NAME_LC;
+    positions[bishop2Position] = Bishop.NAME_LC;
+    positions[queenPosition] = Queen.NAME_LC;
+    positions[knight1Position] = Knight.NAME_LC;
+    positions[knight2Position] = Knight.NAME_LC;
+    positions[freePositions.get(0)] = Rook.NAME_LC;
+    positions[freePositions.get(1)] = King.NAME_LC;
+    positions[freePositions.get(2)] = Rook.NAME_LC;
+    return new String(positions).chars().mapToObj(c -> (char) c).collect(Collectors.toList());
   }
 
-  private static List<Integer> findPositionsToSwap(final List<Character> positions) {
-    final List<Integer> positionsToSwap = new ArrayList<>(2);
-    boolean foundRook = false, foundKing = false;
-    for (int i = 0; i < positions.size(); i++) {
-      final char currentPiece = positions.get(i);
-      if (currentPiece == 'k') {
-        if (!foundRook) {
-          positionsToSwap.add(i);
-        }
-        else if (!positionsToSwap.isEmpty()) {
-          positionsToSwap.add(i);
-          return positionsToSwap;
-        }
-        foundKing = true;
+  private static int getPosition(final int relativePosition, final List<Integer> alreadyGivenPositions) {
+    int finalPosition = relativePosition;
+    for (int index = 0; index < alreadyGivenPositions.size(); index++) {
+      int position = alreadyGivenPositions.get(index);
+      if (position <= finalPosition) {
+        finalPosition++;
       }
-      else if (currentPiece == 'r') {
-        if (foundRook) {
-          if (foundKing)
-            return List.of();
-          positionsToSwap.add(i);
-        }
-        else if (!positionsToSwap.isEmpty()) {
-          positionsToSwap.add(i);
-          return positionsToSwap;
-        }
-        foundRook = true;
+      else {
+        alreadyGivenPositions.add(index, finalPosition);
+        return finalPosition;
       }
     }
-    throw new IllegalStateException("Inconsistency at finding positions to swap!");
+    alreadyGivenPositions.add(finalPosition);
+    return finalPosition;
   }
 
   private static Random getRandom(final Long seed) {
-    final String logMessage = "960 Seed: {}";
+    final String logMessage = "Random Seed: {}";
     if (seed != null) {
       log.info(logMessage, seed);
       return new Random(seed);
