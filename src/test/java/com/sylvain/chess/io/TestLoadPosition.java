@@ -66,14 +66,14 @@ public class TestLoadPosition {
     final String fileName = "fen/starting.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
-    Assert.assertEquals(PlayerColor.BLACK, gameplay.getLastPlayer().getColor());
+    Assert.assertEquals(PlayerColor.BLACK, gameplay.getInfo().getLastPlayer().getColor());
     for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
       Assert.assertEquals(2, gameplay.getBoard().getUnmovedRooks(color).size());
     }
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
-    Assert.assertEquals(1, gameplay.getMoveNumber());
-    Assert.assertEquals(1, gameplay.getLastHalfMoveWithCaptureOrPawn());
+    Assert.assertEquals(1, gameplay.getInfo().getMoveNumber());
+    Assert.assertEquals(1, gameplay.getInfo().getLastHalfMoveWithCaptureOrPawn());
     Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
   }
 
@@ -82,7 +82,7 @@ public class TestLoadPosition {
     final String fileName = "fen/after-pawn.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
-    Assert.assertEquals(PlayerColor.WHITE, gameplay.getLastPlayer().getColor());
+    Assert.assertEquals(PlayerColor.WHITE, gameplay.getInfo().getLastPlayer().getColor());
     for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
       Assert.assertEquals(2, gameplay.getBoard().getUnmovedRooks(color).size());
@@ -93,8 +93,8 @@ public class TestLoadPosition {
     Assert.assertTrue((new Move(Map.of(blackPawn, blackPawn.move(1, -1)), gameplay.getBoard())).isValidMove());
     // OBS: this pawn didn't exist in the board, it has to be removed (as the rollback method will restore the key's position).
     gameplay.getBoard().removePiece(blackPawn);
-    Assert.assertEquals(1, gameplay.getMoveNumber());
-    Assert.assertEquals(1, gameplay.getLastHalfMoveWithCaptureOrPawn());
+    Assert.assertEquals(1, gameplay.getInfo().getMoveNumber());
+    Assert.assertEquals(1, gameplay.getInfo().getLastHalfMoveWithCaptureOrPawn());
     Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
   }
 
@@ -103,14 +103,14 @@ public class TestLoadPosition {
     final String fileName = "fen/mate3.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
-    Assert.assertEquals(PlayerColor.BLACK, gameplay.getLastPlayer().getColor());
+    Assert.assertEquals(PlayerColor.BLACK, gameplay.getInfo().getLastPlayer().getColor());
     for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
       Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(color).isEmpty());
     }
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
-    Assert.assertEquals(1, gameplay.getMoveNumber());
-    Assert.assertEquals(1, gameplay.getLastHalfMoveWithCaptureOrPawn());
+    Assert.assertEquals(1, gameplay.getInfo().getMoveNumber());
+    Assert.assertEquals(1, gameplay.getInfo().getLastHalfMoveWithCaptureOrPawn());
     Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
   }
 
@@ -119,14 +119,14 @@ public class TestLoadPosition {
     final String fileName = "fen/mate4.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
-    Assert.assertEquals(PlayerColor.BLACK, gameplay.getLastPlayer().getColor());
+    Assert.assertEquals(PlayerColor.BLACK, gameplay.getInfo().getLastPlayer().getColor());
     for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
       Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(color).isEmpty());
     }
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
-    Assert.assertEquals(1, gameplay.getMoveNumber());
-    Assert.assertEquals(1, gameplay.getLastHalfMoveWithCaptureOrPawn());
+    Assert.assertEquals(1, gameplay.getInfo().getMoveNumber());
+    Assert.assertEquals(1, gameplay.getInfo().getLastHalfMoveWithCaptureOrPawn());
     Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
   }
 

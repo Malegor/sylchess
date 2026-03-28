@@ -36,8 +36,8 @@ public class FenLoader {
     final int numberOfHalfMovesWithoutImprovement = Integer.parseInt(fenArray[4]);
     final int moveNumber = Integer.parseInt(fenArray[5]);
     final Gameplay gameplay = new Gameplay(board, color);
-    gameplay.setMoveNumber(moveNumber);
-    gameplay.setLastHalfMoveWithCaptureOrPawn(2 * (moveNumber-1) - numberOfHalfMovesWithoutImprovement + 1);
+    gameplay.getInfo().setMoveNumber(moveNumber);
+    gameplay.getInfo().setLastHalfMoveWithCaptureOrPawn(2 * (moveNumber-1) - numberOfHalfMovesWithoutImprovement + 1);
     return gameplay;
   }
 

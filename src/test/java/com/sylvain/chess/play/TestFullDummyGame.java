@@ -17,9 +17,9 @@ public class TestFullDummyGame {
     final ChessBoard board = ChessBoard.defaultBoard();
     final Gameplay play = new Gameplay(board, null, 5, 2);
     final GameStatus gameStatus = play.playGame(getDummyPlayers(board));
-    System.out.println(gameStatus + " after " + play.getMoveNumber() + " moves.");
+    System.out.println(gameStatus + " after " + play.getInfo().getMoveNumber() + " moves.");
     Assert.assertEquals(GameStatus.UNIMPROVING_MOVES, gameStatus);
-    Assert.assertEquals(57, play.getMoveNumber());
+    Assert.assertEquals(57, play.getInfo().getMoveNumber());
     int numberOfUnmovedPawns = 0;
     for (PieceOnBoard piece : board.getPieces(PlayerColor.WHITE).values()) {
       // OBS: one single pawn didn't move during the game
@@ -45,14 +45,14 @@ public class TestFullDummyGame {
       final ChessBoard board = ChessBoard.defaultBoard();
       final Gameplay play = new Gameplay(board, null, 5, 2);
       final GameStatus gameStatus = play.playGame(getDummyPlayers(board));
-      System.out.println(gameStatus + " after " + play.getMoveNumber() + " moves.");
+      System.out.println(gameStatus + " after " + play.getInfo().getMoveNumber() + " moves.");
       if (consistentGameStatus != null) {
-        Assert.assertEquals(consistentMoveNumber.intValue(), play.getMoveNumber());
+        Assert.assertEquals(consistentMoveNumber.intValue(), play.getInfo().getMoveNumber());
         Assert.assertEquals(consistentGameStatus, gameStatus);
         Assert.assertEquals(consistentGamePositionString, play.getBoard().getPositionString());
       }
       else {
-        consistentMoveNumber = play.getMoveNumber();
+        consistentMoveNumber = play.getInfo().getMoveNumber();
         consistentGameStatus = gameStatus;
         consistentGamePositionString = play.getBoard().getPositionString();
       }

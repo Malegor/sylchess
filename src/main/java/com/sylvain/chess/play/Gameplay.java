@@ -9,13 +9,9 @@ import com.sylvain.chess.play.players.Player;
 import com.sylvain.chess.utils.CircularIterator;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -25,16 +21,9 @@ public class Gameplay {
   private final int maxNumberOfMovesWithoutCaptureOrPawnMove;
   private final int maxNumberOfTimesSamePosition;
   @Getter
-  private Player lastPlayer;
-  @Getter @Setter
-  private int moveNumber;
-  @Getter
-  private int halfMoveNumber;
-  @Getter @Setter
-  private int lastHalfMoveWithCaptureOrPawn;
-  private final Map<String, List<Integer>> occurrencesOfPosition;
-  @Getter
   private final PlayerColor firstPlayingColor;
+  @Getter
+  private final GameStateInfo info;
   @Getter
   private EndGame endGame;
 
@@ -42,12 +31,9 @@ public class Gameplay {
     this.board = board;
     this.maxNumberOfMovesWithoutCaptureOrPawnMove = maxNumberOfMovesWithoutCaptureOrPawnMove;
     this.maxNumberOfTimesSamePosition = maxNumberOfTimesSamePosition;
-    this.moveNumber = 1;
-    this.halfMoveNumber = 1;
-    this.lastHalfMoveWithCaptureOrPawn = 1;
-    this.occurrencesOfPosition = new HashMap<>(20);
     this.firstPlayingColor = firstPlayingColor;
     this.endGame = null;
+    this.info = new GameStateInfo();
   }
 
   public Gameplay(final ChessBoard board, final PlayerColor firstPlayingColor) {
@@ -63,14 +49,14 @@ public class Gameplay {
   }
 
   public GameStatus playGame(final List<Player> players, final int numberOfMoves) {
-    this.lastPlayer = players.getLast();
+    this.info.setLastPlayer(players.getLast());
     final CircularIterator<Player> it = new CircularIterator<>(players);
     if (this.firstPlayingColor != null) {
       while (it.hasNext()) {
         if (it.peek().getColor() == this.firstPlayingColor) {
           break;
         }
-        else this.lastPlayer = it.next();
+        else this.info.setLastPlayer(it.next());
       }
     }
     while (it.hasNext()) {
@@ -78,29 +64,28 @@ public class Gameplay {
       // OBS: small flaw here: in the rule, the en passant or castling possible moves should be considered for the repetition...
       // For example, if the rook hadn't moved before the first occurrence and then moved before the second one, the repeated position would not really a repetition.
       // Considering it would complicate a lot the validation and in practice it is not essential for most applications of the rule.
-      final List<Integer> positionRepetitions = this.occurrencesOfPosition.computeIfAbsent(player.getColor() + ";" + this.board.getPositionString(), k -> new ArrayList<>(2));
-      positionRepetitions.add(this.moveNumber);
+      final List<Integer> positionRepetitions = this.info.newPosition(player.getColor(), this.board);
       if (positionRepetitions.size() >= this.maxNumberOfTimesSamePosition) {
         log.info("Same position has already been repeated! {}", positionRepetitions);
         this.endGame = EndGame.DRAW;
         return GameStatus.SEVERAL_TIMES_SAME_POSITION;
       }
-      if (this.moveNumber >= numberOfMoves)
+      if (this.info.getMoveNumber() >= numberOfMoves)
         return GameStatus.PLAYING;
-      if (this.halfMoveNumber - this.lastHalfMoveWithCaptureOrPawn > 2 * this.maxNumberOfMovesWithoutCaptureOrPawnMove) {
-        log.info("{} moves have been played without any improvement! (since half move {})", this.maxNumberOfMovesWithoutCaptureOrPawnMove, this.lastHalfMoveWithCaptureOrPawn);
+      if (this.info.getHalfMoveNumber() - this.info.getLastHalfMoveWithCaptureOrPawn() > 2 * this.maxNumberOfMovesWithoutCaptureOrPawnMove) {
+        log.info("{} moves have been played without any improvement! (since half move {})", this.maxNumberOfMovesWithoutCaptureOrPawnMove, this.info.getLastHalfMoveWithCaptureOrPawn());
         this.endGame = EndGame.DRAW;
         return GameStatus.UNIMPROVING_MOVES;
       }
-      this.lastPlayer = player;
+      this.info.setLastPlayer(player);
       final Move move = player.getSelectedMove();
       if (move != null) {
         move.apply();
-        log.info("{} - {}", this.moveNumber, move);
+        log.info("{} - {}", this.info.getMoveNumber(), move);
         this.board.printBoard();
         this.board.validateInternalDataStructures();
         if (move.involvesPawnOrCapture()) {
-          this.lastHalfMoveWithCaptureOrPawn = this.halfMoveNumber;
+          this.info.movedPawnOrCaptured();
           // TODO: uncomment next line in the case memory is needed
           //this.occurrencesOfPosition.clear();
         }
@@ -117,10 +102,10 @@ public class Gameplay {
         this.endGame = gameStatus.equals(GameStatus.STALEMATE) ? EndGame.DRAW : player.getColor().equals(PlayerColor.WHITE) ? EndGame.BLACK_WINS : EndGame.WHITE_WINS;
         return gameStatus;
       }
-      this.halfMoveNumber++;
+      this.info.incrementHalfMove();
       // OBS: the following condition only works if the game doesn't exclude players (ex: in a chess game of 3 or more players)
       if (player.equals(players.getLast()))
-        this.moveNumber++;
+        this.info.incrementMove();
     }
     this.endGame = EndGame.ERROR;
     throw new IllegalStateException("Error! No more players can play.");
@@ -128,7 +113,7 @@ public class Gameplay {
 
   private boolean onlyKingsOnBoard() {
     for (final PlayerColor color : this.board.getColors()) {
-      Collection<PieceOnBoard> playerPieces = this.board.getPieces(color).values();
+      final Collection<PieceOnBoard> playerPieces = this.board.getPieces(color).values();
       for (PieceOnBoard piece : playerPieces)
         if (!piece.getName().equals(King.NAME_LC)) {
           return false;

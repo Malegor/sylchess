@@ -7,6 +7,7 @@ import com.sylvain.chess.pieces.King;
 import com.sylvain.chess.pieces.PieceOnBoard;
 import com.sylvain.chess.pieces.Queen;
 import com.sylvain.chess.pieces.Rook;
+import com.sylvain.chess.play.GameStateInfo;
 import com.sylvain.chess.play.Gameplay;
 
 import java.util.ArrayList;
@@ -17,13 +18,14 @@ import java.util.Set;
 public class FenSaver {
   public static String getPositionString(final Gameplay game) {
     final String boardString = getBoardString(game.getBoard());
-    final Character colorString = ChessBoard.getOppositeColor(game.getLastPlayer().getColor()).getFenName();
+    final GameStateInfo info = game.getInfo();
+    final Character colorString = ChessBoard.getOppositeColor(info.getLastPlayer().getColor()).getFenName();
     final String allPossibleCastles = getPossibleCastles(game.getBoard());
     final String possibleEnPassantSquare = getPossibleEnPassant(game.getBoard());
-    final int halfMoveNumber = game.getHalfMoveNumber();
-    final int numberOfHalfMovesWithoutImprovement = halfMoveNumber - game.getLastHalfMoveWithCaptureOrPawn();
+    final int halfMoveNumber = info.getHalfMoveNumber();
+    final int numberOfHalfMovesWithoutImprovement = halfMoveNumber - info.getLastHalfMoveWithCaptureOrPawn();
     return boardString + FenLoader.SEP + colorString + FenLoader.SEP + allPossibleCastles + FenLoader.SEP + possibleEnPassantSquare + FenLoader.SEP +
-            numberOfHalfMovesWithoutImprovement + FenLoader.SEP + game.getMoveNumber();
+            numberOfHalfMovesWithoutImprovement + FenLoader.SEP + info.getMoveNumber();
   }
 
   private static String getPossibleEnPassant(final ChessBoard board) {
