@@ -16,7 +16,7 @@ public class GameStateInfo {
   private Player lastPlayer;
   @Getter @Setter
   private int moveNumber;
-  @Getter @Setter
+  @Getter
   private int halfMoveNumber;
   @Getter @Setter
   private int lastHalfMoveWithCaptureOrPawn;
@@ -38,6 +38,8 @@ public class GameStateInfo {
 
   public void movedPawnOrCaptured() {
     this.lastHalfMoveWithCaptureOrPawn = this.halfMoveNumber;
+    // TODO: uncomment next line in the case memory is needed
+    //this.occurrencesOfPosition.clear();
   }
 
   public void incrementMove() {

@@ -23,7 +23,7 @@ public abstract class InteractivePlayer extends Player {
     while (count++ < MAX_ATTEMPTS) {
       // TODO: allow resigning
       final String moveStr = this.getNextMove();
-      final Optional<Move> optMove = validMoves.stream().filter(m -> m.toPgn().equals(moveStr)).findFirst();
+      final Optional<Move> optMove = validMoves.stream().filter(m -> m.toSan().equals(moveStr)).findFirst();
       if (optMove.isPresent())
         return optMove.get();
       else
@@ -35,7 +35,7 @@ public abstract class InteractivePlayer extends Player {
 
   protected void handleInvalidMove(final List<Move> validMoves, final String moveStr) {
     log.info("Invalid move {}. Try again.", moveStr);
-    log.info("Valid moves: {}", validMoves.stream().map(Move::toPgn).toList());
+    log.info("Valid moves: {}", validMoves.stream().map(Move::toSan).toList());
   }
 
   protected abstract String getNextMove();

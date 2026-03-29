@@ -86,8 +86,6 @@ public class Gameplay {
         this.board.validateInternalDataStructures();
         if (move.involvesPawnOrCapture()) {
           this.info.movedPawnOrCaptured();
-          // TODO: uncomment next line in the case memory is needed
-          //this.occurrencesOfPosition.clear();
         }
         if (this.onlyKingsOnBoard()) {
           this.endGame = EndGame.DRAW;

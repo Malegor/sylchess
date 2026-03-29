@@ -15,7 +15,7 @@ public class TestMateSolver {
     final Move mateMove = mateIn1.selectMove(board.findAllValidMoves(PlayerColor.WHITE));
     board.printBoard();
     System.out.println(mateMove);
-    Assert.assertEquals("Qxf7", mateMove.toPgn());
+    Assert.assertEquals("Qxf7", mateMove.toSan());
   }
 
   @Test
@@ -25,7 +25,7 @@ public class TestMateSolver {
     final Move mateMove = mateIn1.selectMove(board.findAllValidMoves(PlayerColor.BLACK));
     board.printBoard();
     System.out.println(mateMove);
-    Assert.assertEquals("Qh4", mateMove.toPgn());
+    Assert.assertEquals("Qh4", mateMove.toSan());
   }
 
   @Test
@@ -35,7 +35,7 @@ public class TestMateSolver {
     final Move mateMove = mateIn2.selectMove(board.findAllValidMoves(PlayerColor.WHITE));
     board.printBoard();
     System.out.println(mateMove);
-    Assert.assertEquals("Na6", mateMove.toPgn());
+    Assert.assertEquals("Na6", mateMove.toSan());
   }
 
   @Test
@@ -45,7 +45,7 @@ public class TestMateSolver {
     final Move mateMove = mateIn2.selectMove(board.findAllValidMoves(PlayerColor.WHITE));
     board.printBoard();
     System.out.println(mateMove);
-    Assert.assertEquals("Bh1", mateMove.toPgn());
+    Assert.assertEquals("Bh1", mateMove.toSan());
   }
 
   @Test
@@ -55,7 +55,7 @@ public class TestMateSolver {
     final Move mateMove = mateIn2.selectMove(board.findAllValidMoves(PlayerColor.WHITE));
     board.printBoard();
     System.out.println(mateMove);
-    Assert.assertEquals("gxh6", mateMove.toPgn());
+    Assert.assertEquals("gxh6", mateMove.toSan());
   }
 
   @Test
@@ -65,7 +65,7 @@ public class TestMateSolver {
     final Move mateMove = mateIn2.selectMove(board.findAllValidMoves(PlayerColor.WHITE));
     board.printBoard();
     System.out.println(mateMove);
-    Assert.assertEquals("Nd7", mateMove.toPgn());
+    Assert.assertEquals("Nd7", mateMove.toSan());
   }
 
   @Test
@@ -75,6 +75,6 @@ public class TestMateSolver {
     final Move mateMove = mateIn2.selectMove(board.findAllValidMoves(PlayerColor.BLACK));
     board.printBoard();
     System.out.println(mateMove);
-    Assert.assertEquals("Rxa2", mateMove.toPgn());
+    Assert.assertEquals("Rxa2", mateMove.toSan());
   }
 }
