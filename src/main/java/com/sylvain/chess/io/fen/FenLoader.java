@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 @Log4j2
 public class FenLoader {
-
   public static final String SEP = " ";
   public static final String ROW_SEP = "/";
   public static final String NONE = "-";

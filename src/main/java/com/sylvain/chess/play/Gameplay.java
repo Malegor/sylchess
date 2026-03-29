@@ -2,6 +2,7 @@ package com.sylvain.chess.play;
 
 import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
+import com.sylvain.chess.io.fen.FenSaver;
 import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.pieces.King;
 import com.sylvain.chess.pieces.PieceOnBoard;
@@ -21,9 +22,9 @@ public class Gameplay {
   private final int maxNumberOfMovesWithoutCaptureOrPawnMove;
   private final int maxNumberOfTimesSamePosition;
   @Getter
-  private final PlayerColor firstPlayingColor;
-  @Getter
   private final GameStateInfo info;
+  @Getter
+  private final GameHistory history;
   @Getter
   private EndGame endGame;
 
@@ -31,9 +32,9 @@ public class Gameplay {
     this.board = board;
     this.maxNumberOfMovesWithoutCaptureOrPawnMove = maxNumberOfMovesWithoutCaptureOrPawnMove;
     this.maxNumberOfTimesSamePosition = maxNumberOfTimesSamePosition;
-    this.firstPlayingColor = firstPlayingColor;
     this.endGame = null;
     this.info = new GameStateInfo();
+    this.history = new GameHistory(firstPlayingColor);
   }
 
   public Gameplay(final ChessBoard board, final PlayerColor firstPlayingColor) {
@@ -48,17 +49,18 @@ public class Gameplay {
     return playGame(players, 1000);
   }
 
-  public GameStatus playGame(final List<Player> players, final int numberOfMoves) {
+  public GameStatus playGame(final List<Player> players, final int maxNumberOfMoves) {
     this.info.setLastPlayer(players.getLast());
     final CircularIterator<Player> it = new CircularIterator<>(players);
-    if (this.firstPlayingColor != null) {
+    if (this.history.getFirstPlayingColor() != null) {
       while (it.hasNext()) {
-        if (it.peek().getColor() == this.firstPlayingColor) {
+        if (it.peek().getColor() == this.history.getFirstPlayingColor()) {
           break;
         }
         else this.info.setLastPlayer(it.next());
       }
     }
+    this.history.setInitialFen(FenSaver.getPositionString(this));
     while (it.hasNext()) {
       final Player player = it.next();
       // OBS: small flaw here: in the rule, the en passant or castling possible moves should be considered for the repetition...
@@ -70,7 +72,7 @@ public class Gameplay {
         this.endGame = EndGame.DRAW;
         return GameStatus.SEVERAL_TIMES_SAME_POSITION;
       }
-      if (this.info.getMoveNumber() >= numberOfMoves)
+      if (this.info.getMoveNumber() >= maxNumberOfMoves)
         return GameStatus.PLAYING;
       if (this.info.getHalfMoveNumber() - this.info.getLastHalfMoveWithCaptureOrPawn() > 2 * this.maxNumberOfMovesWithoutCaptureOrPawnMove) {
         log.info("{} moves have been played without any improvement! (since half move {})", this.maxNumberOfMovesWithoutCaptureOrPawnMove, this.info.getLastHalfMoveWithCaptureOrPawn());
@@ -82,6 +84,7 @@ public class Gameplay {
       if (move != null) {
         move.apply();
         log.info("{} - {}", this.info.getMoveNumber(), move);
+        this.history.addMove(move);
         this.board.printBoard();
         this.board.validateInternalDataStructures();
         if (move.involvesPawnOrCapture()) {
