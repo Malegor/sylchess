@@ -28,6 +28,7 @@ public class Move {
   private final Map<PieceOnBoard, PieceOnBoard> moveToNewSquare;
   private final ChessBoard board;
   private PieceOnBoard captured;
+  private String completeSan = null;
 
   public Move(final Map<PieceOnBoard, PieceOnBoard> moveToNewSquare, final ChessBoard board) {
     this.moveToNewSquare = moveToNewSquare;
@@ -264,6 +265,9 @@ public class Move {
   }
 
   public String toCompleteSan() {
-    return this.toSan() + this.getCheckSan();
+    if (this.completeSan == null) {
+      this.completeSan = this.toSan() + this.getCheckSan();
+    }
+    return this.completeSan;
   }
 }

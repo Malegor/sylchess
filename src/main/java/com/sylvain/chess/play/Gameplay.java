@@ -32,7 +32,7 @@ public class Gameplay {
     this.board = board;
     this.maxNumberOfMovesWithoutCaptureOrPawnMove = maxNumberOfMovesWithoutCaptureOrPawnMove;
     this.maxNumberOfTimesSamePosition = maxNumberOfTimesSamePosition;
-    this.endGame = null;
+    this.endGame = EndGame.PLAYING;
     this.info = new GameStateInfo();
     this.history = new GameHistory(firstPlayingColor);
   }
@@ -51,6 +51,7 @@ public class Gameplay {
 
   public GameStatus playGame(final List<Player> players, final int maxNumberOfMoves) {
     this.info.setLastPlayer(players.getLast());
+    this.history.setPlayers(players);
     final CircularIterator<Player> it = new CircularIterator<>(players);
     if (this.history.getFirstPlayingColor() != null) {
       while (it.hasNext()) {
