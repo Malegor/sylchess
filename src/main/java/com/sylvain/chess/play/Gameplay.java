@@ -85,6 +85,7 @@ public class Gameplay {
       if (move != null) {
         move.apply();
         log.info("{} - {}", this.info.getMoveNumber(), move);
+        player.publishMove(move);
         this.history.addMove(move);
         this.board.printBoard();
         this.board.validateInternalDataStructures();

@@ -167,6 +167,7 @@ public class Move {
           piece.setHasAlreadyMoved(true);
       }
       this.board.setPreviousMove(this);
+      this.calculateCompleteSan();
   }
 
   public void rollback() {
@@ -257,14 +258,12 @@ public class Move {
 
   private String getCheckSan() {
     final PlayerColor oppositeColor = ChessBoard.getOppositeColor(this.getColor());
-    this.simulate();
     final boolean kingUnderCheck = this.board.isKingUnderCheck(oppositeColor);
     final boolean kingCheckMate = kingUnderCheck && this.board.isKingCheckMate(oppositeColor);
-    this.rollback();
     return kingCheckMate ? CHECKMATE_SAN : kingUnderCheck ? CHECK_SAN : "";
   }
 
-  public void calculateCompleteSan() {
+  private void calculateCompleteSan() {
     this.completeSan = this.toSan() + this.getCheckSan();
   }
 
