@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Move {
+  public static final String NO_MOVE_STR = "...";
   public static final String CAPTURE_SAN = "x";
   public static final String CHECK_SAN = "+";
   public static final String CHECKMATE_SAN = "#";

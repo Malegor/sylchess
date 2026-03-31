@@ -1,6 +1,7 @@
 package com.sylvain.chess.play;
 
 import com.sylvain.chess.PlayerColor;
+import com.sylvain.chess.io.fen.FenLoader;
 import com.sylvain.chess.moves.Move;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +15,7 @@ public class GameHistory {
   @Getter
   private final PlayerColor firstPlayingColor;
   private final List<Move> moves =  new ArrayList<>();
+  @Getter
   private final List<String> movesSan = new ArrayList<>();
 
   public GameHistory(final PlayerColor firstPlayingColor) {
@@ -23,5 +25,9 @@ public class GameHistory {
   public void addMove(final Move move) {
     this.moves.add(move);
     this.movesSan.add(move.toSan());
+  }
+
+  public int getFirstMoveNumber() {
+    return FenLoader.getMoveNumber(this.initialFen);
   }
 }

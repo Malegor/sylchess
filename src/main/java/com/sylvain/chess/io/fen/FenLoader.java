@@ -33,11 +33,15 @@ public class FenLoader {
     configureImpossibleCastles(fenArray[2], board);
     configureLastMove(fenArray[3], board, ChessBoard.getOppositeColor(color));
     final int numberOfHalfMovesWithoutImprovement = Integer.parseInt(fenArray[4]);
-    final int moveNumber = Integer.parseInt(fenArray[5]);
+    final int moveNumber = getMoveNumber(fen);
     final Gameplay gameplay = new Gameplay(board, color);
     gameplay.getInfo().setMoveNumber(moveNumber);
     gameplay.getInfo().setLastHalfMoveWithCaptureOrPawn(2 * (moveNumber-1) - numberOfHalfMovesWithoutImprovement + 1);
     return gameplay;
+  }
+
+  public static int getMoveNumber(final String fen) {
+    return Integer.parseInt(fen.split(SEP)[5]);
   }
 
   private static void configureLastMove(final String fenEnPassant, final ChessBoard board, final PlayerColor color) {
