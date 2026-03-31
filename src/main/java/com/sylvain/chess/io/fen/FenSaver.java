@@ -37,8 +37,8 @@ public class FenSaver {
     final StringBuilder builder = new StringBuilder();
     for (PlayerColor color : board.getColors()) { // OBS: better to get colors from the game players?
       final King king = board.getKing(color);
-      final boolean isKingOnClassicalColumn = king.getSquare().column() == ChessBoard.CLASSICAL_KING_COLUMN;
-      if (!king.isHasAlreadyMoved()) {
+      final boolean isKingOnClassicalColumn = king != null && king.getSquare().column() == ChessBoard.CLASSICAL_KING_COLUMN;
+      if (king != null && !king.isHasAlreadyMoved()) {
         final List<Character> colorChars = new ArrayList<>(2);
         final StringBuilder builderColor = new StringBuilder();
         final Set<Rook> rooks = board.getUnmovedRooks(color);
