@@ -27,7 +27,7 @@ public class GameHistory {
 
   public void addMove(final Move move) {
     this.moves.add(move);
-    this.movesSan.add(move.toCompleteSan());
+    this.movesSan.add(move.toCompleteSan(false));
   }
 
   public int getFirstMoveNumber() {

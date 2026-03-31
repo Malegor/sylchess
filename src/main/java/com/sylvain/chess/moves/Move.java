@@ -28,7 +28,6 @@ public class Move {
   private final Map<PieceOnBoard, PieceOnBoard> moveToNewSquare;
   private final ChessBoard board;
   private PieceOnBoard captured;
-  private String completeSan = null;
 
   public Move(final Map<PieceOnBoard, PieceOnBoard> moveToNewSquare, final ChessBoard board) {
     this.moveToNewSquare = moveToNewSquare;
@@ -255,19 +254,18 @@ public class Move {
     return pieceStr + disambiguate + takeStr + destSquare + promoStr + status;
   }
 
-  private String getCheckSan() {
+  private String getCheckSan(final boolean simulate) {
     final PlayerColor oppositeColor = ChessBoard.getOppositeColor(this.getColor());
-    this.simulate();
+    if (simulate)
+      this.simulate();
     final boolean kingUnderCheck = this.board.isKingUnderCheck(oppositeColor);
     final boolean kingCheckMate = kingUnderCheck && this.board.isKingCheckMate(oppositeColor);
-    this.rollback();
+    if (simulate)
+      this.rollback();
     return kingCheckMate ? CHECKMATE_SAN : kingUnderCheck ? CHECK_SAN : "";
   }
 
-  public String toCompleteSan() {
-    if (this.completeSan == null) {
-      this.completeSan = this.toSan() + this.getCheckSan();
-    }
-    return this.completeSan;
+  public String toCompleteSan(final boolean simulate) {
+    return this.toSan() + this.getCheckSan(simulate);
   }
 }
