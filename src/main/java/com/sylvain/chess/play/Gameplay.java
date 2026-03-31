@@ -32,7 +32,7 @@ public class Gameplay {
     this.board = board;
     this.maxNumberOfMovesWithoutCaptureOrPawnMove = maxNumberOfMovesWithoutCaptureOrPawnMove;
     this.maxNumberOfTimesSamePosition = maxNumberOfTimesSamePosition;
-    this.endGame = EndGame.PLAYING;
+    this.endGame = EndGame.STILL_PLAYING;
     this.info = new GameStateInfo();
     this.history = new GameHistory(firstPlayingColor);
   }

@@ -46,7 +46,7 @@ public class PgnSaver {
     return "[Date \"" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")) + "\"]" +
             "\n[White \"" + game.getHistory().getFirstPlayerOfColor(PlayerColor.WHITE) + "\"]" +
             "\n[Black \"" + game.getHistory().getFirstPlayerOfColor(PlayerColor.BLACK) + "\"]" +
-            (game.getEndGame().equals(EndGame.PLAYING) ? "" :
+            (game.getEndGame().equals(EndGame.STILL_PLAYING) ? "" :
                     "\n[Result \"" + game.getEndGame().getPgn() + "\"]" +
                     "\n[Termination \"" + getTermination(game) + "\"]");
   }
