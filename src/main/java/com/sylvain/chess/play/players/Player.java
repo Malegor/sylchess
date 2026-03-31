@@ -30,7 +30,7 @@ public abstract class Player {
   }
 
   protected void handleValidMove(final Move move) {
-    // Do nothing
+    move.calculateCompleteSan();
   }
 
   protected abstract Move selectMove(final List<Move> validMoves);
