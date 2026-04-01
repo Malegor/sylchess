@@ -66,6 +66,8 @@ public class FenLoader {
 
   private static GameVariant findVariant(final String possibleCastles) {
     // OBS: consider as well the number of pieces of each kind on the board etc.?
+    if (possibleCastles.equals("-"))
+      return GameVariant.CLASSICAL;
     if (possibleCastles.length() > 4)
       return GameVariant.UNKNOWN;
     GameVariant variant = GameVariant.CLASSICAL;

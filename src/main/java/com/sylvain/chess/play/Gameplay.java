@@ -80,8 +80,8 @@ public class Gameplay {
         this.endGame = EndGame.DRAW;
         return GameStatus.UNIMPROVING_MOVES;
       }
-      this.info.setLastPlayer(player);
       final Move move = player.getSelectedMove();
+      this.info.setLastPlayer(player);
       if (move != null) {
         move.apply();
         log.info("{} - {}", this.info.getMoveNumber(), move);
