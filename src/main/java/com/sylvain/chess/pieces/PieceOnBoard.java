@@ -77,7 +77,7 @@ public abstract class PieceOnBoard {
         return factory.create(color, square);
     }
 
-    public static PlayerColor getColor(char pieceChar) {
+    public static PlayerColor getColor(final char pieceChar) {
       return Character.isUpperCase(pieceChar) ? PlayerColor.WHITE : PlayerColor.BLACK;
     }
 

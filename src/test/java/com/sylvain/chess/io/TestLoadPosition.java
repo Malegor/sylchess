@@ -2,6 +2,7 @@ package com.sylvain.chess.io;
 
 import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
+import com.sylvain.chess.board.GameVariant;
 import com.sylvain.chess.board.Square;
 import com.sylvain.chess.io.fen.FenLoader;
 import com.sylvain.chess.io.fen.FenSaver;
@@ -66,14 +67,14 @@ public class TestLoadPosition {
     final String fileName = "fen/starting.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
-    Assert.assertEquals(PlayerColor.BLACK, gameplay.getLastPlayer().getColor());
+    Assert.assertEquals(PlayerColor.BLACK, gameplay.getInfo().getLastPlayer().getColor());
     for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
       Assert.assertEquals(2, gameplay.getBoard().getUnmovedRooks(color).size());
     }
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
-    Assert.assertEquals(1, gameplay.getMoveNumber());
-    Assert.assertEquals(1, gameplay.getLastHalfMoveWithCaptureOrPawn());
+    Assert.assertEquals(1, gameplay.getInfo().getMoveNumber());
+    Assert.assertEquals(1, gameplay.getInfo().getLastHalfMoveWithCaptureOrPawn());
     Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
   }
 
@@ -82,7 +83,7 @@ public class TestLoadPosition {
     final String fileName = "fen/after-pawn.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
-    Assert.assertEquals(PlayerColor.WHITE, gameplay.getLastPlayer().getColor());
+    Assert.assertEquals(PlayerColor.WHITE, gameplay.getInfo().getLastPlayer().getColor());
     for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
       Assert.assertEquals(2, gameplay.getBoard().getUnmovedRooks(color).size());
@@ -93,8 +94,8 @@ public class TestLoadPosition {
     Assert.assertTrue((new Move(Map.of(blackPawn, blackPawn.move(1, -1)), gameplay.getBoard())).isValidMove());
     // OBS: this pawn didn't exist in the board, it has to be removed (as the rollback method will restore the key's position).
     gameplay.getBoard().removePiece(blackPawn);
-    Assert.assertEquals(1, gameplay.getMoveNumber());
-    Assert.assertEquals(1, gameplay.getLastHalfMoveWithCaptureOrPawn());
+    Assert.assertEquals(1, gameplay.getInfo().getMoveNumber());
+    Assert.assertEquals(1, gameplay.getInfo().getLastHalfMoveWithCaptureOrPawn());
     Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
   }
 
@@ -103,14 +104,14 @@ public class TestLoadPosition {
     final String fileName = "fen/mate3.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
-    Assert.assertEquals(PlayerColor.BLACK, gameplay.getLastPlayer().getColor());
+    Assert.assertEquals(PlayerColor.BLACK, gameplay.getInfo().getLastPlayer().getColor());
     for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
       Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(color).isEmpty());
     }
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
-    Assert.assertEquals(1, gameplay.getMoveNumber());
-    Assert.assertEquals(1, gameplay.getLastHalfMoveWithCaptureOrPawn());
+    Assert.assertEquals(1, gameplay.getInfo().getMoveNumber());
+    Assert.assertEquals(1, gameplay.getInfo().getLastHalfMoveWithCaptureOrPawn());
     Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
   }
 
@@ -119,26 +120,39 @@ public class TestLoadPosition {
     final String fileName = "fen/mate4.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
-    Assert.assertEquals(PlayerColor.BLACK, gameplay.getLastPlayer().getColor());
+    Assert.assertEquals(PlayerColor.BLACK, gameplay.getInfo().getLastPlayer().getColor());
     for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
       Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
       Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(color).isEmpty());
     }
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
-    Assert.assertEquals(1, gameplay.getMoveNumber());
-    Assert.assertEquals(1, gameplay.getLastHalfMoveWithCaptureOrPawn());
+    Assert.assertEquals(1, gameplay.getInfo().getMoveNumber());
+    Assert.assertEquals(1, gameplay.getInfo().getLastHalfMoveWithCaptureOrPawn());
     Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
   }
 
   @Test
   public void testCastling() {
-    // OBS: The black king is at its "classical chess" square, so the 'a' and 'h' columns are written 'q' and 'k' in the fen description.
-    final String fen = "r1rrkrrr/8/8/8/8/8/8/RRRKRRRR w HGCAkdq - 0 1";
+    // OBS: it is not a "classical chess" position, because at least on castle char is not 'k' or 'q'.
+    // It is not a chess 960 game either, as there are over 2 possible castles.
+    final String fen = "r1rrkrrr/8/8/8/8/8/8/RRRKRRRR w HGCAhda - 0 1";
     final Gameplay gameplay = FenLoader.loadPosition(fen);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
     Assert.assertEquals(Set.of('a', 'd', 'h'), gameplay.getBoard().getUnmovedRooks(PlayerColor.BLACK).stream().map(r -> r.getSquare().getColumnLetter()).collect(Collectors.toSet()));
     Assert.assertEquals(Set.of('a', 'c', 'g', 'h'), gameplay.getBoard().getUnmovedRooks(PlayerColor.WHITE).stream().map(r -> r.getSquare().getColumnLetter()).collect(Collectors.toSet()));
     Assert.assertEquals(fen, FenSaver.getPositionString(gameplay));
+    Assert.assertEquals(GameVariant.UNKNOWN, gameplay.getBoard().getVariant());
+  }
+
+  @Test
+  public void testCastlingClassicalChess() {
+    final String fen = "r1rrkrrr/8/8/8/8/8/8/RRRKRRRR w kq - 0 1";
+    final Gameplay gameplay = FenLoader.loadPosition(fen);
+    gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
+    Assert.assertEquals(Set.of('a', 'h'), gameplay.getBoard().getUnmovedRooks(PlayerColor.BLACK).stream().map(r -> r.getSquare().getColumnLetter()).collect(Collectors.toSet()));
+    Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(PlayerColor.WHITE).isEmpty());
+    Assert.assertEquals(fen, FenSaver.getPositionString(gameplay));
+    Assert.assertEquals(GameVariant.CLASSICAL, gameplay.getBoard().getVariant());
   }
 
   public static Gameplay loadPositionFromFile(final String fileName) throws IOException {

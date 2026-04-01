@@ -17,16 +17,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Move {
-  public static final String CAPTURE_PGN = "x";
-  public static final String CHECK_PGN = "+";
-  public static final String CHECKMATE_PGN = "#";
-  public static final String KING_SIDE_CASTLE_PGN = "O-O";
-  public static final String QUEEN_SIDE_CASTLE_PGN = "O-O-O";
-  public static final String PROMO_PGN = "=";
+  public static final String NO_MOVE_STR = "...";
+  public static final String CAPTURE_SAN = "x";
+  public static final String CHECK_SAN = "+";
+  public static final String CHECKMATE_SAN = "#";
+  public static final String KING_SIDE_CASTLE_SAN = "O-O";
+  public static final String QUEEN_SIDE_CASTLE_SAN = "O-O-O";
+  public static final String PROMO_SAN = "=";
 
   private final Map<PieceOnBoard, PieceOnBoard> moveToNewSquare;
   private final ChessBoard board;
   private PieceOnBoard captured;
+  private String completeSan;
 
   public Move(final Map<PieceOnBoard, PieceOnBoard> moveToNewSquare, final ChessBoard board) {
     this.moveToNewSquare = moveToNewSquare;
@@ -165,6 +167,7 @@ public class Move {
           piece.setHasAlreadyMoved(true);
       }
       this.board.setPreviousMove(this);
+      this.calculateCompleteSan();
   }
 
   public void rollback() {
@@ -225,13 +228,16 @@ public class Move {
     return Objects.hashCode(this.toString());
   }
 
-  public String toPgn() {
+  /**
+   * @return The move in Standard Algebraic Notation (SAN)
+   */
+  public String toSan() {
     if (this.isCastle()) {
       final boolean isKingSide = this.moveToNewSquare.keySet().stream().min(Comparator.comparing(PieceOnBoard::getSquare)).orElse(new NoPiece(this.getColor(), new Square(0,0))).getName().equals(King.NAME_LC);
-      return isKingSide ? KING_SIDE_CASTLE_PGN : QUEEN_SIDE_CASTLE_PGN;
+      return isKingSide ? KING_SIDE_CASTLE_SAN : QUEEN_SIDE_CASTLE_SAN;
     }
     final Map.Entry<PieceOnBoard, PieceOnBoard> moveEntry = this.moveToNewSquare.entrySet().iterator().next();
-    final String takeStr = this.captured == null ? "" : CAPTURE_PGN;
+    final String takeStr = this.captured == null ? "" : CAPTURE_SAN;
     final PieceOnBoard originalPiece = moveEntry.getKey();
     final Square startSquare = originalPiece.getSquare();
     final String pieceStr = !originalPiece.getName().equals(Pawn.NAME_LC) ? String.valueOf(Character.toUpperCase(originalPiece.printOnBoard()))
@@ -245,21 +251,23 @@ public class Move {
             "" : shouldDisambiguateBoth ?
             startSquare.toString() : shouldDisambiguateRow ?
             startSquare.row() : String.valueOf(startSquare.getColumnLetter()));
-    final String promoStr = originalPiece.getClass().equals(moveEntry.getValue().getClass()) ? "" : PROMO_PGN + Character.toUpperCase(moveEntry.getValue().printOnBoard());
+    final String promoStr = originalPiece.getClass().equals(moveEntry.getValue().getClass()) ? "" : PROMO_SAN + Character.toUpperCase(moveEntry.getValue().printOnBoard());
     final String status = ""; // TODO: checkmate, check ... ?? or should it be the responsibility of the gameplay?
     return pieceStr + disambiguate + takeStr + destSquare + promoStr + status;
   }
 
-  private String getCheckPgn() {
+  private String getCheckSan() {
     final PlayerColor oppositeColor = ChessBoard.getOppositeColor(this.getColor());
-    this.simulate();
     final boolean kingUnderCheck = this.board.isKingUnderCheck(oppositeColor);
     final boolean kingCheckMate = kingUnderCheck && this.board.isKingCheckMate(oppositeColor);
-    this.rollback();
-    return kingCheckMate ? CHECKMATE_PGN : kingUnderCheck ? CHECK_PGN : "";
+    return kingCheckMate ? CHECKMATE_SAN : kingUnderCheck ? CHECK_SAN : "";
   }
 
-  public String toCompletePgn() {
-    return this.toPgn() + getCheckPgn();
+  private void calculateCompleteSan() {
+    this.completeSan = this.toSan() + this.getCheckSan();
+  }
+
+  public String toCompleteSan() {
+    return this.completeSan;
   }
 }

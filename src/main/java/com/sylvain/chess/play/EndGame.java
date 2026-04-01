@@ -6,7 +6,8 @@ public enum EndGame {
   WHITE_WINS("1-0"),
   BLACK_WINS("0-1"),
   DRAW("1/2-1/2"),
-  ERROR("ERR");
+  STILL_PLAYING(""),
+  ERROR("*");
 
   @Getter
   private final String pgn;

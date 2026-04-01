@@ -34,15 +34,23 @@ public class ChessBoard {
   private final Map<PlayerColor, King> kings;
   @Getter @Setter
   private Move previousMove = null;
+  @Getter @Setter
+  private GameVariant variant;
+  @Getter @Setter
+  private boolean setUp;
 
   public ChessBoard() {
     this.piecesByColor = Map.of(PlayerColor.WHITE, new LinkedHashMap<>(16), PlayerColor.BLACK, new LinkedHashMap<>(16));
     this.allPieces = new HashMap<>(32);
     this.kings = new HashMap<>(2);
+    this.variant = GameVariant.CLASSICAL; // Default variant
+    this.setUp = false;
   }
 
   public static ChessBoard defaultBoard() {
-    return getBoard(getClassicalPiecesPositions());
+    final ChessBoard board = getBoard(getClassicalPiecesPositions());
+    board.setVariant(GameVariant.CLASSICAL);
+    return board;
   }
 
   public static ChessBoard getBoard(final List<Character> positions) {
@@ -53,7 +61,19 @@ public class ChessBoard {
   }
 
   public static ChessBoard get960Board(final Long seed) {
-    return getBoard(get960PiecesPositions(seed));
+    final ChessBoard board = getBoard(get960PiecesPositions(seed));
+    board.setVariant(GameVariant.CHESS960);
+    return board;
+  }
+
+  public ChessBoard copy() {
+    final ChessBoard copy = new ChessBoard();
+    for (PieceOnBoard piece : new ArrayList<>(this.allPieces.values())) {
+      copy.addPiece(piece);
+    }
+    copy.setVariant(this.getVariant());
+    copy.setSetUp(this.isSetUp());
+    return copy;
   }
 
   public static int getFirstRow(final PlayerColor color) {
@@ -347,13 +367,5 @@ public class ChessBoard {
 
   public boolean isKingCheckMate(final PlayerColor color) {
     return this.isKingUnderCheck(color) && this.findAllValidMoves(color).isEmpty();
-  }
-
-  public ChessBoard copy() {
-    final ChessBoard copy = new ChessBoard();
-    for (PieceOnBoard piece : new ArrayList<>(this.allPieces.values())) {
-      copy.addPiece(piece);
-    }
-    return copy;
   }
 }

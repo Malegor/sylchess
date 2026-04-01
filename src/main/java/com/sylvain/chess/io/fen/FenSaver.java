@@ -2,11 +2,13 @@ package com.sylvain.chess.io.fen;
 
 import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
+import com.sylvain.chess.board.GameVariant;
 import com.sylvain.chess.board.Square;
 import com.sylvain.chess.pieces.King;
 import com.sylvain.chess.pieces.PieceOnBoard;
 import com.sylvain.chess.pieces.Queen;
 import com.sylvain.chess.pieces.Rook;
+import com.sylvain.chess.play.GameStateInfo;
 import com.sylvain.chess.play.Gameplay;
 
 import java.util.ArrayList;
@@ -17,13 +19,14 @@ import java.util.Set;
 public class FenSaver {
   public static String getPositionString(final Gameplay game) {
     final String boardString = getBoardString(game.getBoard());
-    final Character colorString = ChessBoard.getOppositeColor(game.getLastPlayer().getColor()).getFenName();
+    final GameStateInfo info = game.getInfo();
+    final Character colorString = ChessBoard.getOppositeColor(info.getLastPlayer().getColor()).getFenName();
     final String allPossibleCastles = getPossibleCastles(game.getBoard());
     final String possibleEnPassantSquare = getPossibleEnPassant(game.getBoard());
-    final int halfMoveNumber = game.getHalfMoveNumber();
-    final int numberOfHalfMovesWithoutImprovement = halfMoveNumber - game.getLastHalfMoveWithCaptureOrPawn();
+    final int halfMoveNumber = info.getHalfMoveNumber();
+    final int numberOfHalfMovesWithoutImprovement = halfMoveNumber - info.getLastHalfMoveWithCaptureOrPawn();
     return boardString + FenLoader.SEP + colorString + FenLoader.SEP + allPossibleCastles + FenLoader.SEP + possibleEnPassantSquare + FenLoader.SEP +
-            numberOfHalfMovesWithoutImprovement + FenLoader.SEP + game.getMoveNumber();
+            numberOfHalfMovesWithoutImprovement + FenLoader.SEP + info.getMoveNumber();
   }
 
   private static String getPossibleEnPassant(final ChessBoard board) {
@@ -35,15 +38,18 @@ public class FenSaver {
     final StringBuilder builder = new StringBuilder();
     for (PlayerColor color : board.getColors()) { // OBS: better to get colors from the game players?
       final King king = board.getKing(color);
-      final boolean isKingOnClassicalColumn = king.getSquare().column() == ChessBoard.CLASSICAL_KING_COLUMN;
-      if (!king.isHasAlreadyMoved()) {
+      if (king != null && !king.isHasAlreadyMoved()) {
         final List<Character> colorChars = new ArrayList<>(2);
         final StringBuilder builderColor = new StringBuilder();
         final Set<Rook> rooks = board.getUnmovedRooks(color);
+        final boolean isClassicalGame = board.getVariant().equals(GameVariant.CLASSICAL) && king.getSquare().column() == ChessBoard.CLASSICAL_KING_COLUMN
+                && rooks.stream().noneMatch(rook -> !rook.isHasAlreadyMoved()
+                  && !Set.of(Square.getColumnLetter(1), Square.getColumnLetter(ChessBoard.BOARD_COLS)).contains(rook.getSquare().getColumnLetter()));
         for (boolean kingSide : List.of(Boolean.TRUE, Boolean.FALSE)) {
           for (Rook rook: rooks) {
             if (!rook.isHasAlreadyMoved() && ChessBoard.areValidSquaresForCastle(king, rook, kingSide)) {
-              colorChars.add(rook.getSquare().getColumnLetter());
+              final char columnLetter = rook.getSquare().getColumnLetter();
+              colorChars.add(columnLetter);
             }
           }
         }
@@ -52,7 +58,7 @@ public class FenSaver {
         colorChars
                 .stream()
                 .sorted(Comparator.reverseOrder())
-                .map(c -> isKingOnClassicalColumn &&
+                .map(c -> isClassicalGame &&
                         (c == Square.getColumnLetter(1) || c == Square.getColumnLetter(ChessBoard.BOARD_COLS)) ?
                         c == Square.getColumnLetter(1) ? Queen.NAME_LC : King.NAME_LC :
                         c)

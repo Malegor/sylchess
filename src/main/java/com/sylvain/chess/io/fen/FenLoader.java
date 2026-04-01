@@ -2,6 +2,7 @@ package com.sylvain.chess.io.fen;
 
 import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
+import com.sylvain.chess.board.GameVariant;
 import com.sylvain.chess.board.Square;
 import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.pieces.King;
@@ -20,7 +21,6 @@ import java.util.stream.Collectors;
 
 @Log4j2
 public class FenLoader {
-
   public static final String SEP = " ";
   public static final String ROW_SEP = "/";
   public static final String NONE = "-";
@@ -31,14 +31,19 @@ public class FenLoader {
       throw new IllegalArgumentException("Invalid fen (missing " + (6 - fenArray.length) + " argument(s)): " + fen);
     final ChessBoard board = loadBoard(fenArray[0]);
     final PlayerColor color = getNextColor(fenArray[1].toCharArray()[0]);
+    board.setVariant(findVariant(fenArray[2]));
     configureImpossibleCastles(fenArray[2], board);
     configureLastMove(fenArray[3], board, ChessBoard.getOppositeColor(color));
     final int numberOfHalfMovesWithoutImprovement = Integer.parseInt(fenArray[4]);
-    final int moveNumber = Integer.parseInt(fenArray[5]);
+    final int moveNumber = getMoveNumber(fen);
     final Gameplay gameplay = new Gameplay(board, color);
-    gameplay.setMoveNumber(moveNumber);
-    gameplay.setLastHalfMoveWithCaptureOrPawn(2 * (moveNumber-1) - numberOfHalfMovesWithoutImprovement + 1);
+    gameplay.getInfo().setMoveNumber(moveNumber);
+    gameplay.getInfo().setLastHalfMoveWithCaptureOrPawn(2 * (moveNumber-1) - numberOfHalfMovesWithoutImprovement + 1);
     return gameplay;
+  }
+
+  public static int getMoveNumber(final String fen) {
+    return Integer.parseInt(fen.split(SEP)[5]);
   }
 
   private static void configureLastMove(final String fenEnPassant, final ChessBoard board, final PlayerColor color) {
@@ -57,6 +62,24 @@ public class FenLoader {
       log.warn("Color '{}' is not '{}' or '{}'; it will be considered as WHITE.", fenColor, whiteFen, blackFen);
     }
     return Objects.equals(fenColor, 'b') ? PlayerColor.BLACK : PlayerColor.WHITE;
+  }
+
+  private static GameVariant findVariant(final String possibleCastles) {
+    // OBS: consider as well the number of pieces of each kind on the board etc.?
+    if (possibleCastles.length() > 4)
+      return GameVariant.UNKNOWN;
+    GameVariant variant = GameVariant.CLASSICAL;
+    final char[] charArray = possibleCastles.toCharArray();
+    for (final PlayerColor color : PlayerColor.values()) {
+      if (possibleCastles.chars().mapToObj(c -> (char) c).filter(c -> PieceOnBoard.getColor(c).equals(color)).toList().size() > 2)
+        return GameVariant.UNKNOWN;
+    }
+    for (final Character castle : charArray) {
+      if (Character.toLowerCase(castle) <= Square.getColumnLetter(ChessBoard.BOARD_COLS)) {
+        variant = GameVariant.CHESS960;
+      }
+    }
+    return variant;
   }
 
   private static void configureImpossibleCastles(final String fenCastles, final ChessBoard board) {
@@ -99,6 +122,7 @@ public class FenLoader {
           throw new IllegalArgumentException("Invalid fen board character: " + currentRow);
       }
     }
+    board.setSetUp(true);
     return board;
   }
 }

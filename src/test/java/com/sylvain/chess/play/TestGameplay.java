@@ -33,7 +33,7 @@ public class TestGameplay {
     Assert.assertNotNull(status);
     Assert.assertEquals(GameStatus.CHECKMATE, status);
     Assert.assertEquals(EndGame.BLACK_WINS, game.getEndGame());
-    Assert.assertEquals(whitePlayer, game.getLastPlayer());
+    Assert.assertEquals(whitePlayer, game.getInfo().getLastPlayer());
   }
 
   @Test
@@ -52,7 +52,7 @@ public class TestGameplay {
     Assert.assertNotNull(status);
     Assert.assertEquals(GameStatus.STALEMATE, status);
     Assert.assertEquals(EndGame.DRAW, game.getEndGame());
-    Assert.assertEquals(whitePlayer, game.getLastPlayer());
+    Assert.assertEquals(whitePlayer, game.getInfo().getLastPlayer());
   }
 
   @Test
@@ -62,9 +62,9 @@ public class TestGameplay {
     Assert.assertNotNull(status);
     Assert.assertEquals(GameStatus.SEVERAL_TIMES_SAME_POSITION, status);
     Assert.assertEquals(EndGame.DRAW, game.getEndGame());
-    Assert.assertEquals(PlayerColor.BLACK, game.getLastPlayer().getColor());
+    Assert.assertEquals(PlayerColor.BLACK, game.getInfo().getLastPlayer().getColor());
     // Repetition every 6 moves, as every 3 moves we get the same position but with inverted colors.
-    Assert.assertEquals(13, game.getMoveNumber());
+    Assert.assertEquals(13, game.getInfo().getMoveNumber());
   }
 
   @Test
@@ -75,8 +75,8 @@ public class TestGameplay {
     Assert.assertNotNull(status);
     Assert.assertEquals(GameStatus.UNIMPROVING_MOVES, status);
     Assert.assertEquals(EndGame.DRAW, game.getEndGame());
-    Assert.assertEquals(PlayerColor.WHITE, game.getLastPlayer().getColor());
-    Assert.assertEquals(numberOfMoves + 1, game.getMoveNumber());
+    Assert.assertEquals(PlayerColor.WHITE, game.getInfo().getLastPlayer().getColor());
+    Assert.assertEquals(numberOfMoves + 1, game.getInfo().getMoveNumber());
   }
 
   @Test
@@ -88,7 +88,7 @@ public class TestGameplay {
     final GameStatus status = game.playGame(TestFullDummyGame.getDummyPlayers(game.getBoard()));
     Assert.assertEquals(GameStatus.ONLY_KINGS, status);
     Assert.assertEquals(EndGame.DRAW, game.getEndGame());
-    Assert.assertEquals(1, game.getMoveNumber());
+    Assert.assertEquals(1, game.getInfo().getMoveNumber());
   }
 
   private Gameplay getGameWithRepeatedMoves(final int maxNumberOfMovesWithoutCaptureOrPawnMove) {
