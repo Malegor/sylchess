@@ -2,6 +2,7 @@ package com.sylvain.chess.io.fen;
 
 import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
+import com.sylvain.chess.board.GameVariant;
 import com.sylvain.chess.board.Square;
 import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.pieces.King;
@@ -30,6 +31,7 @@ public class FenLoader {
       throw new IllegalArgumentException("Invalid fen (missing " + (6 - fenArray.length) + " argument(s)): " + fen);
     final ChessBoard board = loadBoard(fenArray[0]);
     final PlayerColor color = getNextColor(fenArray[1].toCharArray()[0]);
+    configureVariant(fenArray[2], board);
     configureImpossibleCastles(fenArray[2], board);
     configureLastMove(fenArray[3], board, ChessBoard.getOppositeColor(color));
     final int numberOfHalfMovesWithoutImprovement = Integer.parseInt(fenArray[4]);
@@ -60,6 +62,16 @@ public class FenLoader {
       log.warn("Color '{}' is not '{}' or '{}'; it will be considered as WHITE.", fenColor, whiteFen, blackFen);
     }
     return Objects.equals(fenColor, 'b') ? PlayerColor.BLACK : PlayerColor.WHITE;
+  }
+
+  private static void configureVariant(final String possibleCastles, final ChessBoard board) {
+    GameVariant variant = GameVariant.CLASSICAL;
+    for (final Character castle : possibleCastles.toCharArray()) {
+      if (Character.toLowerCase(castle) <= Square.getColumnLetter(ChessBoard.BOARD_COLS)) {
+        variant = GameVariant.CHESS960;
+      }
+    }
+    board.setVariant(variant);
   }
 
   private static void configureImpossibleCastles(final String fenCastles, final ChessBoard board) {
