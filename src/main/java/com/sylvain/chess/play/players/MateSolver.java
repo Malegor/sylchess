@@ -4,6 +4,7 @@ import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.moves.EvaluatedMove;
 import com.sylvain.chess.moves.Move;
+import com.sylvain.chess.pieces.PieceOnBoard;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.Comparator;
@@ -28,7 +29,6 @@ public class MateSolver extends Player {
   protected Move selectMove(final List<Move> validMoves) {
     if (validMoves.size() == 1) {
       log.info("Forced move: {}", validMoves.getFirst());
-      //return validMoves.getFirst(); // OBS: for now, continue the search to get the move evaluation
     }
     final EvaluatedMove move = alphaBeta(null, this.maxDepth, -EVALUATION_FOR_MATE - 1, EVALUATION_FOR_MATE + 1);
     final double evaluation = move.getEvaluation();
@@ -47,7 +47,7 @@ public class MateSolver extends Player {
     final PlayerColor oppositeColor = ChessBoard.getOppositeColor(currentColor);
     final List<Move> allValidMovesForOpponent = this.board.findAllValidMoves(oppositeColor).stream().sorted(byCheckingOpponent).toList();
     if (depth <= 0 || allValidMovesForOpponent.isEmpty()) {
-      final int evaluation = this.evaluateBoardFor(currentColor, allValidMovesForOpponent, this.maxDepth - depth);
+      final double evaluation = this.evaluateBoardFor(currentColor, allValidMovesForOpponent, this.maxDepth - depth);
       if (move != null)
         move.rollback();
       // TODO: avoid evaluating same position several times => map (position+color, eval)
@@ -94,14 +94,14 @@ public class MateSolver extends Player {
    * @param numberOfHalfMoves - The number of half moves since the beginning of the search
    * @return The evaluation of the position after the move.
    */
-  private int evaluateBoardFor(final PlayerColor color, final List<Move> allValidMovesForOpponent, final int numberOfHalfMoves) {
+  private double evaluateBoardFor(final PlayerColor color, final List<Move> allValidMovesForOpponent, final int numberOfHalfMoves) {
     boolean shouldMaximize = color == this.color;
     int multiplier = shouldMaximize ? 1 : -1;
     final PlayerColor oppositeColor = ChessBoard.getOppositeColor(color);
     if (this.board.isKingCheckMate(oppositeColor)) {
       return multiplier * (EVALUATION_FOR_MATE - numberOfHalfMoves);
     }
-    // TODO: more complete evaluation: count pieces "values" etc. (this eval only works for puzzles of kind checkmate in n moves)
-    return 0;
+    return this.board.getPieces(this.color).values().stream().mapToDouble(PieceOnBoard::getDefaultValue).sum()
+            - this.board.getPieces(ChessBoard.getOppositeColor(this.color)).values().stream().mapToDouble(PieceOnBoard::getDefaultValue).sum();
   }
 }
