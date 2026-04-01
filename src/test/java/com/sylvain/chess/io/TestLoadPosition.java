@@ -2,6 +2,7 @@ package com.sylvain.chess.io;
 
 import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
+import com.sylvain.chess.board.GameVariant;
 import com.sylvain.chess.board.Square;
 import com.sylvain.chess.io.fen.FenLoader;
 import com.sylvain.chess.io.fen.FenSaver;
@@ -132,13 +133,26 @@ public class TestLoadPosition {
 
   @Test
   public void testCastling() {
-    // OBS: The black king is at its "classical chess" square, so the 'a' and 'h' columns are written 'q' and 'k' in the fen description.
+    // OBS: it is not a "classical chess" position, because at least on castle char is not 'k' or 'q'.
+    // It is not a chess 960 game either, as there are over 2 possible castles.
     final String fen = "r1rrkrrr/8/8/8/8/8/8/RRRKRRRR w HGCAhda - 0 1";
     final Gameplay gameplay = FenLoader.loadPosition(fen);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
     Assert.assertEquals(Set.of('a', 'd', 'h'), gameplay.getBoard().getUnmovedRooks(PlayerColor.BLACK).stream().map(r -> r.getSquare().getColumnLetter()).collect(Collectors.toSet()));
     Assert.assertEquals(Set.of('a', 'c', 'g', 'h'), gameplay.getBoard().getUnmovedRooks(PlayerColor.WHITE).stream().map(r -> r.getSquare().getColumnLetter()).collect(Collectors.toSet()));
     Assert.assertEquals(fen, FenSaver.getPositionString(gameplay));
+    Assert.assertEquals(GameVariant.UNKNOWN, gameplay.getBoard().getVariant());
+  }
+
+  @Test
+  public void testCastlingClassicalChess() {
+    final String fen = "r1rrkrrr/8/8/8/8/8/8/RRRKRRRR w kq - 0 1";
+    final Gameplay gameplay = FenLoader.loadPosition(fen);
+    gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
+    Assert.assertEquals(Set.of('a', 'h'), gameplay.getBoard().getUnmovedRooks(PlayerColor.BLACK).stream().map(r -> r.getSquare().getColumnLetter()).collect(Collectors.toSet()));
+    Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(PlayerColor.WHITE).isEmpty());
+    Assert.assertEquals(fen, FenSaver.getPositionString(gameplay));
+    Assert.assertEquals(GameVariant.CLASSICAL, gameplay.getBoard().getVariant());
   }
 
   public static Gameplay loadPositionFromFile(final String fileName) throws IOException {

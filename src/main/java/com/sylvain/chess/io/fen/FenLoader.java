@@ -31,7 +31,7 @@ public class FenLoader {
       throw new IllegalArgumentException("Invalid fen (missing " + (6 - fenArray.length) + " argument(s)): " + fen);
     final ChessBoard board = loadBoard(fenArray[0]);
     final PlayerColor color = getNextColor(fenArray[1].toCharArray()[0]);
-    configureVariant(fenArray[2], board);
+    board.setVariant(findVariant(fenArray[2]));
     configureImpossibleCastles(fenArray[2], board);
     configureLastMove(fenArray[3], board, ChessBoard.getOppositeColor(color));
     final int numberOfHalfMovesWithoutImprovement = Integer.parseInt(fenArray[4]);
@@ -64,14 +64,22 @@ public class FenLoader {
     return Objects.equals(fenColor, 'b') ? PlayerColor.BLACK : PlayerColor.WHITE;
   }
 
-  private static void configureVariant(final String possibleCastles, final ChessBoard board) {
+  private static GameVariant findVariant(final String possibleCastles) {
+    // OBS: consider as well the number of pieces of each kind on the board etc.?
+    if (possibleCastles.length() > 4)
+      return GameVariant.UNKNOWN;
     GameVariant variant = GameVariant.CLASSICAL;
-    for (final Character castle : possibleCastles.toCharArray()) {
+    final char[] charArray = possibleCastles.toCharArray();
+    for (final PlayerColor color : PlayerColor.values()) {
+      if (possibleCastles.chars().mapToObj(c -> (char) c).filter(c -> PieceOnBoard.getColor(c).equals(color)).toList().size() > 2)
+        return GameVariant.UNKNOWN;
+    }
+    for (final Character castle : charArray) {
       if (Character.toLowerCase(castle) <= Square.getColumnLetter(ChessBoard.BOARD_COLS)) {
         variant = GameVariant.CHESS960;
       }
     }
-    board.setVariant(variant);
+    return variant;
   }
 
   private static void configureImpossibleCastles(final String fenCastles, final ChessBoard board) {
