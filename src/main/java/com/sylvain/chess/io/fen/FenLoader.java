@@ -102,6 +102,7 @@ public class FenLoader {
           throw new IllegalArgumentException("Invalid fen board character: " + currentRow);
       }
     }
+    board.setSetUp(true);
     return board;
   }
 }

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameHistory {
-  @Setter
+  @Getter @Setter
   private String initialFen;
   @Getter
   private final PlayerColor firstPlayingColor;

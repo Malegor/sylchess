@@ -1,6 +1,7 @@
 package com.sylvain.chess.io.pgn;
 
 import com.sylvain.chess.PlayerColor;
+import com.sylvain.chess.board.GameVariant;
 import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.play.EndGame;
 import com.sylvain.chess.play.GameHistory;
@@ -39,16 +40,29 @@ public class PgnSaver {
       isFirstMove = false;
       sep = " ";
     }
-    return getGameDescription(game) + "\n\n" + movesBld + sep + game.getEndGame().getPgn();
+    return getGameDescription(game) + "\n" + movesBld + sep + game.getEndGame().getPgn();
   }
 
   private static String getGameDescription(final Gameplay game) {
-    return "[Date \"" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")) + "\"]" +
-            "\n[White \"" + game.getHistory().getFirstPlayerOfColor(PlayerColor.WHITE) + "\"]" +
-            "\n[Black \"" + game.getHistory().getFirstPlayerOfColor(PlayerColor.BLACK) + "\"]" +
-            (game.getEndGame().equals(EndGame.STILL_PLAYING) ? "" :
-                    "\n[Result \"" + game.getEndGame().getPgn() + "\"]" +
-                    "\n[Termination \"" + getTermination(game) + "\"]");
+    final StringBuilder builder = new StringBuilder();
+    builder.append(tag("Date", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))))
+            .append(tag("White", game.getHistory().getFirstPlayerOfColor(PlayerColor.WHITE).toString()))
+            .append(tag("Black", game.getHistory().getFirstPlayerOfColor(PlayerColor.BLACK).toString()));
+    if (game.getBoard().isSetUp())
+      builder.append(tag("SetUp", "1"));
+    if (!game.getBoard().getVariant().equals(GameVariant.CLASSICAL))
+      builder.append(tag("Variant", game.getBoard().getVariant().getValue()));
+    if (game.getBoard().isSetUp() || !game.getBoard().getVariant().equals(GameVariant.CLASSICAL))
+      builder.append(tag("FEN", game.getHistory().getInitialFen()));
+    if (!game.getEndGame().equals(EndGame.STILL_PLAYING)) {
+      builder.append(tag("Result", game.getEndGame().getPgn()));
+      builder.append(tag("Termination", getTermination(game)));
+    }
+    return builder.toString();
+  }
+
+  private static String tag(final String tagName, final String tagValue) {
+    return "[" + tagName + " \"" + tagValue + "\"]\n";
   }
 
   private static String getTermination(final Gameplay game) {
