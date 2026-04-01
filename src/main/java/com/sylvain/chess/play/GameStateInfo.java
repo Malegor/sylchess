@@ -14,7 +14,7 @@ import java.util.Map;
 public class GameStateInfo {
   @Getter @Setter
   private Player lastPlayer;
-  @Getter @Setter
+  @Getter
   private int moveNumber;
   @Getter
   private int halfMoveNumber;
@@ -48,5 +48,10 @@ public class GameStateInfo {
 
   public void incrementHalfMove() {
     this.halfMoveNumber++;
+  }
+
+  public void setMoveNumber(final int moveNumber) {
+    this.moveNumber = moveNumber;
+    this.halfMoveNumber = 2 * moveNumber - 1;
   }
 }

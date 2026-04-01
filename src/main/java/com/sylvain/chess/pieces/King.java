@@ -53,4 +53,9 @@ public class King extends PieceOnBoard {
     public boolean isPossiblePromotion() {
         return false;
     }
+
+    @Override
+    public double getDefaultValue() {
+        return 0;
+    }
 }

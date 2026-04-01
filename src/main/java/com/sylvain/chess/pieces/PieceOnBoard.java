@@ -97,4 +97,6 @@ public abstract class PieceOnBoard {
     }
 
     public abstract String getIconPath(final PlayerColor color);
+
+    public abstract double getDefaultValue();
 }

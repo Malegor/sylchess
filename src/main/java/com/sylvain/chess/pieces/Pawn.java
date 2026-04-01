@@ -88,4 +88,9 @@ public class Pawn extends PieceOnBoard {
         final String colorStr = color.equals(PlayerColor.BLACK) ? "d" : "l";
         return "/pieces_png/Chess_p" + colorStr + "t60.png";
     }
+
+    @Override
+    public double getDefaultValue() {
+        return 1;
+    }
 }
