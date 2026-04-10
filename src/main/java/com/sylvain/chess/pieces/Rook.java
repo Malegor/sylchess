@@ -48,4 +48,9 @@ public class Rook extends PieceOnBoard {
     public boolean isPossiblePromotion() {
         return true;
     }
+
+    @Override
+    public double getDefaultValue() {
+        return 5;
+    }
 }

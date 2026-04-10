@@ -62,7 +62,7 @@ public class Pawn extends PieceOnBoard {
                 final Square newSquare = this.square.move(incrementCol, incrementRow * ChessBoard.getPawnDirection(this.color));
                 if (ChessBoard.isInBoard(newSquare)) {
                     if (newSquare.row() != ChessBoard.getPromotionRow(this.color)) {
-                        Move possibleMove = new Move(Map.of(this, this.at(newSquare)), board);
+                        final Move possibleMove = new Move(Map.of(this, this.at(newSquare)), board);
                         if (possibleMove.isValidMove()) {
                             validMoves.add(possibleMove);
                         }
@@ -87,5 +87,10 @@ public class Pawn extends PieceOnBoard {
     public String getIconPath(PlayerColor color) {
         final String colorStr = color.equals(PlayerColor.BLACK) ? "d" : "l";
         return "/pieces_png/Chess_p" + colorStr + "t60.png";
+    }
+
+    @Override
+    public double getDefaultValue() {
+        return 1;
     }
 }

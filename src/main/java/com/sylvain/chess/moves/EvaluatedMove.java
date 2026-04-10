@@ -1,11 +1,8 @@
 package com.sylvain.chess.moves;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-@AllArgsConstructor
-@Getter
-public class EvaluatedMove {
-  private final Move move;
-  private final double evaluation;
+public record EvaluatedMove(Move move, double evaluation) {
+  @Override
+  public String toString() {
+    return this.move + ", evaluation=" + this.evaluation;
+  }
 }
