@@ -3,6 +3,7 @@ package com.sylvain.chess.play.players;
 import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.io.fen.FenLoader;
+import com.sylvain.chess.moves.EvaluatedMove;
 import com.sylvain.chess.moves.Move;
 import org.junit.Assert;
 import org.junit.Test;
@@ -76,5 +77,14 @@ public class TestMateSolver {
     board.printBoard();
     System.out.println(mateMove);
     Assert.assertEquals("Rxa2", mateMove.toSan());
+  }
+
+  @Test
+  public void testDefendingMateEnPassant() {
+    final ChessBoard board = FenLoader.loadBoard("2R4r/5pbk/p3p3/4P1P1/1p2B3/8/8/6K1");
+    final MateSolver defMateIn1 = new MateSolver(PlayerColor.BLACK, board, 3);
+    final EvaluatedMove defMove = defMateIn1.selectEvaluatedMove(board.findAllValidMoves(PlayerColor.BLACK));
+    board.printBoard();
+    Assert.assertEquals(-498, defMove.evaluation(), 1e-6);
   }
 }

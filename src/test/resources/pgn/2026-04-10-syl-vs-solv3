@@ -1,0 +1,9 @@
+[Date "2026.04.10"]
+[White "Human (WHITE)"]
+[Black "MateSolver (BLACK)"]
+[Variant "Chess960"]
+[FEN "rnkbqnbr/pppppppp/8/8/8/8/PPPPPPPP/RNKBQNBR w HAha - 0 1"]
+[Result "1-0"]
+[Termination "checkmate"]
+
+1. e4 c6 2. d4 Bb6 3. f4 Ne6 4. Qd2 f6 5. f5 Nf8 6. Bf3 g6 7. g4 Qd8 8. Qh6 gxf5 9. gxf5 Bc4 10. Ne3 Bxa2 11. Rxa2 Bxd4 12. Qg7 Ne6 13. fxe6 dxe6 14. Bg4 f5 15. exf5 Bxg7 16. f6 Bh6 17. Bxe6+ Kc7 18. Nd2 exf6 19. h4 Bf4 20. Ra3 Qd6 21. Bf5 h5 22. Rd3 Qe5 23. Ndc4 Qxf5 24. Bh2 Qe4 25. Re1 Kc8 26. Nd6+ Bxd6 27. Bxd6 Qxh4 28. Red1 Qe4 29. b3 Na6 30. Nc4 Rd8 31. R3d4 Qe2 32. Nd2 Qg2 33. Ne4 Qf3 34. Kb2 f5 35. Ng5 Qg2 36. Nf7 Re8 37. Be5 Rxe5 38. Nxe5 Qg8 39. Nc4 c5 40. R4d7 b6 41. c3 h4 42. Re7 Kb8 43. Ne5 Kc8 44. Rdd7 Qg2+ 45. Ka3 Qg8 46. Nf7 Nc7 47. Rdxc7+ Kb8 48. Rcb7+ Kc8 49. Nd6+ Kd8 50. Rbd7# 1-0
