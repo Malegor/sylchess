@@ -29,6 +29,7 @@ public class Move {
   private final ChessBoard board;
   private PieceOnBoard captured;
   private String completeSan;
+  private Move previousMoveToRestore;
 
   public Move(final Map<PieceOnBoard, PieceOnBoard> moveToNewSquare, final ChessBoard board) {
     this.moveToNewSquare = moveToNewSquare;
@@ -158,15 +159,16 @@ public class Move {
     for (Map.Entry<PieceOnBoard, PieceOnBoard> move : this.moveToNewSquare.entrySet()) {
       this.board.addPiece(move.getValue());
     }
+    this.previousMoveToRestore = this.board.getPreviousMove();
+    this.board.setPreviousMove(this);
   }
 
   public void apply() {
-  // TODO: this method should be orchestrated by CB?
+  // TODO: these methods should be orchestrated by CB?
       this.simulate();
       for (PieceOnBoard piece : this.moveToNewSquare.values()) {
           piece.setHasAlreadyMoved(true);
       }
-      this.board.setPreviousMove(this);
       this.calculateCompleteSan();
   }
 
@@ -178,6 +180,7 @@ public class Move {
       this.board.addPiece(entry.getKey());
     }
     if (this.captured != null) this.board.addPiece(this.captured);
+    this.board.setPreviousMove(this.previousMoveToRestore);
   }
 
   @Override
