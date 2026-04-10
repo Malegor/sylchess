@@ -62,7 +62,7 @@ public class Pawn extends PieceOnBoard {
                 final Square newSquare = this.square.move(incrementCol, incrementRow * ChessBoard.getPawnDirection(this.color));
                 if (ChessBoard.isInBoard(newSquare)) {
                     if (newSquare.row() != ChessBoard.getPromotionRow(this.color)) {
-                        Move possibleMove = new Move(Map.of(this, this.at(newSquare)), board);
+                        final Move possibleMove = new Move(Map.of(this, this.at(newSquare)), board);
                         if (possibleMove.isValidMove()) {
                             validMoves.add(possibleMove);
                         }
