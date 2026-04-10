@@ -22,7 +22,7 @@ public class MateSolver extends Player {
 
   public MateSolver(final PlayerColor color, final ChessBoard board, final int maxNumberOfMoves) {
     super(color, "MateSolver", board);
-    this.maxDepth = maxNumberOfMoves * 2 - 1;
+    this.maxDepth = maxNumberOfMoves * 2 - 1; // TODO: test without '-1': in this case the checkmate defending player will be able to see mate in n
   }
 
   @Override
@@ -31,11 +31,24 @@ public class MateSolver extends Player {
       log.info("Forced move: {}", validMoves.getFirst());
     }
     final EvaluatedMove move = alphaBeta(null, this.maxDepth, -EVALUATION_FOR_MATE - 1, EVALUATION_FOR_MATE + 1);
-    final double evaluation = move.getEvaluation();
-    log.info("Move eval: {}", this.isMateEvaluation(evaluation) ?
-            "MATE IN " + this.getNumberOfMovesForMate(evaluation) + (evaluation < 0 ? " (opponent)" : "") :
-            evaluation);
-    return move.getMove();
+    final double evaluation = move.evaluation();
+    log.info("Move eval: {}", this.isMateEvaluation(evaluation) ? this.getMateInN(evaluation) : evaluation);
+    return move.move();
+  }
+
+  private String getMateInN(final double evaluation) {
+    return "MATE IN " + this.getNumberOfMovesForMate(evaluation) + (evaluation < 0 ? " (opponent)" : "");
+  }
+
+  private int getNumberOfOpponentMovesAfter(final Move move) {
+    return this.findAllOpponentMovesAfter(move).size();
+  }
+
+  private List<Move> findAllOpponentMovesAfter(final Move move) {
+    move.simulate();
+    final List<Move> moves = this.board.findAllValidMoves(ChessBoard.getOppositeColor(move.getColor()));
+    move.rollback();
+    return moves;
   }
 
   private EvaluatedMove alphaBeta(final Move move, final int depth, double alpha, double beta) {
@@ -43,6 +56,8 @@ public class MateSolver extends Player {
       move.simulate();
     final Comparator<Move> byCheckingOpponent = (m1, m2) -> Boolean.compare(this.board.checksOppositeKing(m2.getDestinationPiece()),
             this.board.checksOppositeKing(m1.getDestinationPiece()));
+    // TODO!! improve perf: attribute opponentMoves in EvaluateMove (+ previousMove)
+//    final Comparator<Move> byNumberOfOpponentResponses = (m1, m2) -> this.getNumberOfOpponentMovesAfter(m1) - this.getNumberOfOpponentMovesAfter(m2);
     final PlayerColor currentColor = move == null ? ChessBoard.getOppositeColor(this.color) : move.getColor();
     final PlayerColor oppositeColor = ChessBoard.getOppositeColor(currentColor);
     final List<Move> allValidMovesForOpponent = this.board.findAllValidMoves(oppositeColor).stream().sorted(byCheckingOpponent).toList();
@@ -56,21 +71,33 @@ public class MateSolver extends Player {
     final boolean shouldMaximize = oppositeColor == this.color;
     final int multiplier = shouldMaximize ? 1 : -1;
     EvaluatedMove bestMoveForOpponent = new EvaluatedMove(null, - multiplier * (EVALUATION_FOR_MATE + 1));
+    int index = 0;
+    if (move == null)
+      log.debug("Started search on {} possible moves...", allValidMovesForOpponent.size());
     for (final Move moveOpponent : allValidMovesForOpponent) {
       final EvaluatedMove nextMove = this.alphaBeta(moveOpponent, depth - 1, alpha, beta);
-      if (multiplier * (nextMove.getEvaluation() - bestMoveForOpponent.getEvaluation()) > 0) {
-        bestMoveForOpponent = new EvaluatedMove(moveOpponent, nextMove.getEvaluation());
+      if (move == null)
+        log.debug("{}/{} - On {}, best response is: {}", index, allValidMovesForOpponent.size() - 1, moveOpponent, nextMove);
+      if (multiplier * (nextMove.evaluation() - bestMoveForOpponent.evaluation()) > 0) {
+        bestMoveForOpponent = new EvaluatedMove(moveOpponent, nextMove.evaluation());
       }
-      if (multiplier * nextMove.getEvaluation() >= multiplier * (shouldMaximize ? beta : alpha)) // alpha or beta cutoff
+      if (multiplier * nextMove.evaluation() >= multiplier * (shouldMaximize ? beta : alpha)) { // alpha or beta cutoff
+        if (move == null)
+          log.debug("{}-{} - {}={} evaluation={} cutoff!", depth, move, shouldMaximize ? "beta" : "alpha", shouldMaximize ? beta : alpha, nextMove.evaluation());
         break;
+      }
       if (shouldMaximize)
-        alpha = Math.max(alpha, bestMoveForOpponent.getEvaluation());
+        alpha = Math.max(alpha, bestMoveForOpponent.evaluation());
       else
-        beta = Math.min(beta, bestMoveForOpponent.getEvaluation());
+        beta = Math.min(beta, bestMoveForOpponent.evaluation());
       // If the best move for one player represents a mate in n moves, break in case the depth is too low
       if ((alpha > 0 && this.isMateEvaluation(alpha) && (this.getNumberOfMovesForMate(alpha) - 1) * 2 + 1 <= this.maxDepth - depth + 1) ||
-              (beta < 0 && this.isMateEvaluation(beta) && (this.getNumberOfMovesForMate(beta) - 1) * 2 + 1 <= this.maxDepth - depth + 1))
+              (beta < 0 && this.isMateEvaluation(beta) && (this.getNumberOfMovesForMate(beta) - 1) * 2 + 1 <= this.maxDepth - depth + 1)) {
+        if (move == null)
+          log.debug("{}-{} - Mate in {} cutoff!", depth, move, alpha > 0 ? this.getNumberOfMovesForMate(alpha) : this.getNumberOfMovesForMate(beta));
         break;
+      }
+      index++;
     }
     if (move != null)
       move.rollback();
@@ -98,10 +125,9 @@ public class MateSolver extends Player {
     boolean shouldMaximize = color == this.color;
     int multiplier = shouldMaximize ? 1 : -1;
     final PlayerColor oppositeColor = ChessBoard.getOppositeColor(color);
-    if (this.board.isKingCheckMate(oppositeColor)) {
-      return multiplier * (EVALUATION_FOR_MATE - numberOfHalfMoves);
-    }
-    return this.board.getPieces(this.color).values().stream().mapToDouble(PieceOnBoard::getDefaultValue).sum()
-            - this.board.getPieces(ChessBoard.getOppositeColor(this.color)).values().stream().mapToDouble(PieceOnBoard::getDefaultValue).sum();
+    return this.board.isKingCheckMate(oppositeColor) ? multiplier * (EVALUATION_FOR_MATE - numberOfHalfMoves)
+            : this.board.getPieces(this.color).values().stream().mapToDouble(PieceOnBoard::getDefaultValue).sum()
+              - this.board.getPieces(ChessBoard.getOppositeColor(this.color)).values().stream().mapToDouble(PieceOnBoard::getDefaultValue).sum()
+            + (allValidMovesForOpponent.isEmpty() ? 0 : 1.0 / allValidMovesForOpponent.size());
   }
 }
