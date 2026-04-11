@@ -68,16 +68,15 @@ public class TestConsoleInteractiveGame {
    * OBS: several problems for this test:
    * 1- Inconsistency on pieces that are already on the board --> solved!
    * 2- terminates in a draw (repeated position), in spite of the whites always finding a mate in 5 (the problem is, they don't find the quickest mate) --> solved!
-   * 3- for a few moves, it lasts about 1 hour --> "half-solved" (now: less than 10 minutes for all the 7 semi-moves, with a solver attacking and a solver defending)
+   * 3- for a few moves, it lasts about 1 hour --> "half-solved" (now: less than 10 minutes for all the 7 semi-moves, with a solver attacking and a solver defending) --> solved!
    * 4- The solver doesn't consider the drawing end games (3 times same position etc.) -> write unit tests
    * @throws IOException - Exception thrown from reading a non-existing fen file.
    */
   @Test
-  @Ignore // Because of the processing time, soon to be fixed
   public void testPuzzleProcessingTime() throws IOException {
     final Gameplay game = TestLoadPosition.loadPositionFromFile("fen/mate4-8.fen");
     game.getBoard().printBoard();
-    final List<Player> players = List.of(new MateSolver(PlayerColor.WHITE, game.getBoard(), 5), new MateSolver(PlayerColor.BLACK, game.getBoard(), 5));
+    final List<Player> players = List.of(new MateSolver(PlayerColor.WHITE, game.getBoard(), 6), new MateSolver(PlayerColor.BLACK, game.getBoard(), 6));
     final EndGame endGame = ConsoleInteractiveGame.play(game, players);
     Assert.assertEquals(EndGame.WHITE_WINS, endGame);
   }
