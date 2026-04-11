@@ -49,7 +49,7 @@ public class TestConsoleInteractiveGame {
     final Scanner scanner = new Scanner(mockInput);
     final Gameplay game = TestLoadPosition.loadPositionFromFile("fen/mate3-3.fen");
     game.getBoard().printBoard();
-    final List<Player> players = List.of(new ConsolePlayer(PlayerColor.WHITE, "white", game.getBoard(), scanner), new MateSolver(PlayerColor.BLACK, game.getBoard(), 3));
+    final List<Player> players = List.of(new ConsolePlayer(PlayerColor.WHITE, "white", game.getBoard(), scanner), new MateSolver(PlayerColor.BLACK, game.getBoard(), 5));
     final EndGame endGame = ConsoleInteractiveGame.play(game, players);
     scanner.close();
     Assert.assertEquals(EndGame.BLACK_WINS, endGame);
@@ -59,7 +59,7 @@ public class TestConsoleInteractiveGame {
   public void testMateIn3BothSolvers() throws IOException {
     final Gameplay game = TestLoadPosition.loadPositionFromFile("fen/mate3-3.fen");
     game.getBoard().printBoard();
-    final List<Player> players = List.of(new MateSolver(PlayerColor.WHITE, game.getBoard(), 3), new MateSolver(PlayerColor.BLACK, game.getBoard(), 3));
+    final List<Player> players = List.of(new MateSolver(PlayerColor.WHITE, game.getBoard(), 5), new MateSolver(PlayerColor.BLACK, game.getBoard(), 5));
     final EndGame endGame = ConsoleInteractiveGame.play(game, players);
     Assert.assertEquals(EndGame.BLACK_WINS, endGame);
   }

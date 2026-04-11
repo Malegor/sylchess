@@ -20,9 +20,9 @@ public class MateSolver extends Player {
 
   private final int maxDepth;
 
-  public MateSolver(final PlayerColor color, final ChessBoard board, final int maxNumberOfMoves) {
+  public MateSolver(final PlayerColor color, final ChessBoard board, final int maxNumberOfSemiMoves) {
     super(color, "MateSolver", board);
-    this.maxDepth = maxNumberOfMoves * 2 - 1; // TODO: test without '-1': in this case the checkmate defending player will be able to see mate in n
+    this.maxDepth = maxNumberOfSemiMoves;
   }
 
   @Override
