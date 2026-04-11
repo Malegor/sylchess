@@ -39,7 +39,7 @@ public class ConsoleInteractiveGame {
 
   private static Player getPlayer(final String playerName, final PlayerColor color, final ChessBoard board, final Scanner scanner) {
     final String solverName = "solver";
-    return playerName.equals(solverName) ? new MateSolver(color, board, 5)
+    return playerName.equals(solverName) ? new MateSolver(color, board, 9)
             : playerName.isEmpty() ? new DummyPlayer(color, board)
             : new ConsolePlayer(color, playerName, board, scanner);
   }

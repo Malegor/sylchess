@@ -1,12 +1,14 @@
 package com.sylvain.chess.board;
 
 import com.sylvain.chess.PlayerColor;
+import com.sylvain.chess.io.fen.FenLoader;
 import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.pieces.Bishop;
 import com.sylvain.chess.pieces.King;
 import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.pieces.Queen;
 import com.sylvain.chess.pieces.Rook;
+import com.sylvain.chess.play.Gameplay;
 import com.sylvain.chess.play.players.Player;
 import org.junit.Assert;
 import org.junit.Test;
@@ -165,5 +167,11 @@ public class TestValidMoves {
       }
     };
     Assert.assertThrows(IllegalArgumentException.class, player::getSelectedMove);
+  }
+
+  @Test
+  public void testCastling960() {
+    final Gameplay gameplay = FenLoader.loadPosition("rq1b1kr1/p1p1npp1/1p2b3/3p2Q1/3Pp1n1/BPP3N1/P1B1PPPP/R3NK1R b Aga d3 1 10");
+    Assert.assertTrue(gameplay.getBoard().findAllValidMoves(PlayerColor.BLACK).stream().map(Move::toSan).collect(Collectors.toSet()).contains("O-O"));
   }
 }

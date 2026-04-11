@@ -36,7 +36,7 @@ public class Move {
     this.board = board;
     // OBS: the captured attribute can change (only) in the case of an en passant capture, which explains why it is not final.
     // OBS2: it could be a problem to instantiate a move with the board not at the state at the moment of the move.
-    this.captured = board.getPieceAt(moveToNewSquare.values().iterator().next().getSquare());
+    this.captured = moveToNewSquare.size() > 1 ? null : board.getPieceAt(moveToNewSquare.values().iterator().next().getSquare());
   }
 
   public boolean isValidMove() {
