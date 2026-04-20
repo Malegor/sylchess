@@ -273,4 +273,8 @@ public class Move {
   public String toCompleteSan() {
     return this.completeSan;
   }
+
+  public double getCapturedPieceValue() {
+    return this.captured == null ? 0 : this.captured.getDefaultValue();
+  }
 }

@@ -60,16 +60,16 @@ public class MateSolver extends Player {
       move.simulate();
     final Comparator<Move> byCheckingOpponent = (m1, m2) -> Boolean.compare(this.board.checksOppositeKing(m2.getDestinationPiece()),
             this.board.checksOppositeKing(m1.getDestinationPiece()));
-    // TODO!! improve perf: attribute opponentMoves in EvaluateMove (+ previousMove)
+    // TODO!! improve perf: attribute opponentMoves in EvaluateMove (+ previousMove) (SYLCHESS-99)
 //    final Comparator<Move> byNumberOfOpponentResponses = (m1, m2) -> this.getNumberOfOpponentMovesAfter(m1) - this.getNumberOfOpponentMovesAfter(m2);
     final PlayerColor currentColor = move == null ? ChessBoard.getOppositeColor(this.color) : move.getColor();
     final PlayerColor oppositeColor = ChessBoard.getOppositeColor(currentColor);
-    final List<Move> allValidMovesForOpponent = this.board.findAllValidMoves(oppositeColor).stream().sorted(byCheckingOpponent).toList();
+    final List<Move> allValidMovesForOpponent = this.board.findAllValidMoves(oppositeColor).stream().sorted(byCheckingOpponent.thenComparing(Move::getCapturedPieceValue, Comparator.reverseOrder())).toList();
     if (depth <= 0 || allValidMovesForOpponent.isEmpty()) {
       final double evaluation = this.evaluateBoardFor(currentColor, allValidMovesForOpponent, this.maxDepth - depth);
       if (move != null)
         move.rollback();
-      // TODO: avoid evaluating same position several times => map (position+color, eval)
+      // TODO: avoid evaluating same position several times => map (position+color, eval) (SYLCHESS-56)
       return new EvaluatedMove(move, evaluation);
     }
     final boolean shouldMaximize = oppositeColor == this.color;
