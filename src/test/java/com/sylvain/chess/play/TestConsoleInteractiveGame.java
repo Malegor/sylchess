@@ -7,7 +7,6 @@ import com.sylvain.chess.play.players.interactive.ConsolePlayer;
 import com.sylvain.chess.play.players.MateSolver;
 import com.sylvain.chess.play.players.Player;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -47,7 +46,7 @@ public class TestConsoleInteractiveGame {
     final String simulatedWhiteMoves = "Kg2\nKg3"; // OBS: only for white player
     final InputStream mockInput = new ByteArrayInputStream(simulatedWhiteMoves.getBytes(StandardCharsets.UTF_8));
     final Scanner scanner = new Scanner(mockInput);
-    final Gameplay game = TestLoadPosition.loadPositionFromFile("fen/mate3-3.fen");
+    final Gameplay game = TestLoadPosition.loadPositionFromFile("fen/mate/mate3.fen", 5);
     game.getBoard().printBoard();
     final List<Player> players = List.of(new ConsolePlayer(PlayerColor.WHITE, "white", game.getBoard(), scanner), new MateSolver(PlayerColor.BLACK, game.getBoard(), 5));
     final EndGame endGame = ConsoleInteractiveGame.play(game, players);
@@ -57,7 +56,7 @@ public class TestConsoleInteractiveGame {
 
   @Test
   public void testMateIn3BothSolvers() throws IOException {
-    final Gameplay game = TestLoadPosition.loadPositionFromFile("fen/mate3-3.fen");
+    final Gameplay game = TestLoadPosition.loadPositionFromFile("fen/mate/mate3.fen", 5);
     game.getBoard().printBoard();
     final List<Player> players = List.of(new MateSolver(PlayerColor.WHITE, game.getBoard(), 5), new MateSolver(PlayerColor.BLACK, game.getBoard(), 5));
     final EndGame endGame = ConsoleInteractiveGame.play(game, players);
@@ -74,7 +73,7 @@ public class TestConsoleInteractiveGame {
    */
   @Test
   public void testPuzzleProcessingTime() throws IOException {
-    final Gameplay game = TestLoadPosition.loadPositionFromFile("fen/mate4-8.fen");
+    final Gameplay game = TestLoadPosition.loadPositionFromFile("fen/mate/mate4.fen", 7);
     game.getBoard().printBoard();
     final List<Player> players = List.of(new MateSolver(PlayerColor.WHITE, game.getBoard(), 6), new MateSolver(PlayerColor.BLACK, game.getBoard(), 6));
     final EndGame endGame = ConsoleInteractiveGame.play(game, players);
