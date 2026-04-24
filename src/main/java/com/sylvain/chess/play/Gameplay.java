@@ -73,7 +73,7 @@ public class Gameplay {
         this.endGame = EndGame.DRAW;
         return GameStatus.SEVERAL_TIMES_SAME_POSITION;
       }
-      if (this.info.getMoveNumber() >= maxNumberOfMoves)
+      if (this.info.getMoveNumber() > maxNumberOfMoves)
         return GameStatus.PLAYING;
       if (this.info.getHalfMoveNumber() - this.info.getLastHalfMoveWithCaptureOrPawn() > 2 * this.maxNumberOfMovesWithoutCaptureOrPawnMove) {
         log.info("{} moves have been played without any improvement! (since half move {})", this.maxNumberOfMovesWithoutCaptureOrPawnMove, this.info.getLastHalfMoveWithCaptureOrPawn());

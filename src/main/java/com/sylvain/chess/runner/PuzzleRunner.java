@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,15 +34,30 @@ public class PuzzleRunner {
   }
 
   public static void main(String[] args) throws IOException {
-    final String fileName = "fen/mate/mate3.fen";
+    final int numberOfMovesForMate = 3;
+    final String fileName = "fen/mate/mate" + numberOfMovesForMate + ".fen";
+    final int depth = 7;
     final List<String> fens = loadStringsFromFile(fileName);
     final long startTime = System.currentTimeMillis();
+    long maxTime = 0;
     for (final String fen : fens) {
+      long specificStartTime = System.currentTimeMillis();
       final Gameplay gameplay = FenLoader.loadPosition(fen);
-      final List<Player> players = List.of(new MateSolver(PlayerColor.WHITE, gameplay.getBoard(), 7), new MateSolver(PlayerColor.BLACK, gameplay.getBoard(), 7));
-      final GameStatus gameStatus = gameplay.playGame(players, gameplay.getInfo().getMoveNumber() + 3);
-      assert !gameStatus.equals(GameStatus.PLAYING);
+      final List<Player> players = List.of(new MateSolver(PlayerColor.WHITE, gameplay.getBoard(), depth), new MateSolver(PlayerColor.BLACK, gameplay.getBoard(), depth));
+      final GameStatus gameStatus = gameplay.playGame(players,
+              gameplay.getInfo().getMoveNumber() + numberOfMovesForMate - (gameplay.getHistory().getFirstPlayingColor().equals(PlayerColor.BLACK) ? 0 : 1));
+      if (gameStatus.equals(GameStatus.PLAYING))
+        throw new IllegalStateException("Game status should not be PLAYING: " + fen);
+      maxTime = Math.max(System.currentTimeMillis() - specificStartTime, maxTime);
     }
-    log.info("{} puzzles successfully solved in {} seconds", fens.size(), (System.currentTimeMillis() - startTime) / 1000);
+    final long totalTime = (System.currentTimeMillis() - startTime) / 1000;
+    log.info("{} puzzles successfully solved in {} seconds, max(ms)={}", fens.size(), totalTime, maxTime);
+    log.info("{},1.0-SNAPSHOT,{},{},{},{},{}", getCurrentDate(), Paths.get(fileName).getFileName().toString(), fens.size(), depth, totalTime, maxTime);
+  }
+
+  private static String getCurrentDate() {
+    final LocalDate today = LocalDate.now();
+    final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+    return today.format(formatter);
   }
 }
