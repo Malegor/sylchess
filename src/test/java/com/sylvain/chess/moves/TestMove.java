@@ -22,26 +22,24 @@ public class TestMove {
     board.addPiece(knight);
     board.addPiece(new Knight(PlayerColor.BLACK, new Square(3, 2))); // Doesn't control b3
     board.addPiece(new Queen(PlayerColor.BLACK, new Square(2, 8))); // Isn't a knight
-    Move blackMove = new Move(Map.of(knight, knight.move(1, 2)), board);
-    System.out.println(blackMove.toSan());
-    Assert.assertEquals("Nb3", blackMove.toSan());
+    System.out.println(new Move(Map.of(knight, knight.move(1, 2)), board).toSan());
+    Assert.assertEquals("Nb3", new Move(Map.of(knight, knight.move(1, 2)), board).toSan());
     board.addPiece(new Knight(PlayerColor.BLACK, new Square(4, 2)));
-    Assert.assertEquals("Nab3", blackMove.toSan());
+    Assert.assertEquals("Nab3", new Move(Map.of(knight, knight.move(1, 2)), board).toSan());
     board.addPiece(new Knight(PlayerColor.BLACK, new Square(4, 4)));
-    Assert.assertEquals("Nab3", blackMove.toSan());
+    Assert.assertEquals("Nab3", new Move(Map.of(knight, knight.move(1, 2)), board).toSan());
     board.addPiece(new Knight(PlayerColor.BLACK, new Square(1, 5)));
-    Assert.assertEquals("N1b3", blackMove.toSan());
+    Assert.assertEquals("N1b3", new Move(Map.of(knight, knight.move(1, 2)), board).toSan());
     board.addPiece(new Knight(PlayerColor.BLACK, new Square(3, 1)));
-    Assert.assertEquals("Na1b3", blackMove.toSan());
+    Assert.assertEquals("Na1b3", new Move(Map.of(knight, knight.move(1, 2)), board).toSan());
     board.addPiece(new Bishop(PlayerColor.WHITE, new Square(2, 3)));
-    blackMove = new Move(Map.of(knight, knight.move(1, 2)), board);// In order to set the captured piece
-    Assert.assertEquals("Na1xb3", blackMove.toSan());
+    Assert.assertEquals("Na1xb3", new Move(Map.of(knight, knight.move(1, 2)), board).toSan());
     final Pawn whitePawn = new Pawn(PlayerColor.WHITE, new Square(3, 7));
     board.addPiece(whitePawn);
     final Move pawnPromo = new Move(Map.of(whitePawn, whitePawn.toBishop(whitePawn.getSquare().move(0, 1))), board);
     Assert.assertEquals("c8=B", pawnPromo.toSan());
     final Move pawnPromoOnCapture = new Move(Map.of(whitePawn, whitePawn.toQueen(whitePawn.getSquare().move(-1, 1))), board);
-    pawnPromoOnCapture.isValidMove();
+    //pawnPromoOnCapture.isValidMove();
     Assert.assertEquals("cxb8=Q", pawnPromoOnCapture.toSan());
     board.addPiece(new Pawn(PlayerColor.WHITE, new Square(1, 7)));
     Assert.assertEquals("cxb8=Q", pawnPromoOnCapture.toSan()); // No disambiguating is necessary

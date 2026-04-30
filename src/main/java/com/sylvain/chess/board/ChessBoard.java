@@ -41,7 +41,7 @@ public class ChessBoard {
 
   public ChessBoard() {
     this.piecesByColor = Map.of(PlayerColor.WHITE, new LinkedHashMap<>(16), PlayerColor.BLACK, new LinkedHashMap<>(16));
-    this.allPieces = new HashMap<>(32);
+    this.allPieces = new LinkedHashMap<>(32);
     this.kings = new HashMap<>(2);
     this.variant = GameVariant.CLASSICAL; // Default variant
     this.setUp = false;

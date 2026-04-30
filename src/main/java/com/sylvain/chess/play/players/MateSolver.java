@@ -64,7 +64,11 @@ public class MateSolver extends Player {
 //    final Comparator<Move> byNumberOfOpponentResponses = (m1, m2) -> this.getNumberOfOpponentMovesAfter(m1) - this.getNumberOfOpponentMovesAfter(m2);
     final PlayerColor currentColor = move == null ? ChessBoard.getOppositeColor(this.color) : move.getColor();
     final PlayerColor oppositeColor = ChessBoard.getOppositeColor(currentColor);
-    final List<Move> allValidMovesForOpponent = this.board.findAllValidMoves(oppositeColor).stream().sorted(byCheckingOpponent.thenComparing(Move::getCapturedPieceValue, Comparator.reverseOrder())).toList();
+    final Comparator<Move> moveOrderer = byCheckingOpponent
+            .thenComparing(Move::getPromotionGain, Comparator.reverseOrder())
+            .thenComparing(Move::getCapturedPieceValue, Comparator.reverseOrder())
+            .thenComparing(Move::toString); // Arbitrary tie-breaker (for determinism) // OBS: doesn't fix it
+    final List<Move> allValidMovesForOpponent = this.board.findAllValidMoves(oppositeColor).stream().sorted(moveOrderer).toList();
     if (depth <= 0 || allValidMovesForOpponent.isEmpty()) {
       final double evaluation = this.evaluateBoardFor(currentColor, allValidMovesForOpponent, this.maxDepth - depth);
       if (move != null)
