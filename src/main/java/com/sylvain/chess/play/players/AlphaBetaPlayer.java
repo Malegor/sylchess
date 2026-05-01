@@ -2,13 +2,19 @@ package com.sylvain.chess.play.players;
 
 import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
+import com.sylvain.chess.io.fen.FenLoader;
 import com.sylvain.chess.moves.EvaluatedMove;
 import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.pieces.PieceOnBoard;
+import com.sylvain.chess.play.DrawConditions;
+import com.sylvain.chess.play.GameStateInfo;
+import com.sylvain.chess.play.Gameplay;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A player calculating the best possible move, using the alpha-beta minimax algorithm.
@@ -17,11 +23,20 @@ import java.util.List;
 public class AlphaBetaPlayer extends Player {
   private final static int EVALUATION_FOR_MATE = 500;
 
+  private final DrawConditions drawConditions;
   private final int maxDepth;
+  private final GameStateInfo info;
 
-  public AlphaBetaPlayer(final PlayerColor color, final ChessBoard board, final int maxNumberOfSemiMoves) {
+  public AlphaBetaPlayer(final PlayerColor color, final Gameplay game, final int maxNumberOfSemiMoves) {
+    this(color, game.getBoard(), game.getInfo(), maxNumberOfSemiMoves, game.getDrawConditions());
+  }
+
+  public AlphaBetaPlayer(final PlayerColor color, final ChessBoard board, final GameStateInfo info, final int maxNumberOfSemiMoves,
+                         final DrawConditions drawConditions) {
     super(color, AlphaBetaPlayer.class.getSimpleName(), board);
     this.maxDepth = maxNumberOfSemiMoves;
+    this.info = info;
+    this.drawConditions = drawConditions;
   }
 
   @Override
@@ -33,6 +48,9 @@ public class AlphaBetaPlayer extends Player {
     if (validMoves.size() == 1) {
       log.info("Forced move: {}", validMoves.getFirst());
     }
+    // TODO: improve the following: this could not defend so well against perpetual check.
+    // Problem: if one use the whole repeated positions structure, it could be very time and memory consuming.
+    final Set<ChessBoard> twiceRepeatedPositions = this.info.getTwiceRepeatedPositions().stream().map(FenLoader::loadBoard).collect(Collectors.toSet());
     final EvaluatedMove move = alphaBeta(null, this.maxDepth, -EVALUATION_FOR_MATE - 1, EVALUATION_FOR_MATE + 1);
     final double evaluation = move.evaluation();
     log.info("Move eval: {}", this.isMateEvaluation(evaluation) ? this.getMateInN(evaluation) : evaluation);
@@ -68,8 +86,9 @@ public class AlphaBetaPlayer extends Player {
             .thenComparing(Move::getCapturedPieceValue, Comparator.reverseOrder())
             .thenComparing(Move::toString); // Arbitrary tie-breaker (for determinism) // OBS: doesn't fix it
     final List<Move> allValidMovesForOpponent = this.board.findAllValidMoves(oppositeColor).stream().sorted(moveOrderer).toList();
-    if (depth <= 0 || allValidMovesForOpponent.isEmpty()) {
-      final double evaluation = this.evaluateBoardFor(currentColor, allValidMovesForOpponent, this.maxDepth - depth);
+    if (depth <= 0 || allValidMovesForOpponent.isEmpty() || this.isConditionForStalemate()) {
+      final double evaluation = depth > 0 && !allValidMovesForOpponent.isEmpty() ? 0
+              : this.evaluateBoardFor(currentColor, allValidMovesForOpponent, this.maxDepth - depth);
       if (move != null)
         move.rollback();
       // TODO: avoid evaluating same position several times => map (position+color, eval) (SYLCHESS-56)
@@ -113,6 +132,10 @@ public class AlphaBetaPlayer extends Player {
     return bestMoveForOpponent;
   }
 
+  private boolean isConditionForStalemate() {
+    return false; // TODO
+  }
+
   private boolean isMateEvaluation(final double evaluation) {
     return Math.abs(evaluation) > EVALUATION_FOR_MATE - 50 && Math.abs(evaluation) < EVALUATION_FOR_MATE;
   }
@@ -133,8 +156,8 @@ public class AlphaBetaPlayer extends Player {
     int multiplier = shouldMaximize ? 1 : -1;
     final PlayerColor oppositeColor = ChessBoard.getOppositeColor(color);
     return this.board.isKingCheckMate(oppositeColor) ? multiplier * (EVALUATION_FOR_MATE - numberOfHalfMoves)
-            : this.board.getPieces(this.color).values().stream().mapToDouble(PieceOnBoard::getDefaultValue).sum()
+            : allValidMovesForOpponent.isEmpty() ? 0 : this.board.getPieces(this.color).values().stream().mapToDouble(PieceOnBoard::getDefaultValue).sum()
               - this.board.getPieces(ChessBoard.getOppositeColor(this.color)).values().stream().mapToDouble(PieceOnBoard::getDefaultValue).sum()
-            + (allValidMovesForOpponent.isEmpty() ? 0 : 1.0 / allValidMovesForOpponent.size());
+            + 1.0 / allValidMovesForOpponent.size();
   }
 }

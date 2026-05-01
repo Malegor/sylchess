@@ -28,7 +28,8 @@ public class DeterminismRunner {
       for (int j = 0; j < numberOfRepetitions; j++) {
         final ChessBoard board = ChessBoard.get960Board(seed);
         final Gameplay gameplay = new Gameplay(board);
-        final List<Player> players = List.of(new DummyPlayer(PlayerColor.WHITE, board), new AlphaBetaPlayer(PlayerColor.BLACK, board, 3));
+        final List<Player> players = List.of(new DummyPlayer(PlayerColor.WHITE, board), new AlphaBetaPlayer(PlayerColor.BLACK, board, gameplay.getInfo()
+                , 3, gameplay.getDrawConditions()));
         gameplay.playGame(players);
         final String fen = FenSaver.getPositionString(gameplay);
         if (commonFinalFen == null) {

@@ -98,7 +98,7 @@ public class TestGameplay {
     final Rook blackRook = new Rook(PlayerColor.BLACK, new Square(1, 8));
     board.addPiece(blackRook);
     board.printBoard();
-    return new Gameplay(board, null, maxNumberOfMovesWithoutCaptureOrPawnMove, 3);
+    return new Gameplay(board, null, new DrawConditions(maxNumberOfMovesWithoutCaptureOrPawnMove, 3));
   }
 
   private List<Player> getPlayersRepeatingMoves(final ChessBoard board) {

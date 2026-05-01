@@ -27,7 +27,7 @@ public class ConsoleInteractiveGame {
     for (final PlayerColor color : PlayerColor.values()) {
       System.out.print("Enter name for " + color + " (leave empty to play a dummy player, or \"" + solverName + "\" for a puzzle solver): ");
       final String playerName = scanner.nextLine();
-      players.add(getPlayer(playerName, color, game.getBoard(), scanner));
+      players.add(getPlayer(playerName, color, game, scanner));
     }
     play(game, players);
     scanner.close();
@@ -37,9 +37,10 @@ public class ConsoleInteractiveGame {
     return fen.isEmpty() ? new Gameplay(ChessBoard.defaultBoard()) : FenLoader.loadPosition(fen);
   }
 
-  private static Player getPlayer(final String playerName, final PlayerColor color, final ChessBoard board, final Scanner scanner) {
+  private static Player getPlayer(final String playerName, final PlayerColor color, final Gameplay game, final Scanner scanner) {
     final String solverName = "solver";
-    return playerName.equals(solverName) ? new AlphaBetaPlayer(color, board, 9)
+    final ChessBoard board = game.getBoard();
+    return playerName.equals(solverName) ? new AlphaBetaPlayer(color, board, game.getInfo(), 9, game.getDrawConditions())
             : playerName.isEmpty() ? new DummyPlayer(color, board)
             : new ConsolePlayer(color, playerName, board, scanner);
   }

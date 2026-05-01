@@ -43,7 +43,8 @@ public class PuzzleRunner {
     for (final String fen : fens) {
       long specificStartTime = System.currentTimeMillis();
       final Gameplay gameplay = FenLoader.loadPosition(fen);
-      final List<Player> players = List.of(new AlphaBetaPlayer(PlayerColor.WHITE, gameplay.getBoard(), depth), new AlphaBetaPlayer(PlayerColor.BLACK, gameplay.getBoard(), depth));
+      final List<Player> players = List.of(new AlphaBetaPlayer(PlayerColor.WHITE, gameplay.getBoard(), gameplay.getInfo(), depth, gameplay.getDrawConditions()),
+              new AlphaBetaPlayer(PlayerColor.BLACK, gameplay.getBoard(), gameplay.getInfo(), depth, gameplay.getDrawConditions()));
       final GameStatus gameStatus = gameplay.playGame(players,
               gameplay.getInfo().getMoveNumber() + numberOfMovesForMate - (gameplay.getHistory().getFirstPlayingColor().equals(PlayerColor.BLACK) ? 0 : 1));
       if (gameStatus.equals(GameStatus.PLAYING))
