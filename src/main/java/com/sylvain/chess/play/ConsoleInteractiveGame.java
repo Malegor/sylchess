@@ -5,7 +5,7 @@ import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.io.fen.FenLoader;
 import com.sylvain.chess.play.players.DummyPlayer;
 import com.sylvain.chess.play.players.interactive.ConsolePlayer;
-import com.sylvain.chess.play.players.MateSolver;
+import com.sylvain.chess.play.players.AlphaBetaPlayer;
 import com.sylvain.chess.play.players.Player;
 import lombok.extern.log4j.Log4j2;
 
@@ -39,7 +39,7 @@ public class ConsoleInteractiveGame {
 
   private static Player getPlayer(final String playerName, final PlayerColor color, final ChessBoard board, final Scanner scanner) {
     final String solverName = "solver";
-    return playerName.equals(solverName) ? new MateSolver(color, board, 9)
+    return playerName.equals(solverName) ? new AlphaBetaPlayer(color, board, 9)
             : playerName.isEmpty() ? new DummyPlayer(color, board)
             : new ConsolePlayer(color, playerName, board, scanner);
   }

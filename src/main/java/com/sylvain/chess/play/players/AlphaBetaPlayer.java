@@ -11,17 +11,16 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * A player dedicated to solve mates in n moves, exploring all possible moves for both sides, in breadth-first search(?)
- * May be easier for a first version DFS up to a maximum number of moves.
+ * A player calculating the best possible move, using the alpha-beta minimax algorithm.
  */
 @Log4j2
-public class MateSolver extends Player {
+public class AlphaBetaPlayer extends Player {
   private final static int EVALUATION_FOR_MATE = 500;
 
   private final int maxDepth;
 
-  public MateSolver(final PlayerColor color, final ChessBoard board, final int maxNumberOfSemiMoves) {
-    super(color, "MateSolver", board);
+  public AlphaBetaPlayer(final PlayerColor color, final ChessBoard board, final int maxNumberOfSemiMoves) {
+    super(color, AlphaBetaPlayer.class.getSimpleName(), board);
     this.maxDepth = maxNumberOfSemiMoves;
   }
 

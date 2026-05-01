@@ -4,7 +4,7 @@ import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.io.fen.FenLoader;
 import com.sylvain.chess.play.GameStatus;
 import com.sylvain.chess.play.Gameplay;
-import com.sylvain.chess.play.players.MateSolver;
+import com.sylvain.chess.play.players.AlphaBetaPlayer;
 import com.sylvain.chess.play.players.Player;
 import lombok.extern.log4j.Log4j2;
 
@@ -43,7 +43,7 @@ public class PuzzleRunner {
     for (final String fen : fens) {
       long specificStartTime = System.currentTimeMillis();
       final Gameplay gameplay = FenLoader.loadPosition(fen);
-      final List<Player> players = List.of(new MateSolver(PlayerColor.WHITE, gameplay.getBoard(), depth), new MateSolver(PlayerColor.BLACK, gameplay.getBoard(), depth));
+      final List<Player> players = List.of(new AlphaBetaPlayer(PlayerColor.WHITE, gameplay.getBoard(), depth), new AlphaBetaPlayer(PlayerColor.BLACK, gameplay.getBoard(), depth));
       final GameStatus gameStatus = gameplay.playGame(players,
               gameplay.getInfo().getMoveNumber() + numberOfMovesForMate - (gameplay.getHistory().getFirstPlayingColor().equals(PlayerColor.BLACK) ? 0 : 1));
       if (gameStatus.equals(GameStatus.PLAYING))

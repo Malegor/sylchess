@@ -6,7 +6,7 @@ import com.sylvain.chess.io.fen.FenSaver;
 import com.sylvain.chess.play.EndGame;
 import com.sylvain.chess.play.Gameplay;
 import com.sylvain.chess.play.players.DummyPlayer;
-import com.sylvain.chess.play.players.MateSolver;
+import com.sylvain.chess.play.players.AlphaBetaPlayer;
 import com.sylvain.chess.play.players.Player;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class DeterminismRunner {
       for (int j = 0; j < numberOfRepetitions; j++) {
         final ChessBoard board = ChessBoard.get960Board(seed);
         final Gameplay gameplay = new Gameplay(board);
-        final List<Player> players = List.of(new DummyPlayer(PlayerColor.WHITE, board), new MateSolver(PlayerColor.BLACK, board, 3));
+        final List<Player> players = List.of(new DummyPlayer(PlayerColor.WHITE, board), new AlphaBetaPlayer(PlayerColor.BLACK, board, 3));
         gameplay.playGame(players);
         final String fen = FenSaver.getPositionString(gameplay);
         if (commonFinalFen == null) {
