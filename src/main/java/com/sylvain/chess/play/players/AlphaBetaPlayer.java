@@ -50,8 +50,7 @@ public class AlphaBetaPlayer extends Player {
     }
     // TODO: improve the following: this could not defend so well against perpetual check.
     // Problem: if one use the whole repeated positions structure, it could be very time and memory consuming.
-    final Set<ChessBoard> twiceRepeatedPositions = this.info.getTwiceRepeatedPositions().stream().map(FenLoader::loadBoard).collect(Collectors.toSet());
-    final EvaluatedMove move = alphaBeta(null, this.maxDepth, -EVALUATION_FOR_MATE - 1, EVALUATION_FOR_MATE + 1);
+    final EvaluatedMove move = alphaBeta(null, this.maxDepth, -EVALUATION_FOR_MATE - 1, EVALUATION_FOR_MATE + 1, Set.of());
     final double evaluation = move.evaluation();
     log.info("Move eval: {}", this.isMateEvaluation(evaluation) ? this.getMateInN(evaluation) : evaluation);
     return move;
@@ -72,7 +71,7 @@ public class AlphaBetaPlayer extends Player {
     return moves;
   }
 
-  private EvaluatedMove alphaBeta(final Move move, final int depth, double alpha, double beta) {
+  private EvaluatedMove alphaBeta(final Move move, final int depth, double alpha, double beta, final Set<String> almostDrawPositions) {
     if (move != null)
       move.simulate();
     final Comparator<Move> byCheckingOpponent = (m1, m2) -> Boolean.compare(this.board.checksOppositeKing(m2.getDestinationPiece()),
@@ -86,7 +85,7 @@ public class AlphaBetaPlayer extends Player {
             .thenComparing(Move::getCapturedPieceValue, Comparator.reverseOrder())
             .thenComparing(Move::toString); // Arbitrary tie-breaker (for determinism) // OBS: doesn't fix it
     final List<Move> allValidMovesForOpponent = this.board.findAllValidMoves(oppositeColor).stream().sorted(moveOrderer).toList();
-    if (depth <= 0 || allValidMovesForOpponent.isEmpty() || this.isConditionForStalemate()) {
+    if (depth <= 0 || allValidMovesForOpponent.isEmpty() || this.isConditionForStalemate(oppositeColor, depth, almostDrawPositions)) {
       final double evaluation = depth > 0 && !allValidMovesForOpponent.isEmpty() ? 0
               : this.evaluateBoardFor(currentColor, allValidMovesForOpponent, this.maxDepth - depth);
       if (move != null)
@@ -101,7 +100,7 @@ public class AlphaBetaPlayer extends Player {
     if (move == null)
       log.debug("Started search on {} possible moves...", allValidMovesForOpponent.size());
     for (final Move moveOpponent : allValidMovesForOpponent) {
-      final EvaluatedMove nextMove = this.alphaBeta(moveOpponent, depth - 1, alpha, beta);
+      final EvaluatedMove nextMove = this.alphaBeta(moveOpponent, depth - 1, alpha, beta, this.info.getPositionsAlmostAtDraw(this.drawConditions));
       if (move == null)
         log.debug("{}/{} - On {}, best response is: {}", index + 1, allValidMovesForOpponent.size(), moveOpponent, nextMove);
       if (multiplier * (nextMove.evaluation() - bestMoveForOpponent.evaluation()) > 0) {
@@ -132,8 +131,9 @@ public class AlphaBetaPlayer extends Player {
     return bestMoveForOpponent;
   }
 
-  private boolean isConditionForStalemate() {
-    return false; // TODO
+  private boolean isConditionForStalemate(final PlayerColor color, final int depth, final Set<String> almostDrawPositions) {
+    return almostDrawPositions.contains(GameStateInfo.getPositionKey(color, this.board))
+            || this.drawConditions.tooManyMovesWithoutCaptureOrPawnMove(this.info, this.maxDepth - depth);
   }
 
   private boolean isMateEvaluation(final double evaluation) {
