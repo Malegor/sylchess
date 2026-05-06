@@ -14,7 +14,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Map;
 
 public class TestGameplay {
   @Test
@@ -104,35 +103,33 @@ public class TestGameplay {
   private List<Player> getPlayersRepeatingMoves(final ChessBoard board) {
     final King whiteKing = board.getKing(PlayerColor.WHITE);
     final Rook blackRook = board.getUnmovedRooks(PlayerColor.BLACK).stream().findFirst().orElse(null);
-    // OBS: necessary to remove the pieces before defining the moves as the state of the board should be updated at the moves' instantiation.
-    board.removePiece(whiteKing);
-    board.removePiece(blackRook);
     final Player whitePlayer = new Player(PlayerColor.WHITE, "White", board) {
       private final King square2 = new King(PlayerColor.WHITE, new Square(6,1));
-      private final List<Move> moves = List.of(
-              new Move(Map.of(whiteKing, square2), board),
-              new Move(Map.of(square2, whiteKing), board));
-      final CircularIterator<Move> it = new CircularIterator<>(moves);
+      private final List<String> moves = List.of(
+              square2.printOnBoard() + square2.getSquare().toString(),
+              whiteKing.printOnBoard() + whiteKing.getSquare().toString());
+      final CircularIterator<String> it = new CircularIterator<>(moves);
       @Override
       protected Move selectMove(List<Move> validMoves) {
-        return it.next();
+        return validMoves.stream().filter(m -> m.toSan().equals(it.next())).findFirst().orElse(null);
       }
     };
     final Player blackPlayer = new Player(PlayerColor.BLACK, "Black", board) {
       private final Rook square2 = new Rook(PlayerColor.BLACK, new Square(1,7));
       private final Rook square3 = new Rook(PlayerColor.BLACK, new Square(1,6));
-      private final List<Move> moves = List.of(
-              new Move(Map.of(blackRook, square2), board),
-              new Move(Map.of(square2, square3), board),
-              new Move(Map.of(square3, blackRook), board));
-      final CircularIterator<Move> it = new CircularIterator<>(moves);
+      private final List<String> moves = List.of(
+              Character.toUpperCase(square2.printOnBoard()) + square2.getSquare().toString(),
+              Character.toUpperCase(square3.printOnBoard()) + square3.getSquare().toString(),
+              Character.toUpperCase(blackRook.printOnBoard()) + blackRook.getSquare().toString());
+      final CircularIterator<String> it = new CircularIterator<>(moves);
       @Override
       protected Move selectMove(List<Move> validMoves) {
-        return it.next();
+        if (!it.hasNext())
+          return null;
+        final String next = it.next();
+        return validMoves.stream().filter(m -> m.toSan().equals(next)).findFirst().orElse(null);
       }
     };
-    board.addPiece(whiteKing);
-    board.addPiece(blackRook);
     return List.of(whitePlayer, blackPlayer);
   }
 }
