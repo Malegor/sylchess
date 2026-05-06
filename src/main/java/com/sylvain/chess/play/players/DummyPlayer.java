@@ -12,7 +12,7 @@ import java.util.List;
 public class DummyPlayer extends Player {
 
   public DummyPlayer(final PlayerColor color, final ChessBoard board) {
-    super(color, "Dummy", board);
+    super(color, DummyPlayer.class.getSimpleName(), board);
   }
 
   @Override

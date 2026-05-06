@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GameStateInfo {
   @Getter @Setter
@@ -31,9 +33,13 @@ public class GameStateInfo {
   }
 
   public List<Integer> newPosition(final PlayerColor color, final ChessBoard board) {
-    final List<Integer> moves = this.occurrencesOfPosition.computeIfAbsent(color + ";" + board.getPositionString(), k -> new ArrayList<>(2));
+    final List<Integer> moves = this.occurrencesOfPosition.computeIfAbsent(getPositionKey(color, board), k -> new ArrayList<>(2));
     moves.add(this.moveNumber);
     return moves;
+  }
+
+  public static String getPositionKey(final PlayerColor color, final ChessBoard board) {
+    return color + ";" + board.getPositionString();
   }
 
   public void movedPawnOrCaptured() {
@@ -53,5 +59,10 @@ public class GameStateInfo {
   public void setMoveNumber(final int moveNumber) {
     this.moveNumber = moveNumber;
     this.halfMoveNumber = 2 * moveNumber - 1;
+  }
+
+  public Set<String> getPositionsAlmostAtDraw(final DrawConditions conditions) {
+    return this.occurrencesOfPosition.entrySet().stream().filter(e -> e.getValue().size() >= conditions.maxNumberOfTimesSamePosition() - 1)
+            .map(Map.Entry::getKey).collect(Collectors.toSet());
   }
 }

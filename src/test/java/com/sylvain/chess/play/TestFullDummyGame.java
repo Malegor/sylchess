@@ -15,7 +15,7 @@ public class TestFullDummyGame {
   @Test
   public void testFullDummyGame() {
     final ChessBoard board = ChessBoard.defaultBoard();
-    final Gameplay play = new Gameplay(board, null, 5, 2);
+    final Gameplay play = new Gameplay(board, null, new DrawConditions(5, 2));
     final GameStatus gameStatus = play.playGame(getDummyPlayers(board));
     System.out.println(gameStatus + " after " + play.getInfo().getMoveNumber() + " moves.");
     Assert.assertEquals(GameStatus.UNIMPROVING_MOVES, gameStatus);
@@ -43,7 +43,7 @@ public class TestFullDummyGame {
     String consistentGamePositionString = null;
     for(int i = 0; i < 5; i++) {
       final ChessBoard board = ChessBoard.defaultBoard();
-      final Gameplay play = new Gameplay(board, null, 5, 2);
+      final Gameplay play = new Gameplay(board, null, new DrawConditions(5, 2));
       final GameStatus gameStatus = play.playGame(getDummyPlayers(board));
       System.out.println(gameStatus + " after " + play.getInfo().getMoveNumber() + " moves.");
       if (consistentGameStatus != null) {

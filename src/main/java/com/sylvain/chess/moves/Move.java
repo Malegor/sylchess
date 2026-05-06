@@ -8,6 +8,7 @@ import com.sylvain.chess.pieces.NoPiece;
 import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.pieces.PieceOnBoard;
 import com.sylvain.chess.pieces.Rook;
+import lombok.Getter;
 
 import java.util.Comparator;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Move {
-  public static final String NO_MOVE_STR = "...";
+  public static final String NO_WHITE_MOVE_STR = "...";
   public static final String CAPTURE_SAN = "x";
   public static final String CHECK_SAN = "+";
   public static final String CHECKMATE_SAN = "#";
@@ -28,8 +29,10 @@ public class Move {
   private final Map<PieceOnBoard, PieceOnBoard> moveToNewSquare;
   private final ChessBoard board;
   private PieceOnBoard captured;
-  private String completeSan;
+  private String san, checkSan;
   private Move previousMoveToRestore;
+  @Getter
+  private final boolean validMove;
 
   public Move(final Map<PieceOnBoard, PieceOnBoard> moveToNewSquare, final ChessBoard board) {
     this.moveToNewSquare = moveToNewSquare;
@@ -37,9 +40,10 @@ public class Move {
     // OBS: the captured attribute can change (only) in the case of an en passant capture, which explains why it is not final.
     // OBS2: it could be a problem to instantiate a move with the board not at the state at the moment of the move.
     this.captured = moveToNewSquare.size() > 1 ? null : board.getPieceAt(moveToNewSquare.values().iterator().next().getSquare());
+    this.validMove = this.calculateValidMove();
   }
 
-  public boolean isValidMove() {
+  private boolean calculateValidMove() {
     if (this.moveToNewSquare.isEmpty())
       return false;
     final Map.Entry<PieceOnBoard, PieceOnBoard> firstEntry = this.moveToNewSquare.entrySet().iterator().next();
@@ -197,7 +201,7 @@ public class Move {
   }
 
   public List<PieceOnBoard> getDescriptivePieces() {
-    final Map.Entry<PieceOnBoard, PieceOnBoard> firstEntry = this.moveToNewSquare.entrySet().stream().findFirst().orElse(null);
+    final Map.Entry<PieceOnBoard, PieceOnBoard> firstEntry = this.moveToNewSquare.entrySet().iterator().next();
     return this.isCastle() ? this.moveToNewSquare.values().stream().toList() : List.of(firstEntry.getKey(), firstEntry.getValue());
   }
 
@@ -235,7 +239,14 @@ public class Move {
    * @return The move in Standard Algebraic Notation (SAN)
    */
   public String toSan() {
-    if (this.isCastle()) {
+    if (this.san == null) {
+      this.san = this.calculateSan();
+    }
+    return this.san;
+  }
+
+  private String calculateSan() {
+    if (this.moveToNewSquare.size() > 1) {
       final boolean isKingSide = this.moveToNewSquare.keySet().stream().min(Comparator.comparing(PieceOnBoard::getSquare)).orElse(new NoPiece(this.getColor(), new Square(0,0))).getName().equals(King.NAME_LC);
       return isKingSide ? KING_SIDE_CASTLE_SAN : QUEEN_SIDE_CASTLE_SAN;
     }
@@ -255,8 +266,7 @@ public class Move {
             startSquare.toString() : shouldDisambiguateRow ?
             startSquare.row() : String.valueOf(startSquare.getColumnLetter()));
     final String promoStr = originalPiece.getClass().equals(moveEntry.getValue().getClass()) ? "" : PROMO_SAN + Character.toUpperCase(moveEntry.getValue().printOnBoard());
-    final String status = ""; // TODO: checkmate, check ... ?? or should it be the responsibility of the gameplay?
-    return pieceStr + disambiguate + takeStr + destSquare + promoStr + status;
+    return pieceStr + disambiguate + takeStr + destSquare + promoStr;
   }
 
   private String getCheckSan() {
@@ -267,14 +277,18 @@ public class Move {
   }
 
   private void calculateCompleteSan() {
-    this.completeSan = this.toSan() + this.getCheckSan();
+    this.checkSan = this.getCheckSan();
   }
 
   public String toCompleteSan() {
-    return this.completeSan;
+    return this.toSan() + this.checkSan;
   }
 
   public double getCapturedPieceValue() {
     return this.captured == null ? 0 : this.captured.getDefaultValue();
   }
+
+  public double getPromotionGain() {
+    Map.Entry<PieceOnBoard, PieceOnBoard> theMove = this.moveToNewSquare.entrySet().iterator().next();
+    return this.isCastle() ? 0 : theMove.getValue().getDefaultValue() - theMove.getKey().getDefaultValue();}
 }

@@ -10,12 +10,11 @@ import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.play.Gameplay;
 import com.sylvain.chess.play.TestFullDummyGame;
+import com.sylvain.chess.runner.PuzzleRunner;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -65,7 +64,7 @@ public class TestLoadPosition {
   @Test
   public void testLoadStartingPositions() throws IOException {
     final String fileName = "fen/starting.fen";
-    final Gameplay gameplay = loadPositionFromFile(fileName);
+    final Gameplay gameplay = loadPositionFromFile(fileName, 1);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
     Assert.assertEquals(PlayerColor.BLACK, gameplay.getInfo().getLastPlayer().getColor());
     for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
@@ -75,13 +74,13 @@ public class TestLoadPosition {
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
     Assert.assertEquals(1, gameplay.getInfo().getMoveNumber());
     Assert.assertEquals(1, gameplay.getInfo().getLastHalfMoveWithCaptureOrPawn());
-    Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
+    Assert.assertEquals(loadFirstStringFromFile(fileName), FenSaver.getPositionString(gameplay));
   }
 
   @Test
   public void testAfterMovingPawn() throws IOException {
     final String fileName = "fen/after-pawn.fen";
-    final Gameplay gameplay = loadPositionFromFile(fileName);
+    final Gameplay gameplay = loadPositionFromFile(fileName, 1);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
     Assert.assertEquals(PlayerColor.WHITE, gameplay.getInfo().getLastPlayer().getColor());
     for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
@@ -96,13 +95,13 @@ public class TestLoadPosition {
     gameplay.getBoard().removePiece(blackPawn);
     Assert.assertEquals(1, gameplay.getInfo().getMoveNumber());
     Assert.assertEquals(1, gameplay.getInfo().getLastHalfMoveWithCaptureOrPawn());
-    Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
+    Assert.assertEquals(loadFirstStringFromFile(fileName), FenSaver.getPositionString(gameplay));
   }
 
   @Test
   public void testMateIn3() throws IOException {
-    final String fileName = "fen/mate3.fen";
-    final Gameplay gameplay = loadPositionFromFile(fileName);
+    final String fileName = "fen/mate/mate3.fen";
+    final Gameplay gameplay = loadPositionFromFile(fileName, 1);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
     Assert.assertEquals(PlayerColor.BLACK, gameplay.getInfo().getLastPlayer().getColor());
     for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
@@ -112,13 +111,13 @@ public class TestLoadPosition {
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
     Assert.assertEquals(1, gameplay.getInfo().getMoveNumber());
     Assert.assertEquals(1, gameplay.getInfo().getLastHalfMoveWithCaptureOrPawn());
-    Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
+    Assert.assertEquals(loadFirstStringFromFile(fileName), FenSaver.getPositionString(gameplay));
   }
 
   @Test
   public void testMateIn4() throws IOException {
-    final String fileName = "fen/mate4.fen";
-    final Gameplay gameplay = loadPositionFromFile(fileName);
+    final String fileName = "fen/mate/mate4.fen";
+    final Gameplay gameplay = loadPositionFromFile(fileName, 1);
     gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
     Assert.assertEquals(PlayerColor.BLACK, gameplay.getInfo().getLastPlayer().getColor());
     for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
@@ -128,7 +127,7 @@ public class TestLoadPosition {
     Assert.assertNull(gameplay.getBoard().getPreviousMove());
     Assert.assertEquals(1, gameplay.getInfo().getMoveNumber());
     Assert.assertEquals(1, gameplay.getInfo().getLastHalfMoveWithCaptureOrPawn());
-    Assert.assertEquals(loadStringFromFile(fileName), FenSaver.getPositionString(gameplay));
+    Assert.assertEquals(loadFirstStringFromFile(fileName), FenSaver.getPositionString(gameplay));
   }
 
   @Test
@@ -155,13 +154,11 @@ public class TestLoadPosition {
     Assert.assertEquals(GameVariant.CLASSICAL, gameplay.getBoard().getVariant());
   }
 
-  public static Gameplay loadPositionFromFile(final String fileName) throws IOException {
-    return FenLoader.loadPosition(loadStringFromFile(fileName));
+  public static Gameplay loadPositionFromFile(final String fileName, final int line) throws IOException {
+    return FenLoader.loadPosition(PuzzleRunner.loadStringsFromFile(fileName).get(line - 1));
   }
 
-  private static String loadStringFromFile(final String fileName) throws IOException {
-    final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-    final InputStream is = classloader.getResourceAsStream(fileName);
-    return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+  private static String loadFirstStringFromFile(final String fileName) throws IOException {
+    return PuzzleRunner.loadStringsFromFile(fileName).getFirst();
   }
 }

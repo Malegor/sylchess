@@ -16,29 +16,24 @@ import java.util.List;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
+@Getter
 public class Gameplay {
-  @Getter
   private final ChessBoard board;
-  private final int maxNumberOfMovesWithoutCaptureOrPawnMove;
-  private final int maxNumberOfTimesSamePosition;
-  @Getter
+  private final DrawConditions drawConditions;
   private final GameStateInfo info;
-  @Getter
   private final GameHistory history;
-  @Getter
   private EndGame endGame;
 
-  public Gameplay(final ChessBoard board, final PlayerColor firstPlayingColor, final int maxNumberOfMovesWithoutCaptureOrPawnMove, final int maxNumberOfTimesSamePosition) {
+  public Gameplay(final ChessBoard board, final PlayerColor firstPlayingColor, final DrawConditions drawConditions) {
     this.board = board;
-    this.maxNumberOfMovesWithoutCaptureOrPawnMove = maxNumberOfMovesWithoutCaptureOrPawnMove;
-    this.maxNumberOfTimesSamePosition = maxNumberOfTimesSamePosition;
+    this.drawConditions = drawConditions;
     this.endGame = EndGame.STILL_PLAYING;
     this.info = new GameStateInfo();
     this.history = new GameHistory(firstPlayingColor);
   }
 
   public Gameplay(final ChessBoard board, final PlayerColor firstPlayingColor) {
-    this(board, firstPlayingColor, 50, 3);
+    this(board, firstPlayingColor, new DrawConditions(50,3));
   }
 
   public Gameplay(final ChessBoard board) {
@@ -68,15 +63,15 @@ public class Gameplay {
       // For example, if the rook hadn't moved before the first occurrence and then moved before the second one, the repeated position would not really a repetition.
       // Considering it would complicate a lot the validation and in practice it is not essential for most applications of the rule.
       final List<Integer> positionRepetitions = this.info.newPosition(player.getColor(), this.board);
-      if (positionRepetitions.size() >= this.maxNumberOfTimesSamePosition) {
+      if (positionRepetitions.size() >= this.drawConditions.maxNumberOfTimesSamePosition()) {
         log.info("Same position has already been repeated! {}", positionRepetitions);
         this.endGame = EndGame.DRAW;
         return GameStatus.SEVERAL_TIMES_SAME_POSITION;
       }
-      if (this.info.getMoveNumber() >= maxNumberOfMoves)
+      if (this.info.getMoveNumber() > maxNumberOfMoves)
         return GameStatus.PLAYING;
-      if (this.info.getHalfMoveNumber() - this.info.getLastHalfMoveWithCaptureOrPawn() > 2 * this.maxNumberOfMovesWithoutCaptureOrPawnMove) {
-        log.info("{} moves have been played without any improvement! (since half move {})", this.maxNumberOfMovesWithoutCaptureOrPawnMove, this.info.getLastHalfMoveWithCaptureOrPawn());
+      if (this.drawConditions.tooManyMovesWithoutCaptureOrPawnMove(this.info, 0)) {
+        log.info("{} moves have been played without any improvement! (since half move {})", this.drawConditions.maxNumberOfMovesWithoutCaptureOrPawnMove(), this.info.getLastHalfMoveWithCaptureOrPawn());
         this.endGame = EndGame.DRAW;
         return GameStatus.UNIMPROVING_MOVES;
       }

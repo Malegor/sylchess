@@ -27,7 +27,7 @@ public class PgnSaver {
         newMove = false;
       }
       else if (isFirstMove) {
-        movesBld.append(moveNumber).append(". ").append(Move.NO_MOVE_STR).append(move);
+        movesBld.append(moveNumber).append(". ").append(Move.NO_WHITE_MOVE_STR).append(move);
         moveNumber++;
         newMove = true;
       }
