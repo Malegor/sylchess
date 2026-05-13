@@ -1,0 +1,9 @@
+[Date "2026.04.23"]
+[White "Dummy (WHITE)"]
+[Black "MateSolver (BLACK)"]
+[Variant "Chess960"]
+[FEN "nrqnbbkr/pppppppp/8/8/8/8/PPPPPPPP/NRQNBBKR w HBhb - 0 1"]
+[Result "0-1"]
+[Termination "checkmate"]
+
+1. Nb3 Nb6 2. Ra1 Nc4 3. Qb1 Nxd2 4. Bxd2 g5 5. e3 b5 6. Bc4 bxc4 7. a3 Rxb3 8. cxb3 cxb3 9. Ra2 bxa2 10. b3 axb1=Q 11. f3 Qxd1+ 12. Be1 Qxe1# 0-1
