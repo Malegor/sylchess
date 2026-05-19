@@ -5,6 +5,7 @@ import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.Square;
 import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.pieces.King;
+import com.sylvain.chess.pieces.Knight;
 import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.pieces.Rook;
 import com.sylvain.chess.play.players.DummyPlayer;
@@ -79,13 +80,14 @@ public class TestGameplay {
   }
 
   @Test
-  public void testOnlyKings() {
+  public void testNoPossibleMate() {
     final ChessBoard board = new ChessBoard();
     board.addPiece(new King(PlayerColor.WHITE, new Square(1,1)));
     board.addPiece(new King(PlayerColor.BLACK, new Square(8,8)));
+    board.addPiece(new Knight(PlayerColor.BLACK, new Square(5,5)));
     final Gameplay game = new Gameplay(board);
     final GameStatus status = game.playGame(TestFullDummyGame.getDummyPlayers(game.getBoard()));
-    Assert.assertEquals(GameStatus.ONLY_KINGS, status);
+    Assert.assertEquals(GameStatus.ALMOST_EMPTY_BOARD, status);
     Assert.assertEquals(EndGame.DRAW, game.getEndGame());
     Assert.assertEquals(1, game.getInfo().getMoveNumber());
   }
