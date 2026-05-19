@@ -4,7 +4,9 @@ import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.io.fen.FenSaver;
 import com.sylvain.chess.moves.Move;
+import com.sylvain.chess.pieces.Bishop;
 import com.sylvain.chess.pieces.King;
+import com.sylvain.chess.pieces.Knight;
 import com.sylvain.chess.pieces.PieceOnBoard;
 import com.sylvain.chess.play.players.Player;
 import com.sylvain.chess.utils.CircularIterator;
@@ -12,6 +14,7 @@ import lombok.Getter;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -87,9 +90,9 @@ public class Gameplay {
         if (move.involvesPawnOrCapture()) {
           this.info.movedPawnOrCaptured();
         }
-        if (this.onlyKingsOnBoard()) {
+        if (this.noPossibleMateOnBoard()) {
           this.endGame = EndGame.DRAW;
-          return GameStatus.ONLY_KINGS;
+          return GameStatus.ALMOST_EMPTY_BOARD;
         }
       }
       else {
@@ -109,14 +112,16 @@ public class Gameplay {
     throw new IllegalStateException("Error! No more players can play.");
   }
 
-  private boolean onlyKingsOnBoard() {
+  private boolean noPossibleMateOnBoard() {
+    // OBS: This method should be updated in the case of more than one king by side! (K+N may checkmate K+K)
+    if (this.board.getPieces(PlayerColor.WHITE).size() + this.board.getPieces(PlayerColor.BLACK).size() > 3)
+      return false;
     for (final PlayerColor color : this.board.getColors()) {
       final Collection<PieceOnBoard> playerPieces = this.board.getPieces(color).values();
       for (PieceOnBoard piece : playerPieces)
-        if (!piece.getName().equals(King.NAME_LC)) {
-          return false;
-        }
+        if (!piece.getName().equals(King.NAME_LC))
+          return Set.of(Bishop.NAME_LC, Knight.NAME_LC).contains(piece.getName());
     }
-    return true;
+    return false;
   }
 }
