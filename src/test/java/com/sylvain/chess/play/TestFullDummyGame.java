@@ -2,8 +2,10 @@ package com.sylvain.chess.play;
 
 import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
+import com.sylvain.chess.io.fen.FenSaver;
 import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.pieces.PieceOnBoard;
+import com.sylvain.chess.play.players.AlphaBetaPlayer;
 import com.sylvain.chess.play.players.DummyPlayer;
 import com.sylvain.chess.play.players.Player;
 import org.junit.Assert;
@@ -57,6 +59,27 @@ public class TestFullDummyGame {
         consistentGamePositionString = play.getBoard().getPositionString();
       }
     }
+  }
+
+  @Test
+  public void testSpecificGame() {
+    String commonFinalFen = null;
+    final long seed = 8289664214450011964L;
+    int j=0;
+    //for(int j = 0; j < 20; j++) {
+      final ChessBoard board = ChessBoard.get960Board(seed);
+      final Gameplay play = new Gameplay(board);
+      final GameStatus gameStatus = play.playGame(
+              List.of(new DummyPlayer(PlayerColor.WHITE, board), new AlphaBetaPlayer(PlayerColor.BLACK, play, 3)));
+      System.out.println(gameStatus + " after " + play.getInfo().getMoveNumber() + " moves.");
+      final String fen = FenSaver.getPositionString(play);
+      if (commonFinalFen == null) {
+        commonFinalFen = fen;
+      }
+      else if (!commonFinalFen.equals(fen)) {
+        throw new IllegalStateException("Indeterminism detected after " + (j+1) + " games for seed=" + seed);
+      }
+    //}
   }
 
   public static List<Player> getDummyPlayers(final ChessBoard board) {

@@ -280,7 +280,7 @@ public class ChessBoard {
     //  && king.getSquare().getRow() == getFirstRow(color) && king.getSquare().getColumn() > 1 && king.getSquare().getColumn() < CB.BOARD_COLUMNS // (960)
     // or simply king.getSquare().getColumn() == 5 (standard chess)
     if (king != null && !king.isHasAlreadyMoved()) {
-      final Set<Rook> rooks = this.getUnmovedRooks(color);
+      final List<Rook> rooks = this.getUnmovedRooks(color);
       for (Rook rook : rooks) {
         // If the rook is on a column after the king's, it is a king-side castle, otherwise a queen-side castle.
         final Move castle = this.getCastleMove(king, rook);
@@ -294,16 +294,19 @@ public class ChessBoard {
    * @param color - The color of the rooks to find.
    * @return A set containing the rooks that didn't move yet.
    */
-  public Set<Rook> getUnmovedRooks(final PlayerColor color) {
+  public List<Rook> getUnmovedRooks(final PlayerColor color) {
     return this.piecesByColor.get(color).values().stream().filter(piece -> piece.getName().equals(Rook.NAME_LC) && !piece.isHasAlreadyMoved())
-            .map(piece -> (Rook) piece).collect(Collectors.toSet());
+            .map(piece -> (Rook) piece).collect(Collectors.toList());
   }
 
   public Move getCastleMove(final King king, final Rook rook) {
     final boolean isKingSideCastle = areValidSquaresForCastle(king, rook, true);
     final int newKingsColumn = isKingSideCastle ? CLASSICAL_KING_COLUMN + 2 : CLASSICAL_KING_COLUMN - 2;
     final int newRooksColumn = newKingsColumn + (isKingSideCastle ? -1 : 1);
-    return new Move(Map.of(king, king.at(new Square(newKingsColumn, king.getSquare().row())), rook, rook.at(new Square(newRooksColumn, rook.getSquare().row()))), this);
+    final Map<PieceOnBoard, PieceOnBoard> kingAndRook = new LinkedHashMap<>(2);
+    kingAndRook.put(king, king.at(new Square(newKingsColumn, king.getSquare().row())));
+    kingAndRook.put(rook, rook.at(new Square(newRooksColumn, rook.getSquare().row())));
+    return new Move(kingAndRook, this);
   }
 
   public static boolean areValidSquaresForCastle(final King king, final Rook rook, final boolean isKingSideCastle) {
