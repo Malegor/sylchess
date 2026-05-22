@@ -41,7 +41,7 @@ public class FenSaver {
       if (king != null && !king.isHasAlreadyMoved()) {
         final List<Character> colorChars = new ArrayList<>(2);
         final StringBuilder builderColor = new StringBuilder();
-        final Set<Rook> rooks = board.getUnmovedRooks(color);
+        final List<Rook> rooks = board.getUnmovedRooks(color);
         final boolean isClassicalGame = board.getVariant().equals(GameVariant.CLASSICAL) && king.getSquare().column() == ChessBoard.CLASSICAL_KING_COLUMN
                 && rooks.stream().noneMatch(rook -> !rook.isHasAlreadyMoved()
                   && !Set.of(Square.getColumnLetter(1), Square.getColumnLetter(ChessBoard.BOARD_COLS)).contains(rook.getSquare().getColumnLetter()));

@@ -53,7 +53,9 @@ public class PuzzleRunner {
     }
     final long totalTime = (System.currentTimeMillis() - startTime) / 1000;
     log.info("{} puzzles successfully solved in {} seconds, max(ms)={}", fens.size(), totalTime, maxTime);
-    log.info("{},1.0-SNAPSHOT,{},{},{},{},{}", getCurrentDate(), Paths.get(fileName).getFileName().toString(), fens.size(), depth, totalTime, maxTime);
+    final String version = "1.0-SNAPSHOT";
+    // final String branch; // TODO
+    log.info("{},{},{},{},{},{},{}", getCurrentDate(), version, Paths.get(fileName).getFileName().toString(), fens.size(), depth, totalTime, maxTime);
   }
 
   private static String getCurrentDate() {

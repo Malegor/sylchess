@@ -15,7 +15,7 @@ import java.util.Random;
 public class DeterminismRunner {
   public static void main(String[] args) {
     final int numberOfDifferentGames = 100;
-    int numberOfRepetitions = 1;
+    int numberOfRepetitions = 10;
     final Random rand = new Random();
     int whiteWins = 0;
     int blackWins = 0;
@@ -48,7 +48,7 @@ public class DeterminismRunner {
         default -> {}
       }
     }
-    System.out.println(whiteWins + " / " + draws + " / " + blackWins);
+    System.out.println("Number of games (w/d/b): " + whiteWins + " / " + draws + " / " + blackWins);
     System.out.println(numberOfDifferentGames * numberOfRepetitions + " games played in " + (System.currentTimeMillis() - startTime) + " ms");
   }
 }
