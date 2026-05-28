@@ -258,14 +258,14 @@ public class Move {
             : this.captured == null ? "" : String.valueOf(startSquare.getColumnLetter());
     final Square destSquare = moveEntry.getValue().getSquare();
     final Set<PieceOnBoard> samePiecesForDestination = board.piecesControllingSquare(destSquare, this.getColor()).stream().filter(p -> !p.equals(originalPiece)
-            && p.getClass().equals(originalPiece.getClass())).collect(Collectors.toSet());
+            && p.getName().equals(originalPiece.getName())).collect(Collectors.toSet());
     final boolean shouldDisambiguateRow = samePiecesForDestination.stream().anyMatch(p -> p.getSquare().column() == startSquare.column());
     final boolean shouldDisambiguateBoth = shouldDisambiguateRow && samePiecesForDestination.stream().anyMatch(p -> p.getSquare().row() == startSquare.row());
     final String disambiguate = String.valueOf(originalPiece.getName().equals(Pawn.NAME_LC) || samePiecesForDestination.isEmpty() ?
             "" : shouldDisambiguateBoth ?
             startSquare.toString() : shouldDisambiguateRow ?
             startSquare.row() : String.valueOf(startSquare.getColumnLetter()));
-    final String promoStr = originalPiece.getClass().equals(moveEntry.getValue().getClass()) ? "" : PROMO_SAN + Character.toUpperCase(moveEntry.getValue().printOnBoard());
+    final String promoStr = originalPiece.getName().equals(moveEntry.getValue().getName()) ? "" : PROMO_SAN + Character.toUpperCase(moveEntry.getValue().printOnBoard());
     return pieceStr + disambiguate + takeStr + destSquare + promoStr;
   }
 

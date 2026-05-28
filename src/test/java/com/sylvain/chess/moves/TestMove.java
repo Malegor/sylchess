@@ -39,7 +39,6 @@ public class TestMove {
     final Move pawnPromo = new Move(Map.of(whitePawn, whitePawn.toBishop(whitePawn.getSquare().move(0, 1))), board);
     Assert.assertEquals("c8=B", pawnPromo.toSan());
     final Move pawnPromoOnCapture = new Move(Map.of(whitePawn, whitePawn.toQueen(whitePawn.getSquare().move(-1, 1))), board);
-    //pawnPromoOnCapture.isValidMove();
     Assert.assertEquals("cxb8=Q", pawnPromoOnCapture.toSan());
     board.addPiece(new Pawn(PlayerColor.WHITE, new Square(1, 7)));
     Assert.assertEquals("cxb8=Q", pawnPromoOnCapture.toSan()); // No disambiguating is necessary
@@ -49,6 +48,10 @@ public class TestMove {
     Assert.assertNotNull(castling);
     Assert.assertTrue(castling.isValidMove());
     Assert.assertEquals("O-O", castling.toSan()); // King side
+    final Rook otherWhiteRook = new Rook(PlayerColor.WHITE, new Square(8, 2));
+    board.addPiece(otherWhiteRook);
+    final Move rookMovesOnSameColumn = new Move(Map.of(otherWhiteRook, otherWhiteRook.move(0, 1)), board);
+    Assert.assertEquals("Rh3", rookMovesOnSameColumn.toSan());
     board.printBoard();
   }
 }
