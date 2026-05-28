@@ -81,8 +81,8 @@ public class Gameplay {
       final Move move = player.getSelectedMove();
       this.info.setLastPlayer(player);
       if (move != null) {
+        log.info("{} - {}", this.info.getMoveNumber(), move.toSan());
         move.apply();
-        log.info("{} - {}", this.info.getMoveNumber(), move);
         player.publishMove(move);
         this.history.addMove(move);
         this.board.printBoard();
