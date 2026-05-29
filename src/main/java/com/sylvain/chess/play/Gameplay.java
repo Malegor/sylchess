@@ -81,34 +81,35 @@ public class Gameplay {
         return GameStatus.UNIMPROVING_MOVES;
       }
       final Move move = player.getSelectedMove();
-      this.info.setLastPlayer(player);
-      if (move != null) {
-        log.info("{} - {}", this.info.getMoveNumber(), move.toSan());
-        move.apply();
-        player.publishMove(move);
-        this.history.addMove(move);
-        this.board.printBoard();
-        this.board.validateInternalDataStructures();
-        if (move.involvesPawnOrCapture()) {
-          this.info.movedPawnOrCaptured();
+      if (!this.isAborted) {
+        this.info.setLastPlayer(player);
+        if (move != null) {
+          log.info("{} - {}", this.info.getMoveNumber(), move.toSan());
+          move.apply();
+          player.publishMove(move);
+          this.history.addMove(move);
+          this.board.printBoard();
+          this.board.validateInternalDataStructures();
+          if (move.involvesPawnOrCapture()) {
+            this.info.movedPawnOrCaptured();
+          }
+          if (this.noPossibleMateOnBoard()) {
+            this.endGame = EndGame.DRAW;
+            return GameStatus.ALMOST_EMPTY_BOARD;
+          }
+        } else {
+          // OBS: in case of checkmate, remove the player and continue with the other ones? (ex: chess with 3 or 4 players)
+          final boolean noValidMoves = this.board.findAllValidMoves(player.getColor()).isEmpty();
+          final boolean isCheckmate = this.board.getPieces(player.getColor()).isEmpty() || this.board.isKingUnderCheck(player.getColor());
+          final GameStatus gameStatus = !noValidMoves ? GameStatus.RESIGNED : isCheckmate ? GameStatus.CHECKMATE : GameStatus.STALEMATE;
+          this.endGame = gameStatus.equals(GameStatus.STALEMATE) ? EndGame.DRAW : player.getColor().equals(PlayerColor.WHITE) ? EndGame.BLACK_WINS : EndGame.WHITE_WINS;
+          return gameStatus;
         }
-        if (this.noPossibleMateOnBoard()) {
-          this.endGame = EndGame.DRAW;
-          return GameStatus.ALMOST_EMPTY_BOARD;
-        }
+        this.info.incrementHalfMove();
+        // OBS: the following condition only works if the game doesn't exclude players (ex: in a chess game of 3 or more players)
+        if (player.equals(players.getLast()))
+          this.info.incrementMove();
       }
-      else {
-        // OBS: in case of checkmate, remove the player and continue with the other ones? (ex: chess with 3 or 4 players)
-        final boolean noValidMoves = this.board.findAllValidMoves(player.getColor()).isEmpty();
-        final boolean isCheckmate = this.board.getPieces(player.getColor()).isEmpty() || this.board.isKingUnderCheck(player.getColor());
-        final GameStatus gameStatus = !noValidMoves ? GameStatus.RESIGNED : isCheckmate ? GameStatus.CHECKMATE : GameStatus.STALEMATE;
-        this.endGame = gameStatus.equals(GameStatus.STALEMATE) ? EndGame.DRAW : player.getColor().equals(PlayerColor.WHITE) ? EndGame.BLACK_WINS : EndGame.WHITE_WINS;
-        return gameStatus;
-      }
-      this.info.incrementHalfMove();
-      // OBS: the following condition only works if the game doesn't exclude players (ex: in a chess game of 3 or more players)
-      if (player.equals(players.getLast()))
-        this.info.incrementMove();
     }
     this.endGame = EndGame.ERROR;
     throw new IllegalStateException("Error! No more players can play.");
@@ -132,6 +133,7 @@ public class Gameplay {
     for (final Player player : this.history.getPlayers()) {
       player.abortCalculations();
     }
+    this.endGame = EndGame.ABORTED;
     log.info("Aborted!");
   }
 }
