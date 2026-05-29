@@ -15,7 +15,7 @@ public class GameHistory {
   private String initialFen;
   @Getter
   private final PlayerColor firstPlayingColor;
-  @Setter
+  @Getter @Setter
   private List<Player> players;
   private final List<Move> moves =  new ArrayList<>();
   @Getter

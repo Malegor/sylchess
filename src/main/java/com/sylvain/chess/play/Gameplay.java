@@ -26,6 +26,7 @@ public class Gameplay {
   private final GameStateInfo info;
   private final GameHistory history;
   private EndGame endGame;
+  private boolean isAborted;
 
   public Gameplay(final ChessBoard board, final PlayerColor firstPlayingColor, final DrawConditions drawConditions) {
     this.board = board;
@@ -33,6 +34,7 @@ public class Gameplay {
     this.endGame = EndGame.STILL_PLAYING;
     this.info = new GameStateInfo();
     this.history = new GameHistory(firstPlayingColor);
+    this.isAborted = false;
   }
 
   public Gameplay(final ChessBoard board, final PlayerColor firstPlayingColor) {
@@ -60,7 +62,7 @@ public class Gameplay {
       }
     }
     this.history.setInitialFen(FenSaver.getPositionString(this));
-    while (it.hasNext()) {
+    while (!this.isAborted && it.hasNext()) {
       final Player player = it.next();
       // OBS: small flaw here: in the rule, the en passant or castling possible moves should be considered for the repetition...
       // For example, if the rook hadn't moved before the first occurrence and then moved before the second one, the repeated position would not really a repetition.
@@ -123,5 +125,13 @@ public class Gameplay {
           return Set.of(Bishop.NAME_LC, Knight.NAME_LC).contains(piece.getName());
     }
     return false;
+  }
+
+  public void abort() {
+    this.isAborted = true;
+    for (final Player player : this.history.getPlayers()) {
+      player.abortCalculations();
+    }
+    log.info("Aborted!");
   }
 }

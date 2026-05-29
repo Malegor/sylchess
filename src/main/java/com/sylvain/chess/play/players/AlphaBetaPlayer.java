@@ -2,7 +2,6 @@ package com.sylvain.chess.play.players;
 
 import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
-import com.sylvain.chess.io.fen.FenLoader;
 import com.sylvain.chess.moves.EvaluatedMove;
 import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.pieces.PieceOnBoard;
@@ -14,7 +13,6 @@ import lombok.extern.log4j.Log4j2;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * A player calculating the best possible move, using the alpha-beta minimax algorithm.
@@ -83,7 +81,7 @@ public class AlphaBetaPlayer extends Player {
     final Comparator<Move> moveOrderer = byCheckingOpponent
             .thenComparing(Move::getPromotionGain, Comparator.reverseOrder())
             .thenComparing(Move::getCapturedPieceValue, Comparator.reverseOrder())
-            .thenComparing(Move::toString); // Arbitrary tie-breaker (for determinism) // OBS: doesn't fix it
+            .thenComparing(Move::toString); // Arbitrary tie-breaker (for determinism)
     final List<Move> allValidMovesForOpponent = this.board.findAllValidMoves(oppositeColor).stream().sorted(moveOrderer).toList();
     if (depth <= 0 || allValidMovesForOpponent.isEmpty() || this.isConditionForStalemate(oppositeColor, depth, almostDrawPositions)) {
       final double evaluation = depth > 0 && !allValidMovesForOpponent.isEmpty() ? 0
