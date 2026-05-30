@@ -51,8 +51,10 @@ public class AlphaBetaPlayer extends Player {
     // TODO: improve the following: this could not defend so well against perpetual check.
     // Problem: if one use the whole repeated positions structure, it could be very time and memory consuming.
     final EvaluatedMove move = alphaBeta(null, this.maxDepth, -EVALUATION_FOR_MATE - 1, EVALUATION_FOR_MATE + 1, Set.of());
-    final double evaluation = move.evaluation();
-    log.info("Move eval: {}", this.isMateEvaluation(evaluation) ? this.getMateInN(evaluation) : evaluation);
+    if (move != null) {
+      final double evaluation = move.evaluation();
+      log.info("Move eval: {}", this.isMateEvaluation(evaluation) ? this.getMateInN(evaluation) : evaluation);
+    }
     return move;
   }
 
@@ -85,9 +87,9 @@ public class AlphaBetaPlayer extends Player {
             .thenComparing(Move::getCapturedPieceValue, Comparator.reverseOrder())
             .thenComparing(Move::toString); // Arbitrary tie-breaker (for determinism)
     final List<Move> allValidMovesForOpponent = this.board.findAllValidMoves(oppositeColor).stream().sorted(moveOrderer).toList();
-    if (depth <= 0 || allValidMovesForOpponent.isEmpty() || this.isConditionForStalemate(oppositeColor, depth, almostDrawPositions)) {
-      final double evaluation = depth > 0 && !allValidMovesForOpponent.isEmpty() ? 0
-              : this.evaluateBoardFor(currentColor, allValidMovesForOpponent, this.maxDepth - depth);
+    final boolean stalemate = this.isConditionForStalemate(oppositeColor, depth, almostDrawPositions);
+    if (depth <= 0 || allValidMovesForOpponent.isEmpty() || stalemate) {
+      final double evaluation = stalemate ? 0 : this.evaluateBoardFor(currentColor, allValidMovesForOpponent, this.maxDepth - depth);
       if (move != null)
         move.rollback();
       // TODO: avoid evaluating same position several times => map (position+color, eval) (SYLCHESS-56)
