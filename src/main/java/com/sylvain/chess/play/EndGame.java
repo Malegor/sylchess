@@ -7,6 +7,7 @@ public enum EndGame {
   BLACK_WINS("0-1"),
   DRAW("1/2-1/2"),
   STILL_PLAYING(""),
+  ABORTED("---"),
   ERROR("*");
 
   @Getter

@@ -38,4 +38,6 @@ public abstract class Player {
   public String toString() {
     return this.name + " (" + this.color + ")";
   }
+
+  public abstract void abortCalculations();
 }

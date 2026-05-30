@@ -20,4 +20,9 @@ public class ConsolePlayer extends InteractivePlayer {
     System.out.print("Enter the next move for " + this + ": ");
     return this.scanner.nextLine();
   }
+
+  @Override
+  public void abortCalculations() {
+    this.scanner.close(); // TODO: test (how?)
+  }
 }

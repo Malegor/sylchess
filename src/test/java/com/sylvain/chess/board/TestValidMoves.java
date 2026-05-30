@@ -165,6 +165,9 @@ public class TestValidMoves {
         final King king = board.getKing(PlayerColor.WHITE);
         return new Move(Map.of(king, king.move(2, 1)), board);
       }
+
+      @Override
+      public void abortCalculations() {}
     };
     Assert.assertThrows(IllegalArgumentException.class, player::getSelectedMove);
   }

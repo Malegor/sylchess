@@ -2,7 +2,6 @@ package com.sylvain.chess.play.players;
 
 import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
-import com.sylvain.chess.io.fen.FenLoader;
 import com.sylvain.chess.moves.EvaluatedMove;
 import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.pieces.PieceOnBoard;
@@ -14,7 +13,6 @@ import lombok.extern.log4j.Log4j2;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * A player calculating the best possible move, using the alpha-beta minimax algorithm.
@@ -26,6 +24,7 @@ public class AlphaBetaPlayer extends Player {
   private final DrawConditions drawConditions;
   private final int maxDepth;
   private final GameStateInfo info;
+  private boolean abort;
 
   public AlphaBetaPlayer(final PlayerColor color, final Gameplay game, final int maxNumberOfSemiMoves) {
     this(color, game.getBoard(), game.getInfo(), maxNumberOfSemiMoves, game.getDrawConditions());
@@ -37,6 +36,7 @@ public class AlphaBetaPlayer extends Player {
     this.maxDepth = maxNumberOfSemiMoves;
     this.info = info;
     this.drawConditions = drawConditions;
+    this.abort = false;
   }
 
   @Override
@@ -83,7 +83,7 @@ public class AlphaBetaPlayer extends Player {
     final Comparator<Move> moveOrderer = byCheckingOpponent
             .thenComparing(Move::getPromotionGain, Comparator.reverseOrder())
             .thenComparing(Move::getCapturedPieceValue, Comparator.reverseOrder())
-            .thenComparing(Move::toString); // Arbitrary tie-breaker (for determinism) // OBS: doesn't fix it
+            .thenComparing(Move::toString); // Arbitrary tie-breaker (for determinism)
     final List<Move> allValidMovesForOpponent = this.board.findAllValidMoves(oppositeColor).stream().sorted(moveOrderer).toList();
     if (depth <= 0 || allValidMovesForOpponent.isEmpty() || this.isConditionForStalemate(oppositeColor, depth, almostDrawPositions)) {
       final double evaluation = depth > 0 && !allValidMovesForOpponent.isEmpty() ? 0
@@ -100,9 +100,14 @@ public class AlphaBetaPlayer extends Player {
     if (move == null)
       log.debug("Started search on {} possible moves...", allValidMovesForOpponent.size());
     for (final Move moveOpponent : allValidMovesForOpponent) {
+      if (this.abort)
+        return null;
       final EvaluatedMove nextMove = this.alphaBeta(moveOpponent, depth - 1, alpha, beta, this.info.getPositionsAlmostAtDraw(this.drawConditions));
       if (move == null)
         log.debug("{}/{} - On {}, best response is: {}", index + 1, allValidMovesForOpponent.size(), moveOpponent, nextMove);
+      if (nextMove == null)
+        // This happens if the game is aborted.
+        return nextMove;
       if (multiplier * (nextMove.evaluation() - bestMoveForOpponent.evaluation()) > 0) {
         bestMoveForOpponent = new EvaluatedMove(moveOpponent, nextMove.evaluation());
       }
@@ -159,5 +164,10 @@ public class AlphaBetaPlayer extends Player {
             : allValidMovesForOpponent.isEmpty() ? 0 : this.board.getPieces(this.color).values().stream().mapToDouble(PieceOnBoard::getDefaultValue).sum()
               - this.board.getPieces(ChessBoard.getOppositeColor(this.color)).values().stream().mapToDouble(PieceOnBoard::getDefaultValue).sum()
             + 1.0 / allValidMovesForOpponent.size();
+  }
+
+  @Override
+  public void abortCalculations() {
+    this.abort = true;
   }
 }
