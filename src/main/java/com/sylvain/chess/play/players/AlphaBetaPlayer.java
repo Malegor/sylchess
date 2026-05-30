@@ -24,6 +24,7 @@ public class AlphaBetaPlayer extends Player {
   private final DrawConditions drawConditions;
   private final int maxDepth;
   private final GameStateInfo info;
+  private boolean abort;
 
   public AlphaBetaPlayer(final PlayerColor color, final Gameplay game, final int maxNumberOfSemiMoves) {
     this(color, game.getBoard(), game.getInfo(), maxNumberOfSemiMoves, game.getDrawConditions());
@@ -35,6 +36,7 @@ public class AlphaBetaPlayer extends Player {
     this.maxDepth = maxNumberOfSemiMoves;
     this.info = info;
     this.drawConditions = drawConditions;
+    this.abort = false;
   }
 
   @Override
@@ -98,9 +100,13 @@ public class AlphaBetaPlayer extends Player {
     if (move == null)
       log.debug("Started search on {} possible moves...", allValidMovesForOpponent.size());
     for (final Move moveOpponent : allValidMovesForOpponent) {
+      if (this.abort)
+        return null;
       final EvaluatedMove nextMove = this.alphaBeta(moveOpponent, depth - 1, alpha, beta, this.info.getPositionsAlmostAtDraw(this.drawConditions));
       if (move == null)
         log.debug("{}/{} - On {}, best response is: {}", index + 1, allValidMovesForOpponent.size(), moveOpponent, nextMove);
+      if (nextMove == null)
+        return nextMove;
       if (multiplier * (nextMove.evaluation() - bestMoveForOpponent.evaluation()) > 0) {
         bestMoveForOpponent = new EvaluatedMove(moveOpponent, nextMove.evaluation());
       }
@@ -157,5 +163,10 @@ public class AlphaBetaPlayer extends Player {
             : allValidMovesForOpponent.isEmpty() ? 0 : this.board.getPieces(this.color).values().stream().mapToDouble(PieceOnBoard::getDefaultValue).sum()
               - this.board.getPieces(ChessBoard.getOppositeColor(this.color)).values().stream().mapToDouble(PieceOnBoard::getDefaultValue).sum()
             + 1.0 / allValidMovesForOpponent.size();
+  }
+
+  @Override
+  public void abortCalculations() {
+    this.abort = true;
   }
 }

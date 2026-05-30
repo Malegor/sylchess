@@ -19,4 +19,9 @@ public class DummyPlayer extends Player {
   protected Move selectMove(final List<Move> validMoves) {
     return validMoves.getFirst();
   }
+
+  @Override
+  public void abortCalculations() {
+    // Do nothing
+  }
 }

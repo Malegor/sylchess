@@ -115,6 +115,9 @@ public class TestGameplay {
       protected Move selectMove(List<Move> validMoves) {
         return validMoves.stream().filter(m -> m.toSan().equals(it.next())).findFirst().orElse(null);
       }
+
+      @Override
+      public void abortCalculations() {}
     };
     final Player blackPlayer = new Player(PlayerColor.BLACK, "Black", board) {
       private final Rook square2 = new Rook(PlayerColor.BLACK, new Square(1,7));
@@ -131,6 +134,9 @@ public class TestGameplay {
         final String next = it.next();
         return validMoves.stream().filter(m -> m.toSan().equals(next)).findFirst().orElse(null);
       }
+
+      @Override
+      public void abortCalculations() {}
     };
     return List.of(whitePlayer, blackPlayer);
   }
