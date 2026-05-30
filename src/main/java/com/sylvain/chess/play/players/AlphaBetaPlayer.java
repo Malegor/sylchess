@@ -106,6 +106,7 @@ public class AlphaBetaPlayer extends Player {
       if (move == null)
         log.debug("{}/{} - On {}, best response is: {}", index + 1, allValidMovesForOpponent.size(), moveOpponent, nextMove);
       if (nextMove == null)
+        // This happens if the game is aborted.
         return nextMove;
       if (multiplier * (nextMove.evaluation() - bestMoveForOpponent.evaluation()) > 0) {
         bestMoveForOpponent = new EvaluatedMove(moveOpponent, nextMove.evaluation());

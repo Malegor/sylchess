@@ -39,7 +39,5 @@ public abstract class Player {
     return this.name + " (" + this.color + ")";
   }
 
-  public void abortCalculations() {
-    // Do nothing
-  }
+  public abstract void abortCalculations();
 }
