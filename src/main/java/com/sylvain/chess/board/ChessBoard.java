@@ -143,7 +143,7 @@ public class ChessBoard {
     alreadyGivenPositions.sort(Integer::compareTo);
     final int queenPosition = getPosition(positions960.get(i++), alreadyGivenPositions);
     // For knights: C{5,2} possible positions = 5x4/2 (and not 5x4)
-    record Knights(int first, int second) {};
+    record Knights(int first, int second) {}
     final List<Knights> combinations52 = List.of(
             new Knights(0, 0), new Knights(0, 1), new Knights(0, 2), new Knights(0, 3),
             new Knights(1, 1), new Knights(1, 2), new Knights(1, 3),
