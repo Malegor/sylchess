@@ -20,7 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -66,6 +65,12 @@ public class ChessBoard {
     return board;
   }
 
+  public static ChessBoard get960BoardByIndex(final int index) {
+    final ChessBoard board = getBoard(get960PositionsFromIndex(index));
+    board.setVariant(GameVariant.CHESS960);
+    return board;
+  }
+
   public ChessBoard copy() {
     final ChessBoard copy = new ChessBoard();
     for (PieceOnBoard piece : new ArrayList<>(this.allPieces.values())) {
@@ -106,17 +111,47 @@ public class ChessBoard {
   }
 
   private static List<Character> get960PiecesPositions(final Long seed) {
-    // First determine the bishop positions (one on white squares, the other on black squares).
-    // Then determine the knights and queen positions.
-    // The remaining positions are occupied, in this order, by rook, king and rook.
     final Random random = getRandom(seed);
-    final int bishop1Position = random.nextInt(4) * 2;
-    final int bishop2Position = random.nextInt(4) * 2 + 1;
+    return get960PiecesPositions(List.of(random.nextInt(4), random.nextInt(4), random.nextInt(6), random.nextInt(10)));
+  }
+
+  private static List<Character> get960PositionsFromIndex(final int index) {
+    if (index <= 0 || index > 960) {
+      throw new IllegalArgumentException("Invalid index: " + index);
+    }
+    // Build list of positions from index
+    final List<Integer> bases = List.of(4, 4, 6, 10);
+    final List<Integer> positions = new ArrayList<>(bases.size());
+    int n = index - 1;
+    for (int i = bases.size() - 1; i >= 0; i--) {
+      positions.addFirst(n % bases.get(i));
+      n = n / bases.get(i);
+    }
+    return get960PiecesPositions(positions);
+  }
+
+  /**
+   * @param positions960 First the position of both bishops, then the position of the queen (considering only free columns), then the knights.
+   * The remaining positions are occupied, in this order, by rook, king and rook.
+   * @return The list of pieces, column by column, for the informed sequence of positions
+   */
+  private static List<Character> get960PiecesPositions(final List<Integer> positions960) {
+    int i = 0;
+    final int bishop1Position = positions960.get(i++) * 2;
+    final int bishop2Position = positions960.get(i++) * 2 + 1;
     final List<Integer> alreadyGivenPositions = new ArrayList<>(List.of(bishop1Position, bishop2Position));
     alreadyGivenPositions.sort(Integer::compareTo);
-    final int queenPosition = getPosition(random.nextInt(6), alreadyGivenPositions);
-    final int knight1Position = getPosition(random.nextInt(5), alreadyGivenPositions);
-    final int knight2Position = getPosition(random.nextInt(4), alreadyGivenPositions);
+    final int queenPosition = getPosition(positions960.get(i++), alreadyGivenPositions);
+    // For knights: C{5,2} possible positions = 5x4/2 (and not 5x4)
+    record Knights(int first, int second) {};
+    final List<Knights> combinations52 = List.of(
+            new Knights(0, 0), new Knights(0, 1), new Knights(0, 2), new Knights(0, 3),
+            new Knights(1, 1), new Knights(1, 2), new Knights(1, 3),
+            new Knights(2, 2), new Knights(2, 3),
+            new Knights(3, 3));
+    final Knights knights = combinations52.get(positions960.get(i));
+    final int knight1Position = getPosition(knights.first(), alreadyGivenPositions);
+    final int knight2Position = getPosition(knights.second(), alreadyGivenPositions);
     final List<Integer> freePositions = new ArrayList<>(IntStream.rangeClosed(0, 7).boxed().toList());
     freePositions.removeAll(alreadyGivenPositions);
     final char[] positions = new char[8];
