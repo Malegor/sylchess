@@ -53,6 +53,7 @@ public class Gameplay {
     this.info.setLastPlayer(players.getLast());
     this.history.setPlayers(players);
     final CircularIterator<Player> it = new CircularIterator<>(players);
+    // TODO: if the color is not found -> throw exception (to avoid infinite loop)
     if (this.history.getFirstPlayingColor() != null) {
       while (it.hasNext()) {
         if (it.peek().getColor() == this.history.getFirstPlayingColor()) {

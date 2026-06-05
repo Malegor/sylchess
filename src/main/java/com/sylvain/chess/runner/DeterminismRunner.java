@@ -10,21 +10,23 @@ import com.sylvain.chess.play.players.AlphaBetaPlayer;
 import com.sylvain.chess.play.players.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class DeterminismRunner {
   public static void main(String[] args) {
-    // Data
+    // Data (could be arguments)
     final boolean byIndex = true;
     final int numberOfDifferentGames = 960;
     final int numberOfRepetitions = 1;
     ////
-    final List<Long> gamesWithoutWinning = new ArrayList<>();
+    final List<Long> gamesWhite = new ArrayList<>();
+    final List<Long> gamesBlack = new ArrayList<>();
+    final List<Long> gamesDraw = new ArrayList<>();
+    final Map<String, List<Long>> sameEndgames = new HashMap<>(numberOfDifferentGames);
     final Random rand = new Random();
-    int whiteWins = 0;
-    int blackWins = 0;
-    int draws = 0;
     long seed = 0;
     final long startTime = System.currentTimeMillis();
     for (int i = 1; i <= numberOfDifferentGames; i++) {
@@ -32,33 +34,42 @@ public class DeterminismRunner {
         seed = rand.nextLong();
       String commonFinalFen = null;
       EndGame endgame = null;
+      final long gameDescription = byIndex ? i : seed;
       for (int j = 0; j < numberOfRepetitions; j++) {
         final ChessBoard board = byIndex ? ChessBoard.get960BoardByIndex(i) : ChessBoard.get960BoardBySeed(seed);
         final Gameplay gameplay = new Gameplay(board);
-        final List<Player> players = List.of(new DummyPlayer(PlayerColor.WHITE, board), new AlphaBetaPlayer(PlayerColor.BLACK, board, gameplay.getInfo(),
-                3, gameplay.getDrawConditions()));
+        final List<Player> players = List.of(new AlphaBetaPlayer(PlayerColor.WHITE, gameplay,1), new AlphaBetaPlayer(PlayerColor.BLACK, gameplay,2));
         gameplay.playGame(players);
         final String fen = FenSaver.getPositionString(gameplay);
-        if (commonFinalFen == null) {
+        if (commonFinalFen == null)
           commonFinalFen = fen;
-        }
         else if (!commonFinalFen.equals(fen)) {
-          System.out.println(whiteWins + " / " + draws + " / " + blackWins);
-          throw new IllegalStateException("Indeterminism detected after " + (j+1) + " games for game=" + (byIndex ? i : seed));
+          System.out.println(gamesWhite.size() + " / " + gamesDraw.size() + " / " + gamesBlack.size());
+          throw new IllegalStateException("Indeterminism detected after " + (j+1) + " games for game=" + gameDescription);
         }
         endgame = gameplay.getEndGame();
-        if (!EndGame.BLACK_WINS.equals(endgame) && (gamesWithoutWinning.isEmpty() || !gamesWithoutWinning.getLast().equals((byIndex ? i : seed))))
-          gamesWithoutWinning.add((byIndex ? i : seed));
+        sameEndgames.putIfAbsent(commonFinalFen, new ArrayList<>(1));
+        sameEndgames.get(commonFinalFen).add(gameDescription);
       }
       switch (endgame) {
-        case WHITE_WINS -> whiteWins += 1;
-        case BLACK_WINS -> blackWins += 1;
-        case DRAW -> draws += 1;
+        case WHITE_WINS -> gamesWhite.add(gameDescription);
+        case BLACK_WINS -> gamesBlack.add(gameDescription);
+        case DRAW -> gamesDraw.add(gameDescription);
         default -> throw new IllegalStateException("Unknown endgame: " + endgame);
       }
     }
-    System.out.println("Number of games (w/d/b): " + whiteWins + " / " + draws + " / " + blackWins);
-    System.out.println("Unvictorious games: " + gamesWithoutWinning);
+    System.out.println("Number of games (w/d/b): " + gamesWhite.size() + " / " + gamesDraw.size() + " / " + gamesBlack.size());
+    final EndGame majorWinner = gamesWhite.size() == gamesBlack.size() && gamesWhite.size() == gamesDraw.size() ? null :
+            gamesWhite.size() >= gamesBlack.size() && gamesWhite.size() >= gamesDraw.size() ? EndGame.WHITE_WINS :
+            gamesBlack.size() >= gamesWhite.size() && gamesBlack.size() >= gamesDraw.size() ? EndGame.BLACK_WINS :
+                    EndGame.DRAW;
+    System.out.println("Minority games: " + (!EndGame.WHITE_WINS.equals(majorWinner) ? gamesWhite + " " : "") +
+            (!EndGame.DRAW.equals(majorWinner) ? gamesDraw + " " : "") + (!EndGame.BLACK_WINS.equals(majorWinner) ? gamesBlack : ""));
+    if (sameEndgames.values().stream().mapToInt(List::size).sum() != numberOfDifferentGames)
+      throw new IllegalStateException("Inconsistent endgames!");
+    final List<Map.Entry<String, List<Long>>> sameEnds = sameEndgames.entrySet().stream().filter(e -> e.getValue().size() > 1).toList();
+    if (!sameEnds.isEmpty())
+      System.out.println("Games leading to the same endgame: " + sameEnds);
     System.out.println(numberOfDifferentGames * numberOfRepetitions + " games played in " + (System.currentTimeMillis() - startTime) + " ms");
   }
 }
