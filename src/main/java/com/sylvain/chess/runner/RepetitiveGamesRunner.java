@@ -5,7 +5,6 @@ import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.io.fen.FenSaver;
 import com.sylvain.chess.play.EndGame;
 import com.sylvain.chess.play.Gameplay;
-import com.sylvain.chess.play.players.DummyPlayer;
 import com.sylvain.chess.play.players.AlphaBetaPlayer;
 import com.sylvain.chess.play.players.Player;
 
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class DeterminismRunner {
+public class RepetitiveGamesRunner {
   public static void main(String[] args) {
     // Data (could be arguments)
     final boolean byIndex = true;
