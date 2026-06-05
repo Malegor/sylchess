@@ -130,8 +130,15 @@ public class Gameplay {
 
   public void abort() {
     this.isAborted = true;
-    for (final Player player : this.history.getPlayers()) {
-      player.abortCalculations();
+    try {
+      if (this.history != null) {
+        for (final Player player : this.history.getPlayers()) {
+          player.abortCalculations();
+        }
+      }
+    }
+    catch (final NullPointerException e) {
+      log.error(e.getMessage(), e);
     }
     this.endGame = EndGame.ABORTED;
     log.info("Aborted!");

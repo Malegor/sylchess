@@ -28,6 +28,7 @@ public class ChessBoard {
   public static final int BOARD_COLS = 8;
   public static final int BOARD_ROWS = 8;
   public static final int CLASSICAL_KING_COLUMN = 5;
+  private static final List<Integer> base_sequence_b_b_q_nn = List.of(4, 4, 6, 10);
   private final Map<PlayerColor, Map<Square, PieceOnBoard>> piecesByColor;
   private final Map<Square, PieceOnBoard> allPieces;
   private final Map<PlayerColor, King> kings;
@@ -59,7 +60,7 @@ public class ChessBoard {
     return board;
   }
 
-  public static ChessBoard get960Board(final Long seed) {
+  public static ChessBoard get960BoardBySeed(final Long seed) {
     final ChessBoard board = getBoard(get960PiecesPositions(seed));
     board.setVariant(GameVariant.CHESS960);
     return board;
@@ -112,7 +113,9 @@ public class ChessBoard {
 
   private static List<Character> get960PiecesPositions(final Long seed) {
     final Random random = getRandom(seed);
-    return get960PiecesPositions(List.of(random.nextInt(4), random.nextInt(4), random.nextInt(6), random.nextInt(10)));
+    final List<Integer> description960 = base_sequence_b_b_q_nn.stream().map(random::nextInt).toList();
+    log.info("Index 960: {}", getChess960Index(description960));
+    return get960PiecesPositions(description960);
   }
 
   private static List<Character> get960PositionsFromIndex(final int index) {
@@ -120,20 +123,22 @@ public class ChessBoard {
       throw new IllegalArgumentException("Invalid index: " + index);
     }
     // Build list of positions from index
-    final List<Integer> bases = List.of(4, 4, 6, 10);
+    final List<Integer> bases = base_sequence_b_b_q_nn;
     final List<Integer> positions = new ArrayList<>(bases.size());
     int n = index - 1;
     for (int i = bases.size() - 1; i >= 0; i--) {
       positions.addFirst(n % bases.get(i));
       n = n / bases.get(i);
     }
+    if (index != getChess960Index(positions) + 1)
+      throw new IllegalStateException("Invalid Chess-960 position for: " + index + " != " + (getChess960Index(positions) + 1));
     return get960PiecesPositions(positions);
   }
 
   /**
-   * @param positions960 First the position of both bishops, then the position of the queen (considering only free columns), then the knights.
-   * The remaining positions are occupied, in this order, by rook, king and rook.
-   * @return The list of pieces, column by column, for the informed sequence of positions
+   * @param positions960 First the position of both bishops (each one on a different square color), then the position of the queen (considering only free
+   *                     columns), then the knights. The remaining positions are occupied, in this order, by rook, king and rook.
+   * @return The list of pieces, column by column, for the informed sequence of positions.
    */
   private static List<Character> get960PiecesPositions(final List<Integer> positions960) {
     int i = 0;
@@ -200,6 +205,16 @@ public class ChessBoard {
     for (int col = 1 ; col <= ChessBoard.BOARD_COLS ; col++) {
         this.addPiece(new Pawn(color, new Square(col, secondRow)));
     }
+  }
+
+  public static int getChess960Index(final List<Integer> piecesPositions) {
+    int number = 0;
+    for (int index = 0; index < piecesPositions.size(); index++) {
+      number += piecesPositions.get(index);
+      if (index <  piecesPositions.size() - 1)
+        number *= base_sequence_b_b_q_nn.get(index + 1);
+    }
+    return number;
   }
 
   public static boolean isInBoard(final Square square) {

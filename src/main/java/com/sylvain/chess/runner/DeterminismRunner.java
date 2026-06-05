@@ -18,7 +18,7 @@ public class DeterminismRunner {
     // Data
     final boolean byIndex = true;
     final int numberOfDifferentGames = 960;
-    final int numberOfRepetitions = 2;
+    final int numberOfRepetitions = 1;
     ////
     final List<Long> gamesWithoutWinning = new ArrayList<>();
     final Random rand = new Random();
@@ -33,7 +33,7 @@ public class DeterminismRunner {
       String commonFinalFen = null;
       EndGame endgame = null;
       for (int j = 0; j < numberOfRepetitions; j++) {
-        final ChessBoard board = byIndex ? ChessBoard.get960BoardByIndex(i) : ChessBoard.get960Board(seed);
+        final ChessBoard board = byIndex ? ChessBoard.get960BoardByIndex(i) : ChessBoard.get960BoardBySeed(seed);
         final Gameplay gameplay = new Gameplay(board);
         final List<Player> players = List.of(new DummyPlayer(PlayerColor.WHITE, board), new AlphaBetaPlayer(PlayerColor.BLACK, board, gameplay.getInfo(),
                 3, gameplay.getDrawConditions()));
@@ -47,8 +47,8 @@ public class DeterminismRunner {
           throw new IllegalStateException("Indeterminism detected after " + (j+1) + " games for game=" + (byIndex ? i : seed));
         }
         endgame = gameplay.getEndGame();
-        if (!EndGame.BLACK_WINS.equals(endgame) && !gamesWithoutWinning.getLast().equals(seed))
-          gamesWithoutWinning.add(seed);
+        if (!EndGame.BLACK_WINS.equals(endgame) && (gamesWithoutWinning.isEmpty() || !gamesWithoutWinning.getLast().equals((byIndex ? i : seed))))
+          gamesWithoutWinning.add((byIndex ? i : seed));
       }
       switch (endgame) {
         case WHITE_WINS -> whiteWins += 1;

@@ -55,7 +55,7 @@ public class TestBoard {
 
     @Test
     public void testChess960() {
-        final ChessBoard board = ChessBoard.get960Board(null);
+        final ChessBoard board = ChessBoard.get960BoardBySeed(null);
         board.printBoard();
         this.assertValidInitialBoard(board, PlayerColor.WHITE);
         this.assertValidInitialBoard(board, PlayerColor.BLACK);
