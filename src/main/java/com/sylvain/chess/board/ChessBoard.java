@@ -49,7 +49,7 @@ public class ChessBoard {
           new Knights(2, 2), new Knights(2, 3),
           new Knights(3, 3));
 
-  private ChessBoard(final List<Character> positions, final GameVariant variant, final boolean setUp, final int index960) {
+  private ChessBoard(final List<Character> positions, final GameVariant variant, final boolean setUp) {
     this.piecesByColor = Map.of(PlayerColor.WHITE, new LinkedHashMap<>(16), PlayerColor.BLACK, new LinkedHashMap<>(16));
     this.allPieces = new LinkedHashMap<>(32);
     this.kings = new HashMap<>(2);
@@ -57,15 +57,15 @@ public class ChessBoard {
     this.putPositionsForColor(PlayerColor.BLACK, positions);
     this.variant = variant;
     this.setUp = setUp;
-    this.index960 = index960;
+    this.index960 = get960IndexFromPositions(positions);
   }
 
   public static ChessBoard defaultBoard() {
-    return new ChessBoard(getClassicalPiecesPositions(), GameVariant.CLASSICAL, false, -1);
+    return new ChessBoard(getClassicalPiecesPositions(), GameVariant.CLASSICAL, false);
   }
 
   public static ChessBoard emptyBoard(final GameVariant variant) {
-    return new ChessBoard(List.of(), variant, true, -1);
+    return new ChessBoard(List.of(), variant, true);
   }
 
   public static ChessBoard emptyBoard() {
@@ -75,15 +75,15 @@ public class ChessBoard {
   public static ChessBoard board960BySeed(final Long seed) {
     List<Character> positions = get960PiecesPositions(seed);
     final int index = get960IndexFromPositions(positions);
-    return new ChessBoard(positions, GameVariant.CHESS960, false, index);
+    return new ChessBoard(positions, GameVariant.CHESS960, false);
   }
 
   public static ChessBoard board960ByIndex(final int index) {
-    return new ChessBoard(get960PositionsFromIndex(index), GameVariant.CHESS960, false, index);
+    return new ChessBoard(get960PositionsFromIndex(index), GameVariant.CHESS960, false);
   }
 
   public ChessBoard copy() {
-    final ChessBoard copy = new ChessBoard(List.of(), this.getVariant(), this.isSetUp(), this.getIndex960());
+    final ChessBoard copy = new ChessBoard(List.of(), this.getVariant(), this.isSetUp());
     for (PieceOnBoard piece : new ArrayList<>(this.allPieces.values())) {
       copy.addPiece(piece);
     }
@@ -138,8 +138,8 @@ public class ChessBoard {
       positions.addFirst(n % bases.get(i));
       n = n / bases.get(i);
     }
-    if (index != getChess960Index(positions) + 1)
-      throw new IllegalStateException("Invalid Chess-960 position for: " + index + " != " + (getChess960Index(positions) + 1));
+    if (index != getChess960Index(positions))
+      throw new IllegalStateException("Invalid Chess-960 position for: " + index + " != " + getChess960Index(positions));
     return get960PiecesPositions(positions);
   }
 
@@ -189,6 +189,8 @@ public class ChessBoard {
   }
 
   private static int get960IndexFromPositions(final List<Character> positions) {
+    if (positions.size() < 8)
+      return -1;
     final List<Character> positionsCopy = new ArrayList<>(positions);
     final List<Integer> positionsBBQN2 = new ArrayList<>(4);
     final Map<Character, List<Integer>> positionsOfPieces = new HashMap<>(5);
@@ -248,7 +250,7 @@ public class ChessBoard {
       if (index <  piecesPositions.size() - 1)
         number *= base_sequence_b_b_q_nn.get(index + 1);
     }
-    return number;
+    return number + 1;
   }
 
   public static boolean isInBoard(final Square square) {

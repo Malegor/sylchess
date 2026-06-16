@@ -62,6 +62,20 @@ public class TestBoard {
         this.assertSamePositionsForBothColors(board);
     }
 
+    @Test
+    public void test960Index() {
+        for (int seedCount=0; seedCount<=1000; seedCount++) {
+            final ChessBoard board = ChessBoard.board960BySeed(null);
+            Assert.assertTrue(board.getIndex960() > 0 && board.getIndex960() <= 960);
+        }
+        for (int i=1; i<=960; i++) {
+            final ChessBoard board = ChessBoard.board960ByIndex(i);
+            Assert.assertEquals(i, board.getIndex960());
+        }
+        final ChessBoard board = ChessBoard.defaultBoard();
+        Assert.assertEquals(386, board.getIndex960());
+    }
+
     private void assertSamePositionsForBothColors(final ChessBoard board) {
         final Map<Square, PieceOnBoard> whitePieces = board.getPieces(PlayerColor.WHITE);
         final Map<Square, PieceOnBoard> blackPieces = board.getPieces(PlayerColor.BLACK);
