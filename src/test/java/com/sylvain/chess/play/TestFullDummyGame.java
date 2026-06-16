@@ -67,7 +67,7 @@ public class TestFullDummyGame {
     final long seed = 8289664214450011964L;
     int j=0;
     //for(int j = 0; j < 20; j++) {
-      final ChessBoard board = ChessBoard.get960BoardBySeed(seed);
+      final ChessBoard board = ChessBoard.board960BySeed(seed);
       final Gameplay play = new Gameplay(board);
       final GameStatus gameStatus = play.playGame(
               List.of(new DummyPlayer(PlayerColor.WHITE, board), new AlphaBetaPlayer(PlayerColor.BLACK, play, 3)));

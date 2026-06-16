@@ -35,7 +35,7 @@ public class RepetitiveGamesRunner {
       EndGame endgame = null;
       final long gameDescription = byIndex ? i : seed;
       for (int j = 0; j < numberOfRepetitions; j++) {
-        final ChessBoard board = byIndex ? ChessBoard.get960BoardByIndex(i) : ChessBoard.get960BoardBySeed(seed);
+        final ChessBoard board = byIndex ? ChessBoard.board960ByIndex(i) : ChessBoard.board960BySeed(seed);
         final Gameplay gameplay = new Gameplay(board);
         final List<Player> players = List.of(new AlphaBetaPlayer(PlayerColor.WHITE, gameplay,1), new AlphaBetaPlayer(PlayerColor.BLACK, gameplay,2));
         gameplay.playGame(players);

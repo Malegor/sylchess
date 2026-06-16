@@ -32,7 +32,7 @@ public class TestValidMoves {
 
     @Test
     public void testPromotion() {
-      final ChessBoard board = new ChessBoard();
+      final ChessBoard board = ChessBoard.emptyBoard();
       board.addPiece(new Pawn(PlayerColor.BLACK, new Square(5, 2)));
       board.addPiece(new Bishop(PlayerColor.WHITE, new Square(6, 1)));
       board.addPiece(new Queen(PlayerColor.WHITE, new Square(4, 1)));
@@ -49,7 +49,7 @@ public class TestValidMoves {
 
     @Test
     public void testAvoidCheck() {
-      final ChessBoard board = new ChessBoard();
+      final ChessBoard board = ChessBoard.emptyBoard();
       board.addPiece(new King(PlayerColor.BLACK, new Square(1,2)));
       board.addPiece(new Pawn(PlayerColor.WHITE, new Square(2,2)));
       board.addPiece(new Rook(PlayerColor.WHITE, new Square(8,1)));
@@ -61,7 +61,7 @@ public class TestValidMoves {
 
   @Test
   public void testPreventCheckMovingPiece() {
-    final ChessBoard board = new ChessBoard();
+    final ChessBoard board = ChessBoard.emptyBoard();
     board.addPiece(new King(PlayerColor.WHITE, new Square(1,1)));
     board.addPiece(new Pawn(PlayerColor.WHITE, new Square(1,2)));
     board.addPiece(new Pawn(PlayerColor.WHITE, new Square(2,2)));
@@ -75,7 +75,7 @@ public class TestValidMoves {
 
   @Test
   public void testCheckmate() {
-    final ChessBoard board = new ChessBoard();
+    final ChessBoard board = ChessBoard.emptyBoard();
     board.addPiece(new King(PlayerColor.WHITE, new Square(1,1)));
     board.addPiece(new Pawn(PlayerColor.WHITE, new Square(1,2)));
     board.addPiece(new Pawn(PlayerColor.WHITE, new Square(2,2)));
@@ -88,7 +88,7 @@ public class TestValidMoves {
 
   @Test
   public void testStalemate() {
-    final ChessBoard board = new ChessBoard();
+    final ChessBoard board = ChessBoard.emptyBoard();
     board.addPiece(new King(PlayerColor.WHITE, new Square(1,1)));
     board.addPiece(new Pawn(PlayerColor.WHITE, new Square(2,2)));
     board.addPiece(new Pawn(PlayerColor.BLACK, new Square(3,2)));
@@ -101,7 +101,7 @@ public class TestValidMoves {
 
   @Test
   public void testEnPassant() {
-    final ChessBoard board = new ChessBoard();
+    final ChessBoard board = ChessBoard.emptyBoard();
     final Pawn whitePawn = new Pawn(PlayerColor.WHITE, new Square(2, 2));
     board.addPiece(whitePawn);
     final Pawn blackPawn = new Pawn(PlayerColor.BLACK, new Square(3, 4));
@@ -123,7 +123,7 @@ public class TestValidMoves {
 
   @Test
   public void testCastle() {
-      final ChessBoard board = new ChessBoard();
+      final ChessBoard board = ChessBoard.emptyBoard();
       board.addPiece(new King(PlayerColor.WHITE, new Square(5, 1)));
     board.addPiece(new Rook(PlayerColor.WHITE, new Square(1, 1)));
     board.addPiece(new Rook(PlayerColor.WHITE, new Square(8, 1)));
@@ -156,7 +156,7 @@ public class TestValidMoves {
 
   @Test
   public void testInvalidMove() {
-    final ChessBoard board = new ChessBoard();
+    final ChessBoard board = ChessBoard.emptyBoard();
     board.addPiece(new King(PlayerColor.WHITE, new Square(1,1)));
     board.addPiece(new King(PlayerColor.BLACK, new Square(8,8)));
     final Player player = new Player(PlayerColor.WHITE, "Invalid", board) {

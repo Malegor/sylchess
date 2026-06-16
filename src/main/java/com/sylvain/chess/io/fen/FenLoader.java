@@ -29,9 +29,8 @@ public class FenLoader {
     final String[] fenArray = fen.split(SEP);
     if (fenArray.length < 6)
       throw new IllegalArgumentException("Invalid fen (missing " + (6 - fenArray.length) + " argument(s)): " + fen);
-    final ChessBoard board = loadBoard(fenArray[0]);
+    final ChessBoard board = loadBoard(fenArray[0], findVariant(fenArray[2]));
     final PlayerColor color = getNextColor(fenArray[1].toCharArray()[0]);
-    board.setVariant(findVariant(fenArray[2]));
     configureImpossibleCastles(fenArray[2], board);
     configureLastMove(fenArray[3], board, ChessBoard.getOppositeColor(color));
     final int numberOfHalfMovesWithoutImprovement = Integer.parseInt(fenArray[4]);
@@ -101,8 +100,8 @@ public class FenLoader {
       }
   }
 
-  public static ChessBoard loadBoard(final String fenBoard) {
-    final ChessBoard board = new ChessBoard();
+  public static ChessBoard loadBoard(final String fenBoard, final GameVariant variant) {
+    final ChessBoard board = ChessBoard.emptyBoard(variant);
     final String[] fenByRow = fenBoard.split(ROW_SEP);
     if (fenByRow.length != ChessBoard.BOARD_ROWS)
       throw new IllegalArgumentException("Invalid fen board (invalid rows): " + fenBoard);
@@ -124,7 +123,10 @@ public class FenLoader {
           throw new IllegalArgumentException("Invalid fen board character: " + currentRow);
       }
     }
-    board.setSetUp(true);
     return board;
+  }
+
+  public static ChessBoard loadBoard(final String fenBoard) {
+    return loadBoard(fenBoard, GameVariant.CLASSICAL);
   }
 }

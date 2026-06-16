@@ -26,7 +26,7 @@ public class TestBoard {
 
     @Test
     public void testPrintBoard() {
-        final ChessBoard board = new ChessBoard();
+        final ChessBoard board = ChessBoard.emptyBoard();
         board.addPiece(new Rook(PlayerColor.WHITE, new Square(1, 1)));
         board.addPiece(new King(PlayerColor.BLACK, new Square(5, 8)));
         board.printBoard();
@@ -34,7 +34,7 @@ public class TestBoard {
 
     @Test
     public void testGetSquare() {
-        final ChessBoard board = new ChessBoard();
+        final ChessBoard board = ChessBoard.emptyBoard();
         Assert.assertThrows(IllegalArgumentException.class, () -> board.getSquare(""));
         Assert.assertThrows(IllegalArgumentException.class, () -> board.getSquare("a3a"));
         Assert.assertThrows(IllegalArgumentException.class, () -> board.getSquare("a9"));
@@ -55,7 +55,7 @@ public class TestBoard {
 
     @Test
     public void testChess960() {
-        final ChessBoard board = ChessBoard.get960BoardBySeed(null);
+        final ChessBoard board = ChessBoard.board960BySeed(null);
         board.printBoard();
         this.assertValidInitialBoard(board, PlayerColor.WHITE);
         this.assertValidInitialBoard(board, PlayerColor.BLACK);

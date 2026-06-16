@@ -17,7 +17,7 @@ import java.util.Map;
 public class TestMove {
   @Test
   public void testToSan() {
-    final ChessBoard board = new ChessBoard();
+    final ChessBoard board = ChessBoard.emptyBoard();
     final Knight knight = new Knight(PlayerColor.BLACK, new Square(1, 1));
     board.addPiece(knight);
     board.addPiece(new Knight(PlayerColor.BLACK, new Square(3, 2))); // Doesn't control b3
