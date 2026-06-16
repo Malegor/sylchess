@@ -62,7 +62,7 @@ public class Gameplay {
         else this.info.setLastPlayer(it.next());
       }
     }
-    this.history.setInitialFen(FenSaver.getPositionString(this));
+    this.history.setInitialFen(FenSaver.getPositionString(this.info, this.board));
     while (!this.isAborted && it.hasNext()) {
       final Player player = it.next();
       // OBS: small flaw here: in the rule, the en passant or castling possible moves should be considered for the repetition...
