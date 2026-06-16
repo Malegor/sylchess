@@ -1,6 +1,7 @@
 package com.sylvain.chess.io.pgn;
 
 import com.sylvain.chess.PlayerColor;
+import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.board.GameVariant;
 import com.sylvain.chess.moves.Move;
 import com.sylvain.chess.play.EndGame;
@@ -14,7 +15,7 @@ import java.time.format.DateTimeFormatter;
  * Based on specification at <url><a href="https://github.com/mliebelt/pgn-spec-commented/blob/main/pgn-specification.txt">mliebelt github</a></url>
  */
 public class PgnSaver {
-  public static String saveGame(final Gameplay game) {
+  public static String saveGame(final Gameplay game, final ChessBoard board) {
     final GameHistory history = game.getHistory();
     int moveNumber = history.getFirstMoveNumber();
     boolean newMove = history.getFirstPlayingColor().equals(PlayerColor.WHITE);
@@ -40,21 +41,21 @@ public class PgnSaver {
       isFirstMove = false;
       sep = " ";
     }
-    return getGameDescription(game) + "\n" + movesBld + sep + game.getEndGame().getPgn();
+    return getGameDescription(game, board) + "\n" + movesBld + sep + game.getEndGame().getPgn();
   }
 
-  private static String getGameDescription(final Gameplay game) {
+  private static String getGameDescription(final Gameplay game, final ChessBoard board) {
     final StringBuilder builder = new StringBuilder();
     builder.append(tag("Date", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))))
             .append(tag("White", game.getHistory().getFirstPlayerOfColor(PlayerColor.WHITE).toString()))
             .append(tag("Black", game.getHistory().getFirstPlayerOfColor(PlayerColor.BLACK).toString()));
-    if (game.getBoard().isSetUp())
+    if (board.isSetUp())
       builder.append(tag("SetUp", "1"));
-    if (!game.getBoard().getVariant().equals(GameVariant.CLASSICAL))
-      builder.append(tag("Variant", game.getBoard().getVariant().getValue()));
-    if (game.getBoard().getVariant().equals(GameVariant.CHESS960))
-      builder.append(tag("Index960", String.valueOf(game.getBoard().getIndex960())));
-    if (game.getBoard().isSetUp() || !game.getBoard().getVariant().equals(GameVariant.CLASSICAL))
+    if (!board.getVariant().equals(GameVariant.CLASSICAL))
+      builder.append(tag("Variant", board.getVariant().getValue()));
+    if (board.getVariant().equals(GameVariant.CHESS960))
+      builder.append(tag("Index960", String.valueOf(board.getIndex960())));
+    if (board.isSetUp() || !board.getVariant().equals(GameVariant.CLASSICAL))
       builder.append(tag("FEN", game.getHistory().getInitialFen()));
     if (!game.getEndGame().equals(EndGame.STILL_PLAYING)) {
       builder.append(tag("Result", game.getEndGame().getPgn()));
