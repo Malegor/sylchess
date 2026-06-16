@@ -19,7 +19,7 @@ import java.util.List;
 public class TestGameplay {
   @Test
   public void testCheckmate() {
-    final ChessBoard board = new ChessBoard();
+    final ChessBoard board = ChessBoard.emptyBoard();
     board.addPiece(new King(PlayerColor.WHITE, new Square(1,1)));
     board.addPiece(new Pawn(PlayerColor.WHITE, new Square(1,2)));
     board.addPiece(new Pawn(PlayerColor.WHITE, new Square(2,2)));
@@ -38,7 +38,7 @@ public class TestGameplay {
 
   @Test
   public void testStalemate() {
-    final ChessBoard board = new ChessBoard();
+    final ChessBoard board = ChessBoard.emptyBoard();
     board.addPiece(new King(PlayerColor.WHITE, new Square(1,1)));
     board.addPiece(new Pawn(PlayerColor.WHITE, new Square(2,2)));
     board.addPiece(new Pawn(PlayerColor.BLACK, new Square(3,2)));
@@ -81,7 +81,7 @@ public class TestGameplay {
 
   @Test
   public void testNoPossibleMate() {
-    final ChessBoard board = new ChessBoard();
+    final ChessBoard board = ChessBoard.emptyBoard();
     board.addPiece(new King(PlayerColor.WHITE, new Square(1,1)));
     board.addPiece(new King(PlayerColor.BLACK, new Square(8,8)));
     board.addPiece(new Knight(PlayerColor.BLACK, new Square(5,5)));
@@ -93,7 +93,7 @@ public class TestGameplay {
   }
 
   private Gameplay getGameWithRepeatedMoves(final int maxNumberOfMovesWithoutCaptureOrPawnMove) {
-    final ChessBoard board = new ChessBoard();
+    final ChessBoard board = ChessBoard.emptyBoard();
     final King whiteKing = new King(PlayerColor.WHITE, new Square(5, 1));
     board.addPiece(whiteKing);
     final Rook blackRook = new Rook(PlayerColor.BLACK, new Square(1, 8));

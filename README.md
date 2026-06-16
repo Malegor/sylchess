@@ -51,7 +51,7 @@ Start the server
 TODO: how to run tests etc.
 ## User interface
 
-From the source code of the project, run the [BoardFrame](https://github.com/Malegor/sylchess/blob/master/src/main/java/com/sylvain/chess/ui/BoardFrame.java) class. This will open a frame with a chess board on the left-hand side and some buttons and fields on the right-hand side.
+From the source code of the project, run the [ChessBoardRunner](https://github.com/Malegor/sylchess/blob/master/src/main/java/com/sylvain/chess/runner/ChessBoardRunner.java) class. This will open a frame with a chess board on the left-hand side and some buttons and fields on the right-hand side.
 
 ### Right-hand panel
 

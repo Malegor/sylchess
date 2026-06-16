@@ -26,7 +26,7 @@ public class TestBoard {
 
     @Test
     public void testPrintBoard() {
-        final ChessBoard board = new ChessBoard();
+        final ChessBoard board = ChessBoard.emptyBoard();
         board.addPiece(new Rook(PlayerColor.WHITE, new Square(1, 1)));
         board.addPiece(new King(PlayerColor.BLACK, new Square(5, 8)));
         board.printBoard();
@@ -34,7 +34,7 @@ public class TestBoard {
 
     @Test
     public void testGetSquare() {
-        final ChessBoard board = new ChessBoard();
+        final ChessBoard board = ChessBoard.emptyBoard();
         Assert.assertThrows(IllegalArgumentException.class, () -> board.getSquare(""));
         Assert.assertThrows(IllegalArgumentException.class, () -> board.getSquare("a3a"));
         Assert.assertThrows(IllegalArgumentException.class, () -> board.getSquare("a9"));
@@ -55,11 +55,25 @@ public class TestBoard {
 
     @Test
     public void testChess960() {
-        final ChessBoard board = ChessBoard.get960BoardBySeed(null);
+        final ChessBoard board = ChessBoard.board960BySeed(null);
         board.printBoard();
         this.assertValidInitialBoard(board, PlayerColor.WHITE);
         this.assertValidInitialBoard(board, PlayerColor.BLACK);
         this.assertSamePositionsForBothColors(board);
+    }
+
+    @Test
+    public void test960Index() {
+        for (int seedCount=0; seedCount<=1000; seedCount++) {
+            final ChessBoard board = ChessBoard.board960BySeed(null);
+            Assert.assertTrue(board.getIndex960() > 0 && board.getIndex960() <= 960);
+        }
+        for (int i=1; i<=960; i++) {
+            final ChessBoard board = ChessBoard.board960ByIndex(i);
+            Assert.assertEquals(i, board.getIndex960());
+        }
+        final ChessBoard board = ChessBoard.defaultBoard();
+        Assert.assertEquals(386, board.getIndex960());
     }
 
     private void assertSamePositionsForBothColors(final ChessBoard board) {

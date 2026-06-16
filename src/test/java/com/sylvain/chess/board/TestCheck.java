@@ -20,7 +20,7 @@ public class TestCheck {
 
     @Test
     public void testNoCheck() {
-        final ChessBoard board = new ChessBoard();
+        final ChessBoard board = ChessBoard.emptyBoard();
         board.addPiece(new Rook(PlayerColor.WHITE, new Square(1, 1)));
         board.addPiece(new Rook(PlayerColor.BLACK, new Square(5, 1)));
         board.addPiece(new King(PlayerColor.BLACK, new Square(5, 8)));
@@ -30,7 +30,7 @@ public class TestCheck {
 
     @Test
     public void testSingleCheck() {
-        final ChessBoard board = new ChessBoard();
+        final ChessBoard board = ChessBoard.emptyBoard();
         board.addPiece(new Rook(PlayerColor.WHITE, new Square(1, 1)));
         board.addPiece(new Rook(PlayerColor.BLACK, new Square(5, 1)));
         board.addPiece(new King(PlayerColor.WHITE, new Square(5, 8)));
@@ -41,7 +41,7 @@ public class TestCheck {
 
     @Test
     public void testPiecePreventingCheck() {
-        final ChessBoard board = new ChessBoard();
+        final ChessBoard board = ChessBoard.emptyBoard();
         board.addPiece(new Rook(PlayerColor.WHITE, new Square(5, 5)));
         board.addPiece(new Rook(PlayerColor.BLACK, new Square(5, 1)));
         board.addPiece(new King(PlayerColor.WHITE, new Square(5, 8)));
@@ -51,7 +51,7 @@ public class TestCheck {
 
     @Test
     public void testSeveralChecks() {
-        final ChessBoard board = new ChessBoard();
+        final ChessBoard board = ChessBoard.emptyBoard();
         board.addPiece(new King(PlayerColor.BLACK, new Square(5, 5)));
         board.addPiece(new Knight(PlayerColor.BLACK, new Square(6, 6)));
         board.addPiece(new Queen(PlayerColor.WHITE, new Square(7, 7)));

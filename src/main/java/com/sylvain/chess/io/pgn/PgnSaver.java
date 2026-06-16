@@ -52,6 +52,8 @@ public class PgnSaver {
       builder.append(tag("SetUp", "1"));
     if (!game.getBoard().getVariant().equals(GameVariant.CLASSICAL))
       builder.append(tag("Variant", game.getBoard().getVariant().getValue()));
+    if (game.getBoard().getVariant().equals(GameVariant.CHESS960))
+      builder.append(tag("Index960", String.valueOf(game.getBoard().getIndex960())));
     if (game.getBoard().isSetUp() || !game.getBoard().getVariant().equals(GameVariant.CLASSICAL))
       builder.append(tag("FEN", game.getHistory().getInitialFen()));
     if (!game.getEndGame().equals(EndGame.STILL_PLAYING)) {

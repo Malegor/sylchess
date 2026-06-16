@@ -28,7 +28,7 @@ public class TestPawn {
 
     @Test
     public void testPossibleCaptures() {
-        final ChessBoard board = new ChessBoard();
+        final ChessBoard board = ChessBoard.emptyBoard();
         board.addPiece(new Pawn(PlayerColor.WHITE, new Square(4, 4)));
         board.addPiece(new Pawn(PlayerColor.BLACK, new Square(3, 6)));
         board.addPiece(new Pawn(PlayerColor.BLACK, new Square(4, 6)));
@@ -43,7 +43,7 @@ public class TestPawn {
 
     @Test
     public void testPossibleCapturesBlack() {
-        final ChessBoard board = new ChessBoard();
+        final ChessBoard board = ChessBoard.emptyBoard();
         board.addPiece(new Pawn(PlayerColor.BLACK, new Square(4, 4)));
         board.addPiece(new Pawn(PlayerColor.WHITE, new Square(3, 2)));
         board.addPiece(new Pawn(PlayerColor.WHITE, new Square(4, 2)));
