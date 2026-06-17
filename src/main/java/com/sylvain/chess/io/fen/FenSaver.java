@@ -17,12 +17,11 @@ import java.util.List;
 import java.util.Set;
 
 public class FenSaver {
-  public static String getPositionString(final Gameplay game) {
-    final String boardString = getBoardString(game.getBoard());
-    final GameStateInfo info = game.getInfo();
+  public static String getPositionString(final GameStateInfo info, final ChessBoard board) {
+    final String boardString = getBoardString(board);
     final Character colorString = ChessBoard.getOppositeColor(info.getLastPlayer().getColor()).getFenName();
-    final String allPossibleCastles = getPossibleCastles(game.getBoard());
-    final String possibleEnPassantSquare = getPossibleEnPassant(game.getBoard());
+    final String allPossibleCastles = getPossibleCastles(board);
+    final String possibleEnPassantSquare = getPossibleEnPassant(board);
     final int halfMoveNumber = info.getHalfMoveNumber();
     final int numberOfHalfMovesWithoutImprovement = halfMoveNumber - info.getLastHalfMoveWithCaptureOrPawn();
     return boardString + FenLoader.SEP + colorString + FenLoader.SEP + allPossibleCastles + FenLoader.SEP + possibleEnPassantSquare + FenLoader.SEP +

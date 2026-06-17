@@ -49,7 +49,7 @@ public class ChessBoard {
           new Knights(2, 2), new Knights(2, 3),
           new Knights(3, 3));
 
-  private ChessBoard(final List<Character> positions, final GameVariant variant, final boolean setUp) {
+  private ChessBoard(final List<Character> positions, final GameVariant variant, final boolean setUp, final Integer index960) {
     this.piecesByColor = Map.of(PlayerColor.WHITE, new LinkedHashMap<>(16), PlayerColor.BLACK, new LinkedHashMap<>(16));
     this.allPieces = new LinkedHashMap<>(32);
     this.kings = new HashMap<>(2);
@@ -57,15 +57,15 @@ public class ChessBoard {
     this.putPositionsForColor(PlayerColor.BLACK, positions);
     this.variant = variant;
     this.setUp = setUp;
-    this.index960 = get960IndexFromPositions(positions);
+    this.index960 = index960 == null ? get960IndexFromPositions(positions) : index960;
   }
 
   public static ChessBoard defaultBoard() {
-    return new ChessBoard(getClassicalPiecesPositions(), GameVariant.CLASSICAL, false);
+    return new ChessBoard(getClassicalPiecesPositions(), GameVariant.CLASSICAL, false, null);
   }
 
   public static ChessBoard emptyBoard(final GameVariant variant) {
-    return new ChessBoard(List.of(), variant, true);
+    return new ChessBoard(List.of(), variant, true, -1);
   }
 
   public static ChessBoard emptyBoard() {
@@ -75,15 +75,15 @@ public class ChessBoard {
   public static ChessBoard board960BySeed(final Long seed) {
     List<Character> positions = get960PiecesPositions(seed);
     final int index = get960IndexFromPositions(positions);
-    return new ChessBoard(positions, GameVariant.CHESS960, false);
+    return new ChessBoard(positions, GameVariant.CHESS960, false, null);
   }
 
   public static ChessBoard board960ByIndex(final int index) {
-    return new ChessBoard(get960PositionsFromIndex(index), GameVariant.CHESS960, false);
+    return new ChessBoard(get960PositionsFromIndex(index), GameVariant.CHESS960, false, index);
   }
 
   public ChessBoard copy() {
-    final ChessBoard copy = new ChessBoard(List.of(), this.getVariant(), this.isSetUp());
+    final ChessBoard copy = new ChessBoard(List.of(), this.getVariant(), this.isSetUp(), this.index960);
     for (PieceOnBoard piece : new ArrayList<>(this.allPieces.values())) {
       copy.addPiece(piece);
     }

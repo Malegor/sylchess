@@ -39,7 +39,7 @@ public class RepetitiveGamesRunner {
         final Gameplay gameplay = new Gameplay(board);
         final List<Player> players = List.of(new AlphaBetaPlayer(PlayerColor.WHITE, gameplay,1), new AlphaBetaPlayer(PlayerColor.BLACK, gameplay,2));
         gameplay.playGame(players);
-        final String fen = FenSaver.getPositionString(gameplay);
+        final String fen = FenSaver.getPositionString(gameplay.getInfo(), board);
         if (commonFinalFen == null)
           commonFinalFen = fen;
         else if (!commonFinalFen.equals(fen)) {

@@ -65,69 +65,73 @@ public class TestLoadPosition {
   public void testLoadStartingPositions() throws IOException {
     final String fileName = "fen/starting.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName, 1);
-    gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
+    final ChessBoard board = gameplay.getBoard();
+    gameplay.playGame(TestFullDummyGame.getDummyPlayers(board), 0);
     Assert.assertEquals(PlayerColor.BLACK, gameplay.getInfo().getLastPlayer().getColor());
     for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
-      Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
-      Assert.assertEquals(2, gameplay.getBoard().getUnmovedRooks(color).size());
+      Assert.assertFalse(board.getKing(color).isHasAlreadyMoved());
+      Assert.assertEquals(2, board.getUnmovedRooks(color).size());
     }
-    Assert.assertNull(gameplay.getBoard().getPreviousMove());
+    Assert.assertNull(board.getPreviousMove());
     Assert.assertEquals(1, gameplay.getInfo().getMoveNumber());
     Assert.assertEquals(1, gameplay.getInfo().getLastHalfMoveWithCaptureOrPawn());
-    Assert.assertEquals(loadFirstStringFromFile(fileName), FenSaver.getPositionString(gameplay));
+    Assert.assertEquals(loadFirstStringFromFile(fileName), FenSaver.getPositionString(gameplay.getInfo(), board));
   }
 
   @Test
   public void testAfterMovingPawn() throws IOException {
     final String fileName = "fen/after-pawn.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName, 1);
-    gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
+    final ChessBoard board = gameplay.getBoard();
+    gameplay.playGame(TestFullDummyGame.getDummyPlayers(board), 0);
     Assert.assertEquals(PlayerColor.WHITE, gameplay.getInfo().getLastPlayer().getColor());
     for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
-      Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
-      Assert.assertEquals(2, gameplay.getBoard().getUnmovedRooks(color).size());
+      Assert.assertFalse(board.getKing(color).isHasAlreadyMoved());
+      Assert.assertEquals(2, board.getUnmovedRooks(color).size());
     }
-    Assert.assertNotNull(gameplay.getBoard().getPreviousMove());
+    Assert.assertNotNull(board.getPreviousMove());
     final Square startingSquare = new Square(4, 4);
     final Pawn blackPawn = new Pawn(PlayerColor.BLACK, startingSquare);
-    Assert.assertTrue((new Move(Map.of(blackPawn, blackPawn.move(1, -1)), gameplay.getBoard())).isValidMove());
+    Assert.assertTrue((new Move(Map.of(blackPawn, blackPawn.move(1, -1)), board)).isValidMove());
     // OBS: this pawn didn't exist in the board, it has to be removed (as the rollback method will restore the key's position).
-    gameplay.getBoard().removePiece(blackPawn);
+    board.removePiece(blackPawn);
     Assert.assertEquals(1, gameplay.getInfo().getMoveNumber());
     Assert.assertEquals(1, gameplay.getInfo().getLastHalfMoveWithCaptureOrPawn());
-    Assert.assertEquals(loadFirstStringFromFile(fileName), FenSaver.getPositionString(gameplay));
+    Assert.assertEquals(loadFirstStringFromFile(fileName), FenSaver.getPositionString(gameplay.getInfo(), board));
   }
 
   @Test
   public void testMateIn3() throws IOException {
     final String fileName = "fen/mate/mate3.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName, 1);
-    gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
+    final ChessBoard board = gameplay.getBoard();
+    gameplay.playGame(TestFullDummyGame.getDummyPlayers(board), 0);
     Assert.assertEquals(PlayerColor.BLACK, gameplay.getInfo().getLastPlayer().getColor());
     for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
-      Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
-      Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(color).isEmpty());
+      Assert.assertFalse(board.getKing(color).isHasAlreadyMoved());
+      Assert.assertTrue(board.getUnmovedRooks(color).isEmpty());
     }
-    Assert.assertNull(gameplay.getBoard().getPreviousMove());
+    Assert.assertNull(board.getPreviousMove());
     Assert.assertEquals(1, gameplay.getInfo().getMoveNumber());
     Assert.assertEquals(1, gameplay.getInfo().getLastHalfMoveWithCaptureOrPawn());
-    Assert.assertEquals(loadFirstStringFromFile(fileName), FenSaver.getPositionString(gameplay));
+    Assert.assertEquals(loadFirstStringFromFile(fileName), FenSaver.getPositionString(gameplay.getInfo(), board));
   }
 
   @Test
   public void testMateIn4() throws IOException {
     final String fileName = "fen/mate/mate4.fen";
     final Gameplay gameplay = loadPositionFromFile(fileName, 1);
-    gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
+    final ChessBoard board = gameplay.getBoard();
+    gameplay.playGame(TestFullDummyGame.getDummyPlayers(board), 0);
     Assert.assertEquals(PlayerColor.BLACK, gameplay.getInfo().getLastPlayer().getColor());
     for (PlayerColor color : Set.of(PlayerColor.WHITE, PlayerColor.BLACK)) {
-      Assert.assertFalse(gameplay.getBoard().getKing(color).isHasAlreadyMoved());
-      Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(color).isEmpty());
+      Assert.assertFalse(board.getKing(color).isHasAlreadyMoved());
+      Assert.assertTrue(board.getUnmovedRooks(color).isEmpty());
     }
-    Assert.assertNull(gameplay.getBoard().getPreviousMove());
+    Assert.assertNull(board.getPreviousMove());
     Assert.assertEquals(1, gameplay.getInfo().getMoveNumber());
     Assert.assertEquals(1, gameplay.getInfo().getLastHalfMoveWithCaptureOrPawn());
-    Assert.assertEquals(loadFirstStringFromFile(fileName), FenSaver.getPositionString(gameplay));
+    Assert.assertEquals(loadFirstStringFromFile(fileName), FenSaver.getPositionString(gameplay.getInfo(), board));
   }
 
   @Test
@@ -136,22 +140,24 @@ public class TestLoadPosition {
     // It is not a chess 960 game either, as there are over 2 possible castles.
     final String fen = "r1rrkrrr/8/8/8/8/8/8/RRRKRRRR w HGCAhda - 0 1";
     final Gameplay gameplay = FenLoader.loadPosition(fen);
-    gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
-    Assert.assertEquals(Set.of('a', 'd', 'h'), gameplay.getBoard().getUnmovedRooks(PlayerColor.BLACK).stream().map(r -> r.getSquare().getColumnLetter()).collect(Collectors.toSet()));
-    Assert.assertEquals(Set.of('a', 'c', 'g', 'h'), gameplay.getBoard().getUnmovedRooks(PlayerColor.WHITE).stream().map(r -> r.getSquare().getColumnLetter()).collect(Collectors.toSet()));
-    Assert.assertEquals(fen, FenSaver.getPositionString(gameplay));
-    Assert.assertEquals(GameVariant.UNKNOWN, gameplay.getBoard().getVariant());
+    final ChessBoard board = gameplay.getBoard();
+    gameplay.playGame(TestFullDummyGame.getDummyPlayers(board), 0);
+    Assert.assertEquals(Set.of('a', 'd', 'h'), board.getUnmovedRooks(PlayerColor.BLACK).stream().map(r -> r.getSquare().getColumnLetter()).collect(Collectors.toSet()));
+    Assert.assertEquals(Set.of('a', 'c', 'g', 'h'), board.getUnmovedRooks(PlayerColor.WHITE).stream().map(r -> r.getSquare().getColumnLetter()).collect(Collectors.toSet()));
+    Assert.assertEquals(fen, FenSaver.getPositionString(gameplay.getInfo(), board));
+    Assert.assertEquals(GameVariant.UNKNOWN, board.getVariant());
   }
 
   @Test
   public void testCastlingClassicalChess() {
     final String fen = "r1rrkrrr/8/8/8/8/8/8/RRRKRRRR w kq - 0 1";
     final Gameplay gameplay = FenLoader.loadPosition(fen);
-    gameplay.playGame(TestFullDummyGame.getDummyPlayers(gameplay.getBoard()), 0);
-    Assert.assertEquals(Set.of('a', 'h'), gameplay.getBoard().getUnmovedRooks(PlayerColor.BLACK).stream().map(r -> r.getSquare().getColumnLetter()).collect(Collectors.toSet()));
-    Assert.assertTrue(gameplay.getBoard().getUnmovedRooks(PlayerColor.WHITE).isEmpty());
-    Assert.assertEquals(fen, FenSaver.getPositionString(gameplay));
-    Assert.assertEquals(GameVariant.CLASSICAL, gameplay.getBoard().getVariant());
+    final ChessBoard board = gameplay.getBoard();
+    gameplay.playGame(TestFullDummyGame.getDummyPlayers(board), 0);
+    Assert.assertEquals(Set.of('a', 'h'), board.getUnmovedRooks(PlayerColor.BLACK).stream().map(r -> r.getSquare().getColumnLetter()).collect(Collectors.toSet()));
+    Assert.assertTrue(board.getUnmovedRooks(PlayerColor.WHITE).isEmpty());
+    Assert.assertEquals(fen, FenSaver.getPositionString(gameplay.getInfo(), board));
+    Assert.assertEquals(GameVariant.CLASSICAL, board.getVariant());
   }
 
   public static Gameplay loadPositionFromFile(final String fileName, final int line) throws IOException {

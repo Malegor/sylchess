@@ -72,7 +72,7 @@ public class TestFullDummyGame {
       final GameStatus gameStatus = play.playGame(
               List.of(new DummyPlayer(PlayerColor.WHITE, board), new AlphaBetaPlayer(PlayerColor.BLACK, play, 3)));
       System.out.println(gameStatus + " after " + play.getInfo().getMoveNumber() + " moves.");
-      final String fen = FenSaver.getPositionString(play);
+      final String fen = FenSaver.getPositionString(play.getInfo(), board);
       if (commonFinalFen == null) {
         commonFinalFen = fen;
       }
