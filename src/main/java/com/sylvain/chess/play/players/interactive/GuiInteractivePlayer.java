@@ -1,4 +1,4 @@
-package com.sylvain.chess.ui.players;
+package com.sylvain.chess.play.players.interactive;
 
 import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
@@ -11,38 +11,38 @@ import com.sylvain.chess.pieces.Pawn;
 import com.sylvain.chess.pieces.PieceOnBoard;
 import com.sylvain.chess.pieces.Queen;
 import com.sylvain.chess.pieces.Rook;
-import com.sylvain.chess.play.players.interactive.InteractivePlayer;
-import com.sylvain.chess.ui.BoardFrame;
-import lombok.Setter;
+import lombok.Getter;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
 
 public class GuiInteractivePlayer extends InteractivePlayer {
-  private final BoardFrame frame;
   private String move;
   private Square selectedOrigin;
   private Square selectedDestination;
+  @Getter
+  private CountDownLatch waitingForNextMove;
 
-  public GuiInteractivePlayer(final PlayerColor color, final String name, final ChessBoard board, final BoardFrame frame) {
+  public GuiInteractivePlayer(final PlayerColor color, final String name, final ChessBoard board, final CountDownLatch waitingForNextMove) {
     super(color, name, board);
-    this.frame = frame;
+    this.waitingForNextMove = waitingForNextMove;
   }
 
   @Override
   protected String getNextMove() {
+    this.resetWaitForNextMove();
     try {
-      this.frame.getWaitingForNextMove().await();
+      this.waitingForNextMove.await();
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
-    this.frame.waitForNextMove();
-    this.frame.getWarningsLabel().setText(" ");
+    this.resetWarnings();
     if (this.selectedOrigin == null || this.selectedDestination == null)
       return this.move;
     // OBS: at this point, the frame's "current board" may not yet have been updated.
-    final ChessBoard board = this.frame.getInternalBoard();
+    final ChessBoard board = this.getBoardToUse();
     final PieceOnBoard pieceAtOrigin = board.getPieceAt(this.selectedOrigin);
     if (pieceAtOrigin == null || !pieceAtOrigin.getColor().equals(this.getColor()))
       return this.getBadMoveStr();
@@ -64,8 +64,8 @@ public class GuiInteractivePlayer extends InteractivePlayer {
     if (pieceAtOrigin.getName().equals(Pawn.NAME_LC) && ChessBoard.getPromotionRow(this.getColor()) == this.selectedDestination.row()) {
       // Promotion: for now, read the promotion piece from the move text field (in the future, there could be a popup to select the piece).
       final Pawn pawn = (Pawn) pieceAtOrigin;
-      final String pieceStr = this.frame.getMoveField().getText();
-      final char pieceChar = pieceStr.isEmpty() ? Queen.NAME_LC : Character.toLowerCase(pieceStr.toCharArray()[0]);
+      final String promoted = this.getPromotion();
+      final char pieceChar = promoted.isEmpty() ? Queen.NAME_LC : Character.toLowerCase(promoted.toCharArray()[0]);
       movedPiece = switch (pieceChar) {
         case Bishop.NAME_LC -> pawn.toBishop(this.selectedDestination);
         case Rook.NAME_LC -> pawn.toRook(this.selectedDestination);
@@ -77,6 +77,22 @@ public class GuiInteractivePlayer extends InteractivePlayer {
     return moveToPlay.isValidMove() ? moveToPlay.toSan() : this.getBadMoveStr();
   }
 
+  protected void resetWaitForNextMove() {
+    this.waitingForNextMove = new CountDownLatch(1);
+  }
+
+  protected String getPromotion() {
+    return ""; // TODO: generalize
+  }
+
+  protected ChessBoard getBoardToUse() {
+    return this.board; // TODO: player should copy the board internally for its own calculations?
+  }
+
+  protected void resetWarnings() {
+    // Do nothing
+  }
+
   private String getBadMoveStr() {
     return this.selectedOrigin + " -> " + this.selectedDestination;
   }
@@ -84,16 +100,9 @@ public class GuiInteractivePlayer extends InteractivePlayer {
   @Override
   protected void handleInvalidMove(List<Move> validMoves, String moveStr) {
     super.handleInvalidMove(validMoves, moveStr);
-    this.frame.getWarningsLabel().setText("Invalid move: \"" + moveStr + "\"");
     this.move = null;
     this.selectedOrigin = null;
     this.selectedDestination = null;
-  }
-
-  @Override
-  public void publishMove(final Move move) {
-    super.publishMove(move);
-    this.frame.applyMove(move);
   }
 
   public void setNextMoveSquares(final Square squareOrigin, final Square squareDestination) {

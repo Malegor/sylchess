@@ -47,7 +47,7 @@ public class PuzzleRunner {
               new AlphaBetaPlayer(PlayerColor.BLACK, gameplay.getBoard(), gameplay.getInfo(), depth, gameplay.getDrawConditions()));
       final GameStatus gameStatus = gameplay.playGame(players,
               gameplay.getInfo().getMoveNumber() + numberOfMovesForMate - (gameplay.getHistory().getFirstPlayingColor().equals(PlayerColor.BLACK) ? 0 : 1));
-      if (gameStatus.equals(GameStatus.PLAYING))
+      if (gameStatus.equals(GameStatus.ABORTED_MAX_NB_OF_MOVES))
         throw new IllegalStateException("Game status should not be PLAYING: " + fen);
       maxTime = Math.max(System.currentTimeMillis() - specificStartTime, maxTime);
     }
