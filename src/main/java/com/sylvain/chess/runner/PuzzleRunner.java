@@ -34,6 +34,7 @@ public class PuzzleRunner {
   }
 
   public static void main(String[] args) throws IOException {
+    // TODO: main arguments
     final int numberOfMovesForMate = 3;
     final String fileName = "fen/mate/mate" + numberOfMovesForMate + ".fen";
     final int depth = 7;
@@ -48,7 +49,7 @@ public class PuzzleRunner {
       final GameStatus gameStatus = gameplay.playGame(players,
               gameplay.getInfo().getMoveNumber() + numberOfMovesForMate - (gameplay.getHistory().getFirstPlayingColor().equals(PlayerColor.BLACK) ? 0 : 1));
       if (gameStatus.equals(GameStatus.ABORTED_MAX_NB_OF_MOVES))
-        throw new IllegalStateException("Game status should not be PLAYING: " + fen);
+        throw new IllegalStateException("Player didn't solve this puzzle: " + fen);
       maxTime = Math.max(System.currentTimeMillis() - specificStartTime, maxTime);
     }
     final long totalTime = (System.currentTimeMillis() - startTime) / 1000;

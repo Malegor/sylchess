@@ -1,8 +1,10 @@
-package com.sylvain.chess.play;
+package com.sylvain.chess.runner;
 
 import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.io.fen.FenLoader;
+import com.sylvain.chess.play.EndGame;
+import com.sylvain.chess.play.Gameplay;
 import com.sylvain.chess.play.players.DummyPlayer;
 import com.sylvain.chess.play.players.interactive.ConsolePlayer;
 import com.sylvain.chess.play.players.AlphaBetaPlayer;
@@ -15,8 +17,9 @@ import java.util.List;
 import java.util.Scanner;
 
 @Log4j2
-public class ConsoleInteractiveGame {
+public class ConsoleRunner {
   public static void main(String[] args) {
+    // TODO: main arguments (ex. depth)
     final InputStream inputStream = System.in; // TODO: param for tests(?)
     final Scanner scanner = new Scanner(inputStream);
     final String solverName = "solver";

@@ -1,8 +1,10 @@
-package com.sylvain.chess.play;
+package com.sylvain.chess.runner;
 
 import com.sylvain.chess.PlayerColor;
 import com.sylvain.chess.board.ChessBoard;
 import com.sylvain.chess.io.TestLoadPosition;
+import com.sylvain.chess.play.EndGame;
+import com.sylvain.chess.play.Gameplay;
 import com.sylvain.chess.play.players.interactive.ConsolePlayer;
 import com.sylvain.chess.play.players.AlphaBetaPlayer;
 import com.sylvain.chess.play.players.Player;
@@ -16,7 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Scanner;
 
-public class TestConsoleInteractiveGame {
+public class TestConsoleRunner {
   @Test
   public void testMatDeLimbecile() {
     final String simulatedMoves = "f3\ne5\ng4\nQh4";
@@ -24,7 +26,7 @@ public class TestConsoleInteractiveGame {
     final Scanner scanner = new Scanner(mockInput);
     final ChessBoard board = ChessBoard.defaultBoard();
     final List<Player> players = List.of(new ConsolePlayer(PlayerColor.WHITE, "white", board, scanner), new ConsolePlayer(PlayerColor.BLACK, "black", board, scanner));
-    final EndGame endGame = ConsoleInteractiveGame.play(new Gameplay(board), players);
+    final EndGame endGame = ConsoleRunner.play(new Gameplay(board), players);
     scanner.close();
     Assert.assertEquals(EndGame.BLACK_WINS, endGame);
   }
@@ -36,7 +38,7 @@ public class TestConsoleInteractiveGame {
     final Scanner scanner = new Scanner(mockInput);
     final ChessBoard board = ChessBoard.defaultBoard();
     final List<Player> players = List.of(new ConsolePlayer(PlayerColor.WHITE, "white", board, scanner), new ConsolePlayer(PlayerColor.BLACK, "black", board, scanner));
-    final EndGame endGame = ConsoleInteractiveGame.play(new Gameplay(board), players);
+    final EndGame endGame = ConsoleRunner.play(new Gameplay(board), players);
     scanner.close();
     Assert.assertEquals(EndGame.DRAW, endGame);
   }
@@ -49,7 +51,7 @@ public class TestConsoleInteractiveGame {
     final Gameplay game = TestLoadPosition.loadPositionFromFile("fen/mate/mate3.fen", 5);
     game.getBoard().printBoard();
     final List<Player> players = List.of(new ConsolePlayer(PlayerColor.WHITE, "white", game.getBoard(), scanner), new AlphaBetaPlayer(PlayerColor.BLACK, game, 5));
-    final EndGame endGame = ConsoleInteractiveGame.play(game, players);
+    final EndGame endGame = ConsoleRunner.play(game, players);
     scanner.close();
     Assert.assertEquals(EndGame.BLACK_WINS, endGame);
   }
@@ -59,7 +61,7 @@ public class TestConsoleInteractiveGame {
     final Gameplay game = TestLoadPosition.loadPositionFromFile("fen/mate/mate3.fen", 5);
     game.getBoard().printBoard();
     final List<Player> players = List.of(new AlphaBetaPlayer(PlayerColor.WHITE, game, 5), new AlphaBetaPlayer(PlayerColor.BLACK, game, 5));
-    final EndGame endGame = ConsoleInteractiveGame.play(game, players);
+    final EndGame endGame = ConsoleRunner.play(game, players);
     Assert.assertEquals(EndGame.BLACK_WINS, endGame);
   }
 
@@ -76,7 +78,7 @@ public class TestConsoleInteractiveGame {
     final Gameplay game = TestLoadPosition.loadPositionFromFile("fen/mate/mate4.fen", 7);
     game.getBoard().printBoard();
     final List<Player> players = List.of(new AlphaBetaPlayer(PlayerColor.WHITE, game, 6), new AlphaBetaPlayer(PlayerColor.BLACK, game, 6));
-    final EndGame endGame = ConsoleInteractiveGame.play(game, players);
+    final EndGame endGame = ConsoleRunner.play(game, players);
     Assert.assertEquals(EndGame.WHITE_WINS, endGame);
   }
 }
