@@ -92,6 +92,11 @@ public class TestGameplay {
     Assert.assertEquals(1, game.getInfo().getMoveNumber());
   }
 
+  @Test
+  public void testFails() {
+    Assert.fail();
+  }
+
   private Gameplay getGameWithRepeatedMoves(final int maxNumberOfMovesWithoutCaptureOrPawnMove) {
     final ChessBoard board = ChessBoard.emptyBoard();
     final King whiteKing = new King(PlayerColor.WHITE, new Square(5, 1));
