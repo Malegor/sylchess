@@ -26,6 +26,7 @@ public class FenLoader {
   public static final String NONE = "-";
 
   public static Gameplay loadPosition(final String fen) {
+    log.info("Loading position from fen: {}", fen);
     final String[] fenArray = fen.split(SEP);
     if (fenArray.length < 6)
       throw new IllegalArgumentException("Invalid fen (missing " + (6 - fenArray.length) + " argument(s)): " + fen);

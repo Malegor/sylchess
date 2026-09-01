@@ -106,7 +106,7 @@ public class AlphaBetaPlayer extends Player {
         return null;
       final EvaluatedMove nextMove = this.alphaBeta(moveOpponent, depth - 1, alpha, beta, this.info.getPositionsAlmostAtDraw(this.drawConditions));
       if (move == null)
-        log.debug("{}/{} - On {}, best response is: {}", index + 1, allValidMovesForOpponent.size(), moveOpponent, nextMove);
+        log.debug("{}/{} - On {}, suggested response is: {}", index + 1, allValidMovesForOpponent.size(), moveOpponent, nextMove);
       if (nextMove == null)
         // This happens if the game is aborted.
         return nextMove;

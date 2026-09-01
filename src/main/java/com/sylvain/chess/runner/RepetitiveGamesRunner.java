@@ -6,7 +6,9 @@ import com.sylvain.chess.io.fen.FenSaver;
 import com.sylvain.chess.play.EndGame;
 import com.sylvain.chess.play.Gameplay;
 import com.sylvain.chess.play.players.AlphaBetaPlayer;
+import com.sylvain.chess.play.players.DummyPlayer;
 import com.sylvain.chess.play.players.Player;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,12 +16,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+@Log4j2
 public class RepetitiveGamesRunner {
   public static void main(String[] args) {
     // Data (could be arguments)
     final boolean byIndex = true;
     final int numberOfDifferentGames = 960;
-    final int numberOfRepetitions = 1;
+    final int numberOfRepetitions = 2;
     ////
     final List<Long> gamesWhite = new ArrayList<>();
     final List<Long> gamesBlack = new ArrayList<>();
@@ -37,18 +40,19 @@ public class RepetitiveGamesRunner {
       for (int j = 0; j < numberOfRepetitions; j++) {
         final ChessBoard board = byIndex ? ChessBoard.board960ByIndex(i) : ChessBoard.board960BySeed(seed);
         final Gameplay gameplay = new Gameplay(board);
-        final List<Player> players = List.of(new AlphaBetaPlayer(PlayerColor.WHITE, gameplay,1), new AlphaBetaPlayer(PlayerColor.BLACK, gameplay,2));
+        final List<Player> players = List.of(new DummyPlayer(PlayerColor.WHITE, board), new AlphaBetaPlayer(PlayerColor.BLACK, gameplay,3));
         gameplay.playGame(players);
         final String fen = FenSaver.getPositionString(gameplay.getInfo(), board);
         if (commonFinalFen == null)
           commonFinalFen = fen;
         else if (!commonFinalFen.equals(fen)) {
-          System.out.println(gamesWhite.size() + " / " + gamesDraw.size() + " / " + gamesBlack.size());
+          log.info("{} / {} / {}", gamesWhite.size(), gamesDraw.size(), gamesBlack.size());
           throw new IllegalStateException("Indeterminism detected after " + (j+1) + " games for game=" + gameDescription);
         }
         endgame = gameplay.getEndGame();
         sameEndgames.putIfAbsent(commonFinalFen, new ArrayList<>(1));
-        sameEndgames.get(commonFinalFen).add(gameDescription);
+        if (sameEndgames.get(commonFinalFen).isEmpty() || !sameEndgames.get(commonFinalFen).getLast().equals(gameDescription))
+          sameEndgames.get(commonFinalFen).add(gameDescription);
       }
       switch (endgame) {
         case WHITE_WINS -> gamesWhite.add(gameDescription);
@@ -57,18 +61,18 @@ public class RepetitiveGamesRunner {
         default -> throw new IllegalStateException("Unknown endgame: " + endgame);
       }
     }
-    System.out.println("Number of games (w/d/b): " + gamesWhite.size() + " / " + gamesDraw.size() + " / " + gamesBlack.size());
+    log.info("Number of games (w/d/b): {} / {} / {}", gamesWhite.size(), gamesDraw.size(), gamesBlack.size());
     final EndGame majorWinner = gamesWhite.size() == gamesBlack.size() && gamesWhite.size() == gamesDraw.size() ? null :
             gamesWhite.size() >= gamesBlack.size() && gamesWhite.size() >= gamesDraw.size() ? EndGame.WHITE_WINS :
             gamesBlack.size() >= gamesWhite.size() && gamesBlack.size() >= gamesDraw.size() ? EndGame.BLACK_WINS :
                     EndGame.DRAW;
-    System.out.println("Minority games: " + (!EndGame.WHITE_WINS.equals(majorWinner) ? gamesWhite + " " : "") +
-            (!EndGame.DRAW.equals(majorWinner) ? gamesDraw + " " : "") + (!EndGame.BLACK_WINS.equals(majorWinner) ? gamesBlack : ""));
-    if (sameEndgames.values().stream().mapToInt(List::size).sum() != numberOfDifferentGames)
-      throw new IllegalStateException("Inconsistent endgames!");
+    log.info("Minority games: {}{}{}", !EndGame.WHITE_WINS.equals(majorWinner) ? gamesWhite + " " : "", !EndGame.DRAW.equals(majorWinner) ? gamesDraw + " " : "", !EndGame.BLACK_WINS.equals(majorWinner) ? gamesBlack : "");
     final List<Map.Entry<String, List<Long>>> sameEnds = sameEndgames.entrySet().stream().filter(e -> e.getValue().size() > 1).toList();
     if (!sameEnds.isEmpty())
-      System.out.println("Games leading to the same endgame: " + sameEnds);
-    System.out.println(numberOfDifferentGames * numberOfRepetitions + " games played in " + (System.currentTimeMillis() - startTime) + " ms");
+      log.info("Games leading to the same endgame: {}", sameEnds);
+    log.info(numberOfDifferentGames * numberOfRepetitions + " games played in {} ms", System.currentTimeMillis() - startTime);
+    if (sameEndgames.values().stream().mapToInt(List::size).sum() != numberOfDifferentGames)
+      throw new IllegalStateException("Inconsistent endgames! " + sameEndgames.values().stream().mapToInt(List::size).sum()
+        + " vs. " + numberOfDifferentGames);
   }
 }

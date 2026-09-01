@@ -22,52 +22,24 @@ This project is a Java-based chess program that allows users to play starting fr
 - Interactive game on desktop-based interface
 - Load a given position from [FEN](https://www.chess.com/terms/fen-chess) description
 
-## Run Locally (TODO)
+## Running locally
 
-Clone the project
-
+Get the project jar. (OBS: with this command, the project is also available as a library for other projects).
 ```bash
-  git clone https://link-to-project
+  mvn clean install
 ```
 
-Go to the project directory
+Get the jar in `<home>/.m2/repository/com/sylvain/chess/sylchess/<version>/sylchess-<version>.jar`
 
-```bash
-  cd my-project
-```
+TODO:
+- java -jar sylchess.jar
+- java -cp <whatever>
 
-Install dependencies
+## Swing interface
+See project [Swing Interface](https://github.com/Malegor/sylchess-swing)
 
-```bash
-  npm install
-```
-
-Start the server
-
-```bash
-  npm run start
-```
-
-TODO: how to run tests etc.
-## User interface
-
-From the source code of the project, run the [ChessBoardRunner](https://github.com/Malegor/sylchess/blob/master/src/main/java/com/sylvain/chess/runner/ChessBoardRunner.java) class. This will open a frame with a chess board on the left-hand side and some buttons and fields on the right-hand side.
-
-### Right-hand panel
-
-There you can run a new game (New Game button), using either a classical starting position, a chess 960 position, or a given position from a FEN description (fill the text field on the right). The players can be chosen between a human (interactive) player, a dummy player, and a puzzle solver (for the present it is mainly useful for puzzles and not for complete games).
-
-In the next section, in case there is at least one interactive player, you can inform the next move by filling the text field and clicking "Submit move". The text the move you inform is based on PGN-kind moves, such as Kxd3, e8=Q etc. In case the move you enter is not an allowed move, you get a warning and a few more chances to enter a valid move. After 5 unsuccesful attempts, the game is considered resigned and the other player wins the game.
-
-The lowest section gathers some information on the game. On the left-hand side, the warning messages are displayed, when necessary. In the middle, a table shows every move played in the current game until the last move. On the right-hand side, you get the game result as soon as it is over.
-
-### Board panel
-
-The board panel shows the game position after each move was played. As soon as a piece moved, the panel show its squares with distinct colors.
-
-Right-clicking on a square will color the square, and double-clicking reset all the squares' default color.
-
-You can also use the board to indicate your next move, by left-clicking on the piece you want to move and then on the destination square. In the case of castling however, you should click on the king and the rook to indicate that move. Note that even if the other player is still "thinking" (such as in the case of a puzzle solver), you can still pre-move by clicking on the squares, especially if the other player's next move is predictable.
+## Web interface
+See project [Web Interface](https://github.com/Malegor/sylchess-webserver)
 
 ## Future work
 
@@ -76,6 +48,7 @@ You can also use the board to indicate your next move, by left-clicking on the p
 - generalize rules: ex. two or more kings
 - generalize rules: several players for same color (test it)
 - first phase before game: player chooses the positions of each piece
+- improve Alpha-Beta's player performance
 
 ## Acknowledgements
 
